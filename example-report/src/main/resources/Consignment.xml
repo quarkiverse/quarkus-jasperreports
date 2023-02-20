@@ -1,0 +1,30 @@
+<consignment>
+	<senderAddress>
+		<name>Schokoladen Fabrik</name>
+		<country>DE</country>
+		<streetAndNumber>Fabrikenstraße 5a</streetAndNumber>
+		<city>Kassel</city>
+		<zipCode>34123</zipCode>
+		<district>Lohfelden</district>
+	</senderAddress>
+	<recipientAddress>
+		<name>Einzelhandel GmbH</name>
+		<country>DE</country>
+		<streetAndNumber>Turmstraße 12b</streetAndNumber>
+		<city>Dortmund</city>
+		<zipCode>44135</zipCode>
+		<district>Kaiserviertel</district>
+	</recipientAddress>
+	<recipientContact>
+		<name>Erika Mustermann</name>
+		<phone>(+49) 01234 567890</phone>
+		<email>erika@mustermann.de</email>
+	</recipientContact>
+	<positions>
+		<position>
+			<packageCount>2</packageCount>
+			<packageType>CO</packageType>
+		</position>
+	</positions>
+	
+</consignment>
