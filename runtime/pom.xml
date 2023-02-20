@@ -9,12 +9,6 @@
   </parent>
   <artifactId>quarkus-jasperreports</artifactId>
   <name>Quarkus Jasperreports - Runtime</name>
-  <dependencies>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-arc</artifactId>
-    </dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>
@@ -47,4 +41,17 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-arc</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.jasperreports</groupId>
+      <artifactId>jasperreports</artifactId>
+      <version>${jasperreports.version}</version>
+    </dependency>
+  </dependencies>
 </project>

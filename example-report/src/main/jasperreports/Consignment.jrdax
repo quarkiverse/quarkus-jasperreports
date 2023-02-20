@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xmlDataAdapter class="net.sf.jasperreports.data.xml.XmlDataAdapterImpl">
+  <name>Consignment</name>
+  <dataFile type="repositoryDataLocation">
+    <location>C:\Users\Martin\JaspersoftWorkspace\MyReports\Consignment.xml</location>
+  </dataFile>
+  <selectExpression></selectExpression>
+  <useConnection>true</useConnection>
+  <locale>de_DE</locale>
+  <timeZone>Europe/Berlin</timeZone>
+  <namespaceAware>false</namespaceAware>
+</xmlDataAdapter>
