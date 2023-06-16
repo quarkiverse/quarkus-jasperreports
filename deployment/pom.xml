@@ -9,10 +9,31 @@
   </parent>
   <artifactId>quarkus-jasperreports-deployment</artifactId>
   <name>Quarkus Jasperreports - Deployment</name>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>io.quarkus</groupId>
+              <artifactId>quarkus-extension-processor</artifactId>
+              <version>${version.quarkus}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-arc-deployment</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-jackson-deployment</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.jasperreports</groupId>
@@ -25,20 +46,4 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>io.quarkus</groupId>
-              <artifactId>quarkus-extension-processor</artifactId>
-              <version>${quarkus.version}</version>
-            </path>
-          </annotationProcessorPaths>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
