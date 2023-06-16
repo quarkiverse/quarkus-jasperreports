@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.quarkiverse</groupId>
     <artifactId>quarkiverse-parent</artifactId>
-    <version>12</version>
+    <version>13</version>
   </parent>
   <groupId>io.quarkiverse.jasperreports</groupId>
   <artifactId>quarkus-jasperreports-parent</artifactId>
@@ -22,18 +22,30 @@
     <url>https://github.com/quarkiverse/quarkus-jasperreports</url>
   </scm>
   <properties>
-    <compiler-plugin.version>3.10.1</compiler-plugin.version>
+    <!-- Settings -->
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.version>3.0.0.Alpha4</quarkus.version>
+
+
+    <!-- Dependency Versions -->
+    <version.quarkus>3.1.2.Final</version.quarkus>
+    <version.quarkus-poi>2.0.1</version.quarkus-poi>
+    <version.jackson>2.14.2</version.jackson> <!-- Must match the jackson version used in the given quarkus version -->
+
+    <version.jasperreports>6.20.5</version.jasperreports><!-- Make sure to update the exclusions in quarkus-jasperreports when updating jasper -->
+    <version.jaxen>1.2.0</version.jaxen> <!-- Must match the jaxen version used in the given jasperreports version -->
+
+    <!-- Plugin Versions -->
+    <compiler-plugin.version>3.10.1</compiler-plugin.version>
+    <jasperreports-plugin.version>3.5.4</jasperreports-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-bom</artifactId>
-        <version>${quarkus.version}</version>
+        <version>${version.quarkus}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -45,7 +57,7 @@
         <plugin>
           <groupId>io.quarkus</groupId>
           <artifactId>quarkus-maven-plugin</artifactId>
-          <version>${quarkus.version}</version>
+          <version>${version.quarkus}</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
