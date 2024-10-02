@@ -37,7 +37,8 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.data.http.HttpDataService.class.getName(),
                 net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getName(),
                 net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
-                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName()
+                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName(),
+                net.sf.jasperreports.engine.type.ColorEnum.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
