@@ -39,6 +39,7 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.print.JRPrinterAWT.class.getPackageName(),
                 net.sf.jasperreports.engine.type.ColorEnum.class.getPackageName(),
                 net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getPackageName(),
+                net.sf.jasperreports.engine.util.ExifUtil.class.getPackageName(),
                 net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getPackageName(),
                 net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getPackageName()
                 )
