@@ -24,6 +24,7 @@ import java.util.Map;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 
 import org.w3c.dom.Document;
 
@@ -38,6 +39,7 @@ import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.fill.JRFiller;
 import net.sf.jasperreports.engine.fill.SimpleJasperReportSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
@@ -46,6 +48,7 @@ import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.export.SimpleXmlExporterOutput;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
@@ -115,6 +118,25 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
+    @POST
+    @Path("xml")
+    public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
+        long start = System.currentTimeMillis();
+        JasperPrint jasperPrint = fill();
+
+        JRXmlExporter exporter = new JRXmlExporter(DefaultJasperReportsContext.getInstance());
+
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        SimpleXmlExporterOutput xmlOutput = new SimpleXmlExporterOutput(outputStream);
+        xmlOutput.setEmbeddingImages(embedded);
+        exporter.setExporterOutput(xmlOutput);
+        exporter.exportReport();
+        Log.info("XML creation time : " + (System.currentTimeMillis() - start));
+        return outputStream.toByteArray();
+    }
+
     //    @POST
     //    @Path("print")
     //    public void print() throws JRException {
@@ -164,24 +186,7 @@ public class JasperReportsResource {
     //        return outputStream.toByteArray();
     //    }
     //
-    //    @POST
-    //    @Path("xml")
-    //    public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
-    //        long start = System.currentTimeMillis();
-    //        JasperPrint jasperPrint = fill();
-    //
-    //        JRXmlExporter exporter = new JRXmlExporter(DefaultJasperReportsContext.getInstance());
-    //
-    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-    //
-    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    //        SimpleXmlExporterOutput xmlOutput = new SimpleXmlExporterOutput(outputStream);
-    //        xmlOutput.setEmbeddingImages(embedded);
-    //        exporter.setExporterOutput(xmlOutput);
-    //        exporter.exportReport();
-    //        Log.info("XML creation time : " + (System.currentTimeMillis() - start));
-    //        return outputStream.toByteArray();
-    //    }
+
     //
     //    @POST
     //    @Path("html")

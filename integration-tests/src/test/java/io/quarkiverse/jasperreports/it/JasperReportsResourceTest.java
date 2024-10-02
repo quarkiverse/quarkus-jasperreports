@@ -17,6 +17,19 @@ class JasperReportsResourceTest {
                 .statusCode(200);
     }
 
+    @Test
+    void testExportXML() {
+        given()
+                .when().post("/jasperreports/xml")
+                .then()
+                .statusCode(200);
+
+        given()
+                .when().post("/jasperreports/xml?embedded=true")
+                .then()
+                .statusCode(200);
+    }
+
     //    @Test
     //    void testExportPDF() {
     //        given()
@@ -33,18 +46,7 @@ class JasperReportsResourceTest {
     //                .statusCode(200);
     //    }
     //
-    //    @Test
-    //    void testExportXML() {
-    //        given()
-    //                .when().post("/jasperreports/xml")
-    //                .then()
-    //                .statusCode(200);
-    //
-    //        given()
-    //                .when().post("/jasperreports/xml?embedded=true")
-    //                .then()
-    //                .statusCode(200);
-    //    }
+
     //
     //    @Test
     //    void testExportHTML() {
