@@ -35,7 +35,7 @@
         <version.quarkus-poi>2.0.6</version.quarkus-poi>
 
         <version.jasperreports>6.21.3</version.jasperreports><!-- Make sure to update the exclusions in quarkus-jasperreports when updating jasper -->
-        <version.jaxen>1.2.0</version.jaxen> <!-- Must match the jaxen version used in the given jasperreports version -->
+        <version.jaxen>2.0.0</version.jaxen> <!-- Must match the jaxen version used in the given jasperreports version -->
     </properties>
     <dependencyManagement>
         <dependencies>

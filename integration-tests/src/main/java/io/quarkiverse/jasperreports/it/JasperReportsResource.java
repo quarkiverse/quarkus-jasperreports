@@ -40,6 +40,7 @@ import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.fill.JRFiller;
 import net.sf.jasperreports.engine.fill.SimpleJasperReportSource;
@@ -155,6 +156,22 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
+    @POST
+    @Path("rtf")
+    public byte[] rtf() throws JRException {
+        long start = System.currentTimeMillis();
+        JasperPrint jasperPrint = fill();
+
+        JRRtfExporter exporter = new JRRtfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+
+        exporter.exportReport();
+        Log.info("RTF creation time : " + (System.currentTimeMillis() - start));
+        return outputStream.toByteArray();
+    }
+
     //    @POST
     //    @Path("print")
     //    public void print() throws JRException {
@@ -182,27 +199,7 @@ public class JasperReportsResource {
     //
     //        return outputStream.toByteArray();
     //    }
-    //
-    //    @POST
-    //    @Path("rtf")
-    //    public byte[] rtf() throws JRException {
-    //        long start = System.currentTimeMillis();
-    //
-    //        JasperPrint jasperPrint = fill();
-    //
-    //        JRRtfExporter exporter = new JRRtfExporter();
-    //
-    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-    //
-    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    //        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-    //
-    //        exporter.exportReport();
-    //
-    //        Log.info("RTF creation time : " + (System.currentTimeMillis() - start));
-    //
-    //        return outputStream.toByteArray();
-    //    }
+
     //
 
     //
