@@ -22,6 +22,9 @@ updates:
       quarkiverse:
         patterns:
           - "io.quarkiverse*"
+      jasper:
+        patterns:
+          - "net.sf.jasperreports*"
       dependencies:
         patterns:
           - "*"
