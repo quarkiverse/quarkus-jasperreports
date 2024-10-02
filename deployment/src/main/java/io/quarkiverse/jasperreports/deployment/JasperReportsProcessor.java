@@ -31,6 +31,7 @@ class JasperReportsProcessor {
         Stream.of(
                 javax.swing.plaf.metal.MetalIconFactory.class.getName(),
                 javax.swing.plaf.metal.DefaultMetalTheme.class.getName(),
+                javax.swing.plaf.metal.MetalTheme.class.getName(),
                 net.sf.jasperreports.data.http.HttpDataService.class.getName(),
                 net.sf.jasperreports.engine.SimpleReportContext.class.getName(),
                 net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getName(),
