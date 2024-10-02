@@ -29,18 +29,19 @@ class JasperReportsProcessor {
     void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         Stream.of(
+                javax.swing.plaf.metal.MetalIconFactory.class.getName(),
+                javax.swing.plaf.metal.DefaultMetalTheme.class.getName(),
+                net.sf.jasperreports.data.http.HttpDataService.class.getName(),
                 net.sf.jasperreports.engine.SimpleReportContext.class.getName(),
                 net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getName(),
-                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName(),
-                net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getName(),
-                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getName(),
-                net.sf.jasperreports.data.http.HttpDataService.class.getName(),
                 net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getName(),
-                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
-                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName(),
-                net.sf.jasperreports.engine.type.ColorEnum.class.getName(),
                 net.sf.jasperreports.engine.fonts.AwtFontManager.class.getName(),
-                javax.swing.plaf.metal.MetalIconFactory.class.getName()
+                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName(),
+                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
+                net.sf.jasperreports.engine.type.ColorEnum.class.getName(),
+                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getName(),
+                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName(),
+                net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
