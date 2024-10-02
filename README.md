@@ -25,7 +25,7 @@ Create a new JasperReports project (with a base jasperreports starter code):
 ```bash
 quarkus create app jasperreports-app -x=io.quarkiverse.jasperreports:quarkus-jasperreports
 ```
-Or add to you pom.xml directly:
+Or add to your pom.xml directly:
 
 ```xml
 <dependency>
@@ -67,19 +67,20 @@ CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
 
 ## 🧑‍💻 Contributing
 
-- Contribution is the best way to support and get involved in community!
+- Contribution is the best way to support and get involved in the community!
 - Please, consult our [Code of Conduct](./CODE_OF_CONDUCT.md) policies for interacting in our community.
-- Contributions to `quarkus-jasperreports` Please check our [CONTRIBUTING.md](./CONTRIBUTING.md)
+- Contributions to `quarkus-jasperreports` - please check our [CONTRIBUTING.md](./CONTRIBUTING.md)
 
-### If you have any idea or question 🤷
+### If you have any ideas or questions 🤷
 
 - [Ask a question](https://github.com/quarkiverse/quarkus-jasperreports/discussions)
 - [Raise an issue](https://github.com/quarkiverse/quarkus-jasperreports/issues)
 - [Feature request](https://github.com/quarkiverse/quarkus-jasperreports/issues)
 - [Code submission](https://github.com/quarkiverse/quarkus-jasperreports/pulls)
+
 ## Contributors ✨
 
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+Thanks go to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
