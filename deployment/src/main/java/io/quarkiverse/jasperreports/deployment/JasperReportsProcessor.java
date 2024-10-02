@@ -33,13 +33,14 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.data.http.HttpDataService.class.getPackageName(),
                 net.sf.jasperreports.engine.SimpleReportContext.class.getPackageName(),
                 net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getPackageName(),
+                net.sf.jasperreports.engine.export.JRXlsExporter.class.getPackageName(),
                 net.sf.jasperreports.engine.export.oasis.JROdtExporter.class.getPackageName(),
                 net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getPackageName(),
                 net.sf.jasperreports.engine.fonts.AwtFontManager.class.getPackageName(),
                 net.sf.jasperreports.engine.print.JRPrinterAWT.class.getPackageName(),
                 net.sf.jasperreports.engine.type.ColorEnum.class.getPackageName(),
-                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getPackageName(),
                 net.sf.jasperreports.engine.util.ExifUtil.class.getPackageName(),
+                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getPackageName(),
                 net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getPackageName(),
                 net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getPackageName()
                 )
