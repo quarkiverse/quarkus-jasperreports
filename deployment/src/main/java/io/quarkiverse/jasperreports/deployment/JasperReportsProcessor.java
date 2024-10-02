@@ -31,7 +31,8 @@ class JasperReportsProcessor {
         Stream.of(
                 net.sf.jasperreports.engine.SimpleReportContext.class.getName(),
                 net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getName(),
-                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName()
+                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName(),
+                net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
