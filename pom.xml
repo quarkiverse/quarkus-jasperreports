@@ -1,100 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>io.quarkiverse</groupId>
-    <artifactId>quarkiverse-parent</artifactId>
-    <version>15</version>
-  </parent>
-  <groupId>io.quarkiverse.jasperreports</groupId>
-  <artifactId>quarkus-jasperreports-parent</artifactId>
-  <version>lütter-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Quarkus Jasperreports - Parent</name>
-  <modules>
-    <module>deployment</module>
-    <module>runtime</module>
-  </modules>
-  <scm>
-    <connection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</connection>
-    <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</developerConnection>
-    <url>https://github.com/quarkiverse/quarkus-jasperreports</url>
-    <tag>HEAD</tag>
-  </scm>
-  <properties>
-    <!-- Settings -->
-    <maven.compiler.release>11</maven.compiler.release>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.quarkiverse</groupId>
+        <artifactId>quarkiverse-parent</artifactId>
+        <version>18</version>
+    </parent>
+    <groupId>io.quarkiverse.jasperreports</groupId>
+    <artifactId>quarkus-jasperreports-parent</artifactId>
+    <version>999-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Quarkus JasperReports - Parent</name>
+    <description>JasperReports is an open source reporting library that can be embedded into any Java application.
+    </description>
+    <modules>
+        <module>deployment</module>
+        <module>runtime</module>
+    </modules>
+    <scm>
+        <connection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</connection>
+        <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</developerConnection>
+        <url>https://github.com/quarkiverse/quarkus-jasperreports</url>
+        <tag>HEAD</tag>
+    </scm>
+    <properties>
+        <!-- Settings -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <!-- Dependency Versions -->
+        <version.quarkus>3.15.1</version.quarkus>
+        <version.quarkus-poi>2.0.6</version.quarkus-poi>
 
-    <!-- Dependency Versions -->
-    <version.quarkus>3.2.0.Final</version.quarkus>
-    <version.quarkus-poi>2.0.2</version.quarkus-poi>
-    <version.jackson>2.14.2</version.jackson> <!-- Must match the jackson version used in the given quarkus version -->
-
-    <version.jasperreports>6.20.5</version.jasperreports><!-- Make sure to update the exclusions in quarkus-jasperreports when updating jasper -->
-    <version.jaxen>1.2.0</version.jaxen> <!-- Must match the jaxen version used in the given jasperreports version -->
-
-    <!-- Plugin Versions -->
-    <compiler-plugin.version>3.10.1</compiler-plugin.version>
-    <jasperreports-plugin.version>3.5.4</jasperreports-plugin.version>
-  </properties>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.quarkus}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-maven-plugin</artifactId>
-          <version>${version.quarkus}</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler-plugin.version}</version>
-          <configuration>
-            <compilerArgs>
-              <arg>-parameters</arg>
-            </compilerArgs>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-  <profiles>
-    <profile>
-      <id>docs</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>!true</value>
-        </property>
-      </activation>
-      <modules>
-        <module>docs</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>it</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>!true</value>
-        </property>
-      </activation>
-      <modules>
-        <module>integration-tests</module>
-      </modules>
-    </profile>
-  </profiles>
+        <version.jasperreports>6.21.3</version.jasperreports><!-- Make sure to update the exclusions in quarkus-jasperreports when updating jasper -->
+        <version.jaxen>1.2.0</version.jaxen> <!-- Must match the jaxen version used in the given jasperreports version -->
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-bom</artifactId>
+                <version>${version.quarkus}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-maven-plugin</artifactId>
+                    <version>${version.quarkus}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+        <profile>
+            <id>docs</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>docs</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>it</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>!true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>integration-tests</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
