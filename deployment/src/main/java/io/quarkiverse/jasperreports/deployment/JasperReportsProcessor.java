@@ -29,20 +29,18 @@ class JasperReportsProcessor {
     void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         Stream.of(
-                javax.swing.plaf.metal.MetalIconFactory.class.getName(),
-                javax.swing.plaf.metal.DefaultMetalTheme.class.getName(),
-                javax.swing.plaf.metal.MetalTheme.class.getName(),
-                net.sf.jasperreports.data.http.HttpDataService.class.getName(),
-                net.sf.jasperreports.engine.SimpleReportContext.class.getName(),
-                net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getName(),
-                net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getName(),
-                net.sf.jasperreports.engine.fonts.AwtFontManager.class.getName(),
-                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName(),
-                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
-                net.sf.jasperreports.engine.type.ColorEnum.class.getName(),
-                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getName(),
-                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName(),
-                net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getName()
+                javax.swing.plaf.metal.MetalIconFactory.class.getPackageName(),
+                net.sf.jasperreports.data.http.HttpDataService.class.getPackageName(),
+                net.sf.jasperreports.engine.SimpleReportContext.class.getPackageName(),
+                net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getPackageName(),
+                net.sf.jasperreports.engine.export.oasis.JROdtExporter.class.getPackageName(),
+                net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getPackageName(),
+                net.sf.jasperreports.engine.fonts.AwtFontManager.class.getPackageName(),
+                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getPackageName(),
+                net.sf.jasperreports.engine.type.ColorEnum.class.getPackageName(),
+                net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getPackageName(),
+                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getPackageName(),
+                net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getPackageName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
