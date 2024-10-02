@@ -22,31 +22,33 @@
             <exclusions>
                 <!-- provided by quarkus-jackson -->
                 <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-annotations</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
+
                 </exclusion>
                 <!-- provided by quarkus-jackson -->
                 <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
+
                 </exclusion>
                 <!-- provided by quarkus-jackson -->
                 <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
                 </exclusion>
                 <!-- provided by quarkus-jackson -->
                 <exclusion>
-                    <artifactId>jackson-dataformat-xml</artifactId>
                     <groupId>com.fasterxml.jackson.dataformat</groupId>
+                    <artifactId>jackson-dataformat-xml</artifactId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>org.apache.commons</artifactId>
                     <groupId>commons-collections4</groupId>
+                    <artifactId>org.apache.commons</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -15,7 +15,7 @@ public class JasperReportsDevUIProcessor {
         final CardPageBuildItem card = new CardPageBuildItem();
 
         final ExternalPageBuilder versionPage = Page.externalPageBuilder("JasperReports Version")
-                .icon("font-awesome-regular:tag")
+                .icon("font-awesome-solid:tag")
                 .url("https://community.jaspersoft.com/download-jaspersoft/community-edition/")
                 .doNotEmbed()
                 .staticLabel(JasperReport.class.getPackage().getSpecificationVersion());

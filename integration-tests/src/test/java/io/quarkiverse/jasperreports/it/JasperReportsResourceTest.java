@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
-class JasperreportsResourceTest {
+class JasperReportsResourceTest {
 
     @Test
     void testExportPDF() {

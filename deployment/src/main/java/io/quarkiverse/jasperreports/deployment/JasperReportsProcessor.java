@@ -1,14 +1,16 @@
 package io.quarkiverse.jasperreports.deployment;
 
+import java.util.stream.Stream;
+
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 
-class JasperreportsProcessor {
+class JasperReportsProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
@@ -24,11 +26,16 @@ class JasperreportsProcessor {
     }
 
     @BuildStep
-    void runtimeInits(BuildProducer<RuntimeInitializedClassBuildItem> producer) {
-        // TODO: Test what is really needed for native to work
-        // see also https://github.com/quarkusio/quarkus/issues/31224
-        producer.produce(new RuntimeInitializedClassBuildItem("net.sf.jasperreports.engine.SimpleReportContext"));
-        producer.produce(new RuntimeInitializedClassBuildItem("net.sf.jasperreports.engine.design.JRAbstractCompiler"));
+    void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
+        //@formatter:off
+        Stream.of(
+                net.sf.jasperreports.engine.SimpleReportContext.class.getName(),
+                net.sf.jasperreports.engine.design.JRAbstractCompiler.class.getName(),
+                net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName()
+                )
+                .map(RuntimeInitializedPackageBuildItem::new)
+                .forEach(runtimeInitializedPackages::produce);
+        //@formatter:on
     }
 
     @BuildStep

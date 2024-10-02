@@ -69,7 +69,7 @@ import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
 @Path("/jasperreports")
 @ApplicationScoped
-public class JasperreportsResource {
+public class JasperReportsResource {
 
     private static final String TEST_REPORT_NAME = "CustomersReport";
     private static final String TEST_SUB_REPORT_NAME = "OrdersReport";
