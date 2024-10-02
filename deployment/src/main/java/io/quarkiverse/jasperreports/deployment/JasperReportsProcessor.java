@@ -39,6 +39,7 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
                 net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName(),
                 net.sf.jasperreports.engine.type.ColorEnum.class.getName(),
+                net.sf.jasperreports.engine.fonts.AwtFontManager.class.getName(),
                 javax.swing.plaf.metal.MetalIconFactory.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
