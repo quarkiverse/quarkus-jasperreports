@@ -26,6 +26,15 @@
         "code",
         "maintenance"
       ]
+    },
+    {
+      "login": "kauanmocelin",
+      "name": "Kauan Mocelin",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3020794?v=4",
+      "profile": "https://github.com/kauanmocelin",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
