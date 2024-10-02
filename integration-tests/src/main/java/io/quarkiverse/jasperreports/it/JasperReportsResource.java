@@ -38,6 +38,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.fill.JRFiller;
@@ -47,6 +48,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXmlExporterOutput;
 import net.sf.jasperreports.repo.JasperDesignCache;
@@ -137,6 +139,22 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
+    @POST
+    @Path("html")
+    public byte[] html() throws JRException {
+        long start = System.currentTimeMillis();
+        JasperPrint jasperPrint = fill();
+
+        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
+
+        exporter.exportReport();
+        Log.info("HTML creation time : " + (System.currentTimeMillis() - start));
+        return outputStream.toByteArray();
+    }
+
     //    @POST
     //    @Path("print")
     //    public void print() throws JRException {
@@ -188,21 +206,7 @@ public class JasperReportsResource {
     //
 
     //
-    //    @POST
-    //    @Path("html")
-    //    public byte[] html() throws JRException {
-    //        long start = System.currentTimeMillis();
-    //        JasperPrint jasperPrint = fill();
-    //
-    //        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
-    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    //        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
-    //
-    //        exporter.exportReport();
-    //        Log.info("HTML creation time : " + (System.currentTimeMillis() - start));
-    //        return outputStream.toByteArray();
-    //    }
+
     //
     //    @POST
     //    @Path("xls")

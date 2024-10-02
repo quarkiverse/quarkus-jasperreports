@@ -30,6 +30,14 @@ class JasperReportsResourceTest {
                 .statusCode(200);
     }
 
+    @Test
+    void testExportHTML() {
+        given()
+                .when().post("/jasperreports/html")
+                .then()
+                .statusCode(200);
+    }
+
     //    @Test
     //    void testExportPDF() {
     //        given()
@@ -48,13 +56,7 @@ class JasperReportsResourceTest {
     //
 
     //
-    //    @Test
-    //    void testExportHTML() {
-    //        given()
-    //                .when().post("/jasperreports/html")
-    //                .then()
-    //                .statusCode(200);
-    //    }
+
     //
     //    @Test
     //    void testExportXLS() {
