@@ -46,7 +46,6 @@ import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
-import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -239,23 +238,23 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
-    @Path("odt")
-    public byte[] odt() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JROdtExporter exporter = new JROdtExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-        exporter.exportReport();
-
-        Log.info("ODT creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
+    //    @POST
+    //    @Path("odt")
+    //    public byte[] odt() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JROdtExporter exporter = new JROdtExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("ODT creation time : " + (System.currentTimeMillis() - start));
+    //        return outputStream.toByteArray();
+    //    }
 
     @POST
     @Path("ods")

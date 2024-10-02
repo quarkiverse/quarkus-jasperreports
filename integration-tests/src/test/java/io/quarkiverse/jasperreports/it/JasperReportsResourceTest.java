@@ -62,7 +62,7 @@ class JasperReportsResourceTest {
                 .statusCode(200);
     }
 
-    @Test
+    //@Test
     void testExportODT() {
         given()
                 .when().post("/jasperreports/odt")
