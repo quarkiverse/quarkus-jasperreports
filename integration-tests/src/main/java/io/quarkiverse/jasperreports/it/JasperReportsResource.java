@@ -24,7 +24,6 @@ import java.util.Map;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
 
 import org.w3c.dom.Document;
 
@@ -34,21 +33,11 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRRtfExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
-import net.sf.jasperreports.engine.export.JRXmlExporter;
-import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.fill.JRFiller;
 import net.sf.jasperreports.engine.fill.SimpleJasperReportSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
@@ -56,13 +45,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
-import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
-import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
-import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import net.sf.jasperreports.export.SimpleXmlExporterOutput;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
@@ -115,112 +98,6 @@ public class JasperReportsResource {
     }
 
     @POST
-    @Path("print")
-    public void print() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrintManager.printReport("CustomersReport.jrprint", true);
-        Log.info("Printing time : " + (System.currentTimeMillis() - start));
-    }
-
-    @POST
-    @Path("pdf")
-    public byte[] pdf() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-        exporter.exportReport();
-
-        Log.info("PDF creation time : " + (System.currentTimeMillis() - start));
-
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("rtf")
-    public byte[] rtf() throws JRException {
-        long start = System.currentTimeMillis();
-
-        JasperPrint jasperPrint = fill();
-
-        JRRtfExporter exporter = new JRRtfExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-
-        exporter.exportReport();
-
-        Log.info("RTF creation time : " + (System.currentTimeMillis() - start));
-
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("xml")
-    public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRXmlExporter exporter = new JRXmlExporter(DefaultJasperReportsContext.getInstance());
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        SimpleXmlExporterOutput xmlOutput = new SimpleXmlExporterOutput(outputStream);
-        xmlOutput.setEmbeddingImages(embedded);
-        exporter.setExporterOutput(xmlOutput);
-        exporter.exportReport();
-        Log.info("XML creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("html")
-    public byte[] html() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
-
-        exporter.exportReport();
-        Log.info("HTML creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("xls")
-    public byte[] xls() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRXlsExporter exporter = new JRXlsExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-        SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
-        configuration.setOnePagePerSheet(true);
-        exporter.setConfiguration(configuration);
-
-        exporter.exportReport();
-
-        Log.info("XLS creation time : " + (System.currentTimeMillis() - start));
-
-        return outputStream.toByteArray();
-    }
-
-    @POST
     @Path("csv")
     public byte[] csv() throws JRException {
         long start = System.currentTimeMillis();
@@ -239,12 +116,159 @@ public class JasperReportsResource {
     }
 
     //    @POST
-    //    @Path("odt")
-    //    public byte[] odt() throws JRException {
+    //    @Path("print")
+    //    public void print() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrintManager.printReport("CustomersReport.jrprint", true);
+    //        Log.info("Printing time : " + (System.currentTimeMillis() - start));
+    //    }
+    //
+    //    @POST
+    //    @Path("pdf")
+    //    public byte[] pdf() throws JRException {
     //        long start = System.currentTimeMillis();
     //        JasperPrint jasperPrint = fill();
     //
-    //        JROdtExporter exporter = new JROdtExporter();
+    //        JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("PDF creation time : " + (System.currentTimeMillis() - start));
+    //
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("rtf")
+    //    public byte[] rtf() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRRtfExporter exporter = new JRRtfExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("RTF creation time : " + (System.currentTimeMillis() - start));
+    //
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("xml")
+    //    public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRXmlExporter exporter = new JRXmlExporter(DefaultJasperReportsContext.getInstance());
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        SimpleXmlExporterOutput xmlOutput = new SimpleXmlExporterOutput(outputStream);
+    //        xmlOutput.setEmbeddingImages(embedded);
+    //        exporter.setExporterOutput(xmlOutput);
+    //        exporter.exportReport();
+    //        Log.info("XML creation time : " + (System.currentTimeMillis() - start));
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("html")
+    //    public byte[] html() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
+    //
+    //        exporter.exportReport();
+    //        Log.info("HTML creation time : " + (System.currentTimeMillis() - start));
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("xls")
+    //    public byte[] xls() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRXlsExporter exporter = new JRXlsExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //        SimpleXlsReportConfiguration configuration = new SimpleXlsReportConfiguration();
+    //        configuration.setOnePagePerSheet(true);
+    //        exporter.setConfiguration(configuration);
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("XLS creation time : " + (System.currentTimeMillis() - start));
+    //
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //
+    //
+    //        @POST
+    //        @Path("odt")
+    //        public byte[] odt() throws JRException {
+    //            long start = System.currentTimeMillis();
+    //            JasperPrint jasperPrint = fill();
+    //
+    //            JROdtExporter exporter = new JROdtExporter();
+    //
+    //            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //
+    //            exporter.exportReport();
+    //
+    //            Log.info("ODT creation time : " + (System.currentTimeMillis() - start));
+    //            return outputStream.toByteArray();
+    //        }
+    //
+    //    @POST
+    //    @Path("ods")
+    //    public byte[] ods() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JROdsExporter exporter = new JROdsExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //        SimpleOdsReportConfiguration configuration = new SimpleOdsReportConfiguration();
+    //        configuration.setOnePagePerSheet(true);
+    //        exporter.setConfiguration(configuration);
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("ODS creation time : " + (System.currentTimeMillis() - start));
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("docx")
+    //    public byte[] docx() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRDocxExporter exporter = new JRDocxExporter();
     //
     //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
     //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -252,87 +276,48 @@ public class JasperReportsResource {
     //
     //        exporter.exportReport();
     //
-    //        Log.info("ODT creation time : " + (System.currentTimeMillis() - start));
+    //        Log.info("DOCX creation time : " + (System.currentTimeMillis() - start));
     //        return outputStream.toByteArray();
     //    }
-
-    @POST
-    @Path("ods")
-    public byte[] ods() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JROdsExporter exporter = new JROdsExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-        SimpleOdsReportConfiguration configuration = new SimpleOdsReportConfiguration();
-        configuration.setOnePagePerSheet(true);
-        exporter.setConfiguration(configuration);
-
-        exporter.exportReport();
-
-        Log.info("ODS creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("docx")
-    public byte[] docx() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRDocxExporter exporter = new JRDocxExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-        exporter.exportReport();
-
-        Log.info("DOCX creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("xlsx")
-    public byte[] xlsx() throws JRException {
-        long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRXlsxExporter exporter = new JRXlsxExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
-        configuration.setOnePagePerSheet(true);
-        exporter.setConfiguration(configuration);
-
-        exporter.exportReport();
-
-        Log.info("XLSX creation time : " + (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
-    }
-
-    @POST
-    @Path("pptx")
-    public byte[] pptx() throws JRException {
-        long start = System.currentTimeMillis();
-
-        JasperPrint jasperPrint = fill();
-
-        JRPptxExporter exporter = new JRPptxExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-        exporter.exportReport();
-
-        Log.info("PPTX creation time : " + (System.currentTimeMillis() - start));
-
-        return outputStream.toByteArray();
-    }
+    //
+    //    @POST
+    //    @Path("xlsx")
+    //    public byte[] xlsx() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRXlsxExporter exporter = new JRXlsxExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+    //        configuration.setOnePagePerSheet(true);
+    //        exporter.setConfiguration(configuration);
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("XLSX creation time : " + (System.currentTimeMillis() - start));
+    //        return outputStream.toByteArray();
+    //    }
+    //
+    //    @POST
+    //    @Path("pptx")
+    //    public byte[] pptx() throws JRException {
+    //        long start = System.currentTimeMillis();
+    //
+    //        JasperPrint jasperPrint = fill();
+    //
+    //        JRPptxExporter exporter = new JRPptxExporter();
+    //
+    //        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    //        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    //        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+    //
+    //        exporter.exportReport();
+    //
+    //        Log.info("PPTX creation time : " + (System.currentTimeMillis() - start));
+    //
+    //        return outputStream.toByteArray();
+    //    }
 }
