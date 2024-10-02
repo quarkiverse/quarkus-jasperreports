@@ -36,7 +36,8 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getName(),
                 net.sf.jasperreports.data.http.HttpDataService.class.getName(),
                 net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getName(),
-                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName()
+                net.sf.jasperreports.engine.print.JRPrinterAWT.class.getName(),
+                net.sf.jasperreports.engine.fonts.SimpleFontFace.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
