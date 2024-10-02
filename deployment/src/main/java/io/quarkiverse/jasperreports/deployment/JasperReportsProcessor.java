@@ -42,13 +42,16 @@ class JasperReportsProcessor {
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-bridge"));
         index.produce(new IndexDependencyBuildItem("com.ibm.icu", "icu4j"));
         index.produce(new IndexDependencyBuildItem("com.drewnoakes", "metadata-extractor"));
+        index.produce(new IndexDependencyBuildItem("org.jfree", "jcommon"));
+        index.produce(new IndexDependencyBuildItem("org.jfree", "jfreechart"));
     }
 
     @BuildStep
     void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         Stream.of(
-                javax.swing.plaf.metal.MetalIconFactory.class.getPackageName()
+                javax.swing.plaf.metal.MetalIconFactory.class.getPackageName(),
+                org.jfree.chart.servlet.ServletUtilities.class.getPackageName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
@@ -76,6 +79,9 @@ class JasperReportsProcessor {
             CombinedIndexBuildItem combinedIndex) {
 
         final List<String> classNames = new ArrayList<>();
+        classNames.add(java.awt.Color.class.getName());
+        classNames.add(java.awt.geom.Rectangle2D.class.getName());
+        classNames.add(java.awt.BasicStroke.class.getName());
         // All utilities
         classNames.addAll(collectClassesInPackage(combinedIndex,
                 net.sf.jasperreports.renderers.util.RendererUtil.class.getPackageName()));
@@ -85,6 +91,49 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex,
                 net.sf.jasperreports.renderers.WrappingSvgDataToGraphics2DRenderer.class.getPackageName()));
+
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                net.sf.jasperreports.charts.ChartContext.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                net.sf.jasperreports.charts.util.ChartUtil.class.getPackageName()));
+
+        // JFREECHART
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.JFreeChart.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.axis.Axis.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.labels.CategoryItemLabelGenerator.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.plot.Plot.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.plot.dial.DialBackground.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.renderer.category.BarRenderer.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.renderer.xy.CandlestickRenderer.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.chart.title.LegendTitle.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.Range.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.category.CategoryDataset.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.gantt.GanttCategoryDataset.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.general.Dataset.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.time.TimeSeriesCollection.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.xy.DefaultHighLowDataset.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.data.xy.XYDataset.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.ui.TextAnchor.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.util.ShapeUtilities.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex,
+                org.jfree.io.SerialUtilities.class.getPackageName()));
 
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder(classNames.toArray(new String[0])).constructors().methods().fields()
@@ -104,7 +153,7 @@ class JasperReportsProcessor {
                     .toList();
             classes.addAll(packageClasses);
         }
-        LOGGER.infof("%s Classes: %s", packageName, classes);
+        LOGGER.tracef("%s Classes: %s", packageName, classes);
         return classes;
     }
 
