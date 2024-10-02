@@ -15,6 +15,7 @@ updates:
       - dependency-name: "io.quarkus:quarkus-extension-processor"
       - dependency-name: "io.quarkus:quarkus-extension-maven-plugin"
       - dependency-name: "net.sf.jasperreports:jasperreports"
+      - dependency-name: "net.sf.jasperreports:jasperreports-fonts"
       - dependency-name: "jaxen:jaxen"
     groups:
       quarkus:
@@ -24,9 +25,6 @@ updates:
       quarkiverse:
         patterns:
           - "io.quarkiverse*"
-      jasper:
-        patterns:
-          - "net.sf.jasperreports*"
       dependencies:
         patterns:
           - "*"
