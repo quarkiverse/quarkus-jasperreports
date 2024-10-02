@@ -34,7 +34,8 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getName(),
                 net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getName(),
                 net.sf.jasperreports.engine.util.json.DefaultJsonQLExecuter.class.getName(),
-                net.sf.jasperreports.data.http.HttpDataService.class.getName()
+                net.sf.jasperreports.data.http.HttpDataService.class.getName(),
+                net.sf.jasperreports.engine.export.ooxml.DocxRunHelper.class.getName()
                 )
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
