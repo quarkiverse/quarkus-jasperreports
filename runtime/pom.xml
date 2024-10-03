@@ -30,11 +30,6 @@
         <dependency>
             <groupId>io.quarkiverse.poi</groupId>
             <artifactId>quarkus-poi</artifactId>
-            <version>${version.quarkus-poi}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -45,28 +40,7 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>${version.jasperreports}</version>
             <exclusions>
-                <!-- provided by quarkus-jackson -->
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-annotations</artifactId>
-                </exclusion>
-                <!-- provided by quarkus-jackson -->
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <!-- provided by quarkus-jackson -->
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <!-- provided by quarkus-jackson -->
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-                    <artifactId>jackson-dataformat-xml</artifactId>
-                </exclusion>
                 <exclusion>
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
@@ -80,7 +54,6 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-jaxen</artifactId>
-            <version>${version.jasperreports}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -95,7 +68,6 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-excel-poi</artifactId>
-            <version>${version.jasperreports}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

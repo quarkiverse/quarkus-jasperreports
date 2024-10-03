@@ -28,7 +28,6 @@
         <dependency>
             <groupId>io.quarkiverse.poi</groupId>
             <artifactId>quarkus-poi-deployment</artifactId>
-            <version>${version.quarkus-poi}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -37,7 +36,6 @@
         <dependency>
             <groupId>io.quarkiverse.jasperreports</groupId>
             <artifactId>quarkus-jasperreports</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
