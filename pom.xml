@@ -74,6 +74,11 @@
                 <artifactId>jasperreports-excel-poi</artifactId>
                 <version>${version.jasperreports}</version>
             </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-fonts</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <build>

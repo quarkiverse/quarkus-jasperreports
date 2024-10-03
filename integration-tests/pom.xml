@@ -19,12 +19,6 @@
         <dependency>
             <groupId>io.quarkiverse.jasperreports</groupId>
             <artifactId>quarkus-jasperreports</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.poi</groupId>
-            <artifactId>quarkus-poi</artifactId>
-            <version>${version.quarkus-poi}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
@@ -43,7 +37,6 @@
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports-fonts</artifactId>
-            <version>${version.jasperreports}</version>
         </dependency>
     </dependencies>
     <build>
