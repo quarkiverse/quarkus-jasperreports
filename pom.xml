@@ -66,6 +66,11 @@
             </dependency>
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-jdt</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-jaxen</artifactId>
                 <version>${version.jasperreports}</version>
             </dependency>
