@@ -2,6 +2,7 @@ package io.quarkiverse.jasperreports.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.jboss.jandex.ClassInfo;
@@ -11,6 +12,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
+import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
@@ -23,10 +25,35 @@ class JasperReportsProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
+    private static final String DEFAULT_ROOT_PATH = "";
 
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
+    }
+
+    @BuildStep
+    ReportRootBuildItem defaultReportRoot() {
+        return new ReportRootBuildItem(DEFAULT_ROOT_PATH);
+    }
+
+    @BuildStep
+    void collectReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
+            List<ReportRootBuildItem> reportRoots) {
+        watchedPaths.produce(HotDeploymentWatchedFileBuildItem.builder().setLocationPredicate(new Predicate<String>() {
+            @Override
+            public boolean test(String path) {
+                for (ReportRootBuildItem root : reportRoots) {
+                    // reports - .jrxml
+                    // styles - .jrtx
+                    if (path.startsWith(root.getPath()) && (path.endsWith(".jrxml") || path.endsWith(".jrtx"))) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }).build());
     }
 
     @BuildStep

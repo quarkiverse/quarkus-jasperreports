@@ -8,7 +8,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import io.quarkus.test.QuarkusDevModeTest;
 
-public class JasperreportsDevModeTest {
+public class JasperReportsDevModeTest {
 
     // Start hot reload (DevMode) test with your extension loaded
     @RegisterExtension
@@ -20,4 +20,5 @@ public class JasperreportsDevModeTest {
         // Write your dev mode tests here - see the testing extension guide https://quarkus.io/guides/writing-extensions#testing-hot-reload for more information
         Assertions.assertTrue(true, "Add dev mode assertions to " + getClass().getName());
     }
+
 }
