@@ -102,6 +102,7 @@ class JasperReportsProcessor {
     void registerResourceBuildItems(BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
             BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
         nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(
+                "jasperreports.properties",
                 EXTENSIONS_FILE,
                 "default.jasperreports.properties",
                 "jasperreports_messages.properties",

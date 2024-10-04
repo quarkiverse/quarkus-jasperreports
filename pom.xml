@@ -71,7 +71,7 @@
             </dependency>
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
-                <artifactId>jasperreports-jaxen</artifactId>
+                <artifactId>jasperreports-xalan</artifactId>
                 <version>${version.jasperreports}</version>
             </dependency>
             <dependency>
