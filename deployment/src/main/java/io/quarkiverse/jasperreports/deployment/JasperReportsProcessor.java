@@ -1,5 +1,12 @@
 package io.quarkiverse.jasperreports.deployment;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,12 +27,13 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBu
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
+import io.quarkus.logging.Log;
 
 class JasperReportsProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
-    private static final String DEFAULT_ROOT_PATH = "";
+    private static final String DEFAULT_ROOT_PATH = "src";
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -127,23 +135,46 @@ class JasperReportsProcessor {
 
     @BuildStep(onlyIf = IsDevelopment.class)
     ReportRootBuildItem defaultReportRoot() {
+
         return new ReportRootBuildItem(DEFAULT_ROOT_PATH);
     }
 
     @BuildStep(onlyIf = IsDevelopment.class)
     void watchReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
+            BuildProducer<ReportFileBuildItem> reportFiles,
             List<ReportRootBuildItem> reportRoots) {
-        watchedPaths.produce(HotDeploymentWatchedFileBuildItem.builder().setLocationPredicate(path -> {
-            for (ReportRootBuildItem root : reportRoots) {
+
+        for (ReportRootBuildItem reportRoot : reportRoots) {
+            Path startDir = Paths.get(reportRoot.getPath()); // Specify your starting directory
+            List<Path> foundFiles = new ArrayList<>();
+
+            try {
                 // reports - .jrxml
                 // styles - .jrtx
-                if (path.startsWith(root.getPath()) && (path.endsWith(".jrxml") || path.endsWith(".jrtx"))) {
-                    return true;
-                }
+                // compiled - .jasper
+                Files.walkFileTree(startDir, new SimpleFileVisitor<>() {
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                        // Check if the file has one of the desired extensions
+                        for (String ext : ReportFileBuildItem.EXTENSIONS) {
+                            if (file.toString().endsWith(ext)) {
+                                foundFiles.add(file);
+                                break;
+                            }
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+                });
+            } catch (IOException e) {
+                Log.error("Error looking for report files.", e);
             }
 
-            return false;
-        }).build());
+            // Print the found files
+            foundFiles.forEach((file) -> {
+                reportFiles.produce(new ReportFileBuildItem(file));
+                watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.toString()));
+            });
+        }
     }
 
     private List<String> collectClassesInPackage(CombinedIndexBuildItem combinedIndex, String packageName) {
