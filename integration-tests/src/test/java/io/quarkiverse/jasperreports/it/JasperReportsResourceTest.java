@@ -12,7 +12,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportCSV() {
         given()
-                .when().post("/jasperreports/csv")
+                .when().get("/jasperreports/csv")
                 .then()
                 .statusCode(200);
     }
@@ -20,12 +20,12 @@ class JasperReportsResourceTest {
     @Test
     void testExportXML() {
         given()
-                .when().post("/jasperreports/xml")
+                .when().get("/jasperreports/xml")
                 .then()
                 .statusCode(200);
 
         given()
-                .when().post("/jasperreports/xml?embedded=true")
+                .when().get("/jasperreports/xml?embedded=true")
                 .then()
                 .statusCode(200);
     }
@@ -33,7 +33,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportHTML() {
         given()
-                .when().post("/jasperreports/html")
+                .when().get("/jasperreports/html")
                 .then()
                 .statusCode(200);
     }
@@ -41,7 +41,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportRTF() {
         given()
-                .when().post("/jasperreports/rtf")
+                .when().get("/jasperreports/rtf")
                 .then()
                 .statusCode(200);
     }
@@ -49,7 +49,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportODT() {
         given()
-                .when().post("/jasperreports/odt")
+                .when().get("/jasperreports/odt")
                 .then()
                 .statusCode(200);
     }
@@ -57,7 +57,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportODS() {
         given()
-                .when().post("/jasperreports/ods")
+                .when().get("/jasperreports/ods")
                 .then()
                 .statusCode(200);
     }
@@ -65,7 +65,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportDOCX() {
         given()
-                .when().post("/jasperreports/docx")
+                .when().get("/jasperreports/docx")
                 .then()
                 .statusCode(200);
     }
@@ -73,7 +73,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportXLSX() {
         given()
-                .when().post("/jasperreports/xlsx")
+                .when().get("/jasperreports/xlsx")
                 .then()
                 .statusCode(200);
     }
@@ -81,7 +81,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportPPTX() {
         given()
-                .when().post("/jasperreports/pptx")
+                .when().get("/jasperreports/pptx")
                 .then()
                 .statusCode(200);
     }
@@ -89,7 +89,7 @@ class JasperReportsResourceTest {
     @Test
     void testExportXLS() {
         given()
-                .when().post("/jasperreports/xls")
+                .when().get("/jasperreports/xls")
                 .then()
                 .statusCode(200);
     }
@@ -97,7 +97,7 @@ class JasperReportsResourceTest {
     //    @Test
     //    void testExportPDF() {
     //        given()
-    //                .when().post("/jasperreports/pdf")
+    //                .when().get("/jasperreports/pdf")
     //                .then()
     //                .statusCode(200);
     //    }

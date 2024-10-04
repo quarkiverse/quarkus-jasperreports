@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.POST;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
@@ -114,7 +114,7 @@ public class JasperReportsResource {
         return jasperPrint;
     }
 
-    @POST
+    @GET
     @Path("csv")
     public byte[] csv() throws JRException {
         long start = System.currentTimeMillis();
@@ -132,7 +132,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("xml")
     public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
         long start = System.currentTimeMillis();
@@ -151,7 +151,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("html")
     public byte[] html() throws JRException {
         long start = System.currentTimeMillis();
@@ -167,7 +167,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("rtf")
     public byte[] rtf() throws JRException {
         long start = System.currentTimeMillis();
@@ -190,7 +190,7 @@ public class JasperReportsResource {
 
     //
 
-    @POST
+    @GET
     @Path("odt")
     public byte[] odt() throws JRException {
         long start = System.currentTimeMillis();
@@ -208,7 +208,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("ods")
     public byte[] ods() throws JRException {
         long start = System.currentTimeMillis();
@@ -229,7 +229,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("docx")
     public byte[] docx() throws JRException {
         long start = System.currentTimeMillis();
@@ -247,7 +247,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("xlsx")
     public byte[] xlsx() throws JRException {
         long start = System.currentTimeMillis();
@@ -268,7 +268,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("pptx")
     public byte[] pptx() throws JRException {
         long start = System.currentTimeMillis();
@@ -288,7 +288,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    @POST
+    @GET
     @Path("print")
     public void print() throws JRException {
         long start = System.currentTimeMillis();
@@ -296,7 +296,7 @@ public class JasperReportsResource {
         Log.info("Printing time : " + (System.currentTimeMillis() - start));
     }
 
-    @POST
+    @GET
     @Path("xls")
     public byte[] xls() throws JRException {
         long start = System.currentTimeMillis();
@@ -318,7 +318,7 @@ public class JasperReportsResource {
         return outputStream.toByteArray();
     }
 
-    //        @POST
+    //        @GET
     //        @Path("pdf")
     //        public byte[] pdf() throws JRException {
     //            long start = System.currentTimeMillis();
