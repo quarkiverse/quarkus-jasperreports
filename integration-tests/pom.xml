@@ -36,6 +36,27 @@
         </dependency>
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.4.1</version>
+                    <configuration>
+                        <executable>docker</executable>
+                        <workingDirectory>${project.basedir}</workingDirectory>
+                        <arguments>
+                            <argument>build</argument>
+                            <argument>-f</argument>
+                            <argument>src/main/docker/Dockerfile.jvm</argument>
+                            <argument>-t</argument>
+                            <argument>jasperreports/integration-test:latest</argument>
+                            <argument>.</argument>
+                        </arguments>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>io.quarkus</groupId>
@@ -96,6 +117,84 @@
                     --trace-object-instantiation=org.apache.batik.bridge.RhinoInterpreterFactory
                 </quarkus.native.additional-build-args>
             </properties>
+        </profile>
+        <profile>
+            <!-- Optionally activate this profile to compile the demo into JVM docker image! -->
+            <id>docker</id>
+            <activation>
+                <property>
+                    <name>docker</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <!-- $ docker build -f src/main/docker/Dockerfile.jvm -t jasperreports/integration-test:latest . -->
+                            <execution>
+                                <id>docker-build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>-f</argument>
+                                        <argument>src/main/docker/Dockerfile.jvm</argument>
+                                        <argument>-t</argument>
+                                        <argument>jasperreports/integration-test:latest</argument>
+                                        <argument>.</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>native</id>
+            <activation>
+                <property>
+                    <name>native-publish</name>
+                </property>
+            </activation>
+            <properties>
+                <skipITs>true</skipITs>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
+            </properties>
+            <build>
+                <defaultGoal>clean package</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <!-- $ docker build -f src/main/docker/Dockerfile.native -t jasperreports/integration-test:version . -->
+                            <execution>
+                                <id>docker-build</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>-f</argument>
+                                        <argument>src/main/docker/Dockerfile.native</argument>
+                                        <argument>-t</argument>
+                                        <argument>jasperreports/integration-test:${project.version}</argument>
+                                        <argument>.</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

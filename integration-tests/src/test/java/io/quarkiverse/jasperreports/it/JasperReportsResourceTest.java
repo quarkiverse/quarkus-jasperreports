@@ -94,15 +94,12 @@ class JasperReportsResourceTest {
                 .statusCode(200);
     }
 
-    //    @Test
-    //    void testExportPDF() {
-    //        given()
-    //                .when().get("/jasperreports/pdf")
-    //                .then()
-    //                .statusCode(200);
-    //    }
-    //
-
-    //
+    @Test
+    void testExportPDF() {
+        given()
+                .when().get("/jasperreports/pdf")
+                .then()
+                .statusCode(200);
+    }
 
 }
