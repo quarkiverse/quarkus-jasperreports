@@ -14,6 +14,7 @@ import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
@@ -98,7 +99,7 @@ class JasperReportsProcessor {
     }
 
     @BuildStep
-    void substrateResourceBuildItems(BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
+    void registerResourceBuildItems(BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
             BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
         nativeImageResourceProducer.produce(new NativeImageResourceBuildItem(
                 EXTENSIONS_FILE,
@@ -106,12 +107,18 @@ class JasperReportsProcessor {
                 "jasperreports_messages.properties",
                 "metadata_messages.properties",
                 "metadata_messages-defaults.properties",
-                "properties-metadata.json",
-                "net/sf/jasperreports/fonts/dejavu/jasperreports-fonts.xml"));
+                "properties-metadata.json"));
 
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("jasperreports_messages"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages-defaults"));
+    }
+
+    @BuildStep
+    void registerFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
+        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
+        builder.includeGlob("**/fonts/dejavu/**");
+        nativeImageResourcePatterns.produce(builder.build());
     }
 
     public List<String> collectClassesInPackage(CombinedIndexBuildItem combinedIndex, String packageName) {
