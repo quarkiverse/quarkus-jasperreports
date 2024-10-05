@@ -127,6 +127,15 @@ class JasperReportsProcessor {
     }
 
     @BuildStep
+    void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
+        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_REPORT);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_COMPILED);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_STYLE);
+        nativeImageResourcePatterns.produce(builder.build());
+    }
+
+    @BuildStep
     void registerFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("**/fonts/dejavu/**");
