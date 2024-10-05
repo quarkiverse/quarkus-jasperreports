@@ -17,6 +17,7 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -62,6 +63,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.export.SimpleXmlExporterOutput;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.poi.export.JRXlsExporter;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
@@ -75,12 +77,12 @@ public class JasperReportsResource {
 
     private JasperReport compile(String reportName) throws JRException {
         long start = System.currentTimeMillis();
-        JasperDesign jasperDesign = JRXmlLoader
-                .load(Thread.currentThread().getContextClassLoader().getResourceAsStream(reportName + ".jrxml"));
+        InputStream inputStream = JRLoader.getLocationInputStream(reportName + ".jrxml");
+        JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
 
         JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
-        Log.info("Compilation time : " + (System.currentTimeMillis() - start));
+        Log.infof("Compilation time : %s", (System.currentTimeMillis() - start));
 
         return jasperReport;
     }
@@ -109,7 +111,7 @@ public class JasperReportsResource {
                 SimpleJasperReportSource.from(mainReport, null, new SimpleRepositoryResourceContext()),
                 params);
 
-        Log.info("Filling time : " + (System.currentTimeMillis() - start));
+        Log.infof("Filling time : %s", (System.currentTimeMillis() - start));
 
         return jasperPrint;
     }
@@ -128,7 +130,7 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("CSV creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -147,7 +149,7 @@ public class JasperReportsResource {
         xmlOutput.setEmbeddingImages(embedded);
         exporter.setExporterOutput(xmlOutput);
         exporter.exportReport();
-        Log.info("XML creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("XML creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -163,7 +165,7 @@ public class JasperReportsResource {
         exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
 
         exporter.exportReport();
-        Log.info("HTML creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("HTML creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -183,12 +185,10 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("RTF creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("RTF creation time : %s", (System.currentTimeMillis() - start));
 
         return outputStream.toByteArray();
     }
-
-    //
 
     @GET
     @Path("odt")
@@ -204,7 +204,7 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("ODT creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("ODT creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -225,7 +225,7 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("ODS creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("ODS creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -243,7 +243,7 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("DOCX creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("DOCX creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -264,7 +264,7 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("XLSX creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("XLSX creation time : %s", (System.currentTimeMillis() - start));
         return outputStream.toByteArray();
     }
 
@@ -283,17 +283,18 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("PPTX creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("PPTX creation time : %s", (System.currentTimeMillis() - start));
 
         return outputStream.toByteArray();
     }
 
     @GET
     @Path("print")
-    public void print() throws JRException {
+    public String print() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrintManager.printReport("CustomersReport.jrprint", true);
-        Log.info("Printing time : " + (System.currentTimeMillis() - start));
+        Log.infof("Printing time : %s", (System.currentTimeMillis() - start));
+        return "Printed";
     }
 
     @GET
@@ -313,30 +314,28 @@ public class JasperReportsResource {
 
         exporter.exportReport();
 
-        Log.info("XLS creation time : " + (System.currentTimeMillis() - start));
+        Log.infof("XLS creation time : %s", (System.currentTimeMillis() - start));
 
         return outputStream.toByteArray();
     }
 
-    //        @GET
-    //        @Path("pdf")
-    //        public byte[] pdf() throws JRException {
-    //            long start = System.currentTimeMillis();
-    //            JasperPrint jasperPrint = fill();
-    //
-    //            JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
-    //
-    //            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-    //
-    //            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    //            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-    //
-    //            exporter.exportReport();
-    //
-    //            Log.info("PDF creation time : " + (System.currentTimeMillis() - start));
-    //
-    //            return outputStream.toByteArray();
-    //        }
-    //
+    @GET
+    @Path("pdf")
+    public byte[] pdf() throws JRException {
+        long start = System.currentTimeMillis();
+        JasperPrint jasperPrint = fill();
+
+        JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+
+        exporter.exportReport();
+
+        Log.infof("PDF creation time : %s", (System.currentTimeMillis() - start));
+
+        return outputStream.toByteArray();
+    }
 
 }
