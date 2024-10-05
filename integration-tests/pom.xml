@@ -156,10 +156,10 @@
             </build>
         </profile>
         <profile>
-            <id>native</id>
+            <id>native-docker</id>
             <activation>
                 <property>
-                    <name>native-publish</name>
+                    <name>native-docker</name>
                 </property>
             </activation>
             <properties>
