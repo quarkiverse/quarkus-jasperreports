@@ -45,14 +45,6 @@
                     <configuration>
                         <executable>docker</executable>
                         <workingDirectory>${project.basedir}</workingDirectory>
-                        <arguments>
-                            <argument>build</argument>
-                            <argument>-f</argument>
-                            <argument>src/main/docker/Dockerfile.jvm</argument>
-                            <argument>-t</argument>
-                            <argument>jasperreports/integration-test:latest</argument>
-                            <argument>.</argument>
-                        </arguments>
                     </configuration>
                 </plugin>
             </plugins>
