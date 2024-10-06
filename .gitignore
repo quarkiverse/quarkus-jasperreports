@@ -36,6 +36,7 @@ bin/
 
 # NetBeans
 nb-configuration.xml
+nbactions.xml
 
 # Visual Studio Code
 .vscode

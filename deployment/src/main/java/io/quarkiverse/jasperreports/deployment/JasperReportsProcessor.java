@@ -1,6 +1,9 @@
 package io.quarkiverse.jasperreports.deployment;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +39,7 @@ import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.compilers.ReportExpressionEvaluationData;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JRReportCompileData;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -372,19 +377,19 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         nativeImageResourcePatterns.produce(builder.build());
     }
 
-    @BuildStep(onlyIf = IsDevelopment.class)
-    ReportRootBuildItem defaultReportRoot() {
+    @BuildStep
+    ReportRootBuildItem defaultReportRoot(ReportConfig config) {
+        if (config.build().enable()) {
+            return new ReportRootBuildItem(config.build().source().get().toString());
+        }
         return new ReportRootBuildItem(DEFAULT_ROOT_PATH);
     }
 
-    @BuildStep(onlyIf = IsDevelopment.class)
-    void watchReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
-            BuildProducer<ReportFileBuildItem> reportFiles,
-            List<ReportRootBuildItem> reportRoots) {
-
+    @BuildStep
+    void collectReportFiles(List<ReportRootBuildItem> reportRoots, BuildProducer<ReportFileBuildItem> reportFiles) {
+        final AtomicInteger count = new AtomicInteger(0);
         for (ReportRootBuildItem reportRoot : reportRoots) {
             Path startDir = Paths.get(reportRoot.getPath()); // Specify your starting directory
-            List<Path> foundFiles = new ArrayList<>();
 
             try {
                 // reports - .jrxml
@@ -396,7 +401,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                         // Check if the file has one of the desired extensions
                         for (String ext : ReportFileBuildItem.EXTENSIONS) {
                             if (file.toString().endsWith(ext)) {
-                                foundFiles.add(file);
+                                count.incrementAndGet();
+                                reportFiles.produce(new ReportFileBuildItem(file));
                                 break;
                             }
                         }
@@ -406,12 +412,69 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             } catch (IOException e) {
                 Log.error("Error looking for report files.", e);
             }
+        }
 
-            // Print the found files
-            foundFiles.forEach((file) -> {
-                reportFiles.produce(new ReportFileBuildItem(file));
-                watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.toString()));
-            });
+        Log.debugf("Collected %s report file(s)", count.get());
+    }
+
+    @BuildStep(onlyIf = IsDevelopment.class)
+    void watchReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
+            List<ReportFileBuildItem> reportFiles) {
+
+        // Print the found files
+        reportFiles.forEach((file) -> {
+            Log.tracef("Watching report file %s", file);
+            watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.getFileName()));
+        });
+    }
+
+    @BuildStep
+    void compileReports(ReportConfig config, List<ReportFileBuildItem> reportFiles,
+            BuildProducer<GeneratedClassBuildItem> compiledReportProducer, OutputTargetBuildItem outputTarget) {
+
+        if (config.build().enable()) {
+            Log.debugf("Found %s report(s) to compile?", reportFiles.size());
+            try {
+                // make sure the destination path exists before we try to write files to it
+                Path outputFilePath = Path.of(outputTarget.getOutputDirectory().toString(), "classes",
+                        config.build().destination().get().toString());
+
+                if (!Files.exists(outputFilePath)) {
+                    Files.createDirectories(outputFilePath);
+                }
+
+                // TODO - only compile if the report file has changed?
+                for (ReportFileBuildItem item : reportFiles) {
+                    try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
+                        String outputFile = Path
+                                .of(outputFilePath.toString(), item.getFileName().replace("." + ReportFileBuildItem.EXT_REPORT,
+                                        "." + ReportFileBuildItem.EXT_COMPILED))
+                                .toString();
+
+                        Log.debugf("Compiling %s into %s", item.getPath().toString(), outputFile);
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        JasperCompileManager.compileReportToStream(inputStream, outputStream);
+
+                        Log.debugf("Compiled size is %s", outputStream.size());
+
+                        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                            outputStream.writeTo(fos);
+                        }
+
+                        compiledReportProducer
+                                .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
+                    } catch (JRException ex) {
+                        Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
+                        Log.debug(ex);
+                    }
+                }
+            } catch (IOException ex) {
+                Log.fatalf("I/O Error while compiling reports: %s", ex.getMessage());
+                Log.debug(ex);
+            }
+        } else {
+            Log.debug("Automatic report compilation disabled");
         }
     }
 

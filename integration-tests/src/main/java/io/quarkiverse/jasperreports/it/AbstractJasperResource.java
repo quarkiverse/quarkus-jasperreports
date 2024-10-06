@@ -4,24 +4,28 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 
 public abstract class AbstractJasperResource {
 
+    @ConfigProperty(name = "quarkus.jasperreports.build.destination", defaultValue = "jasperreports")
+    Optional<String> reportPath;
+
     protected JasperReport compileReport(String jasperFile) throws JRException {
         JasperReport result;
-        if (isRunningInContainer()) {
-            result = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(jasperFile + ".jasper"));
-        } else {
-            result = compile(jasperFile);
-        }
+        // TODO - Do we need this check anymore?
+        //        if (isRunningInContainer()) {
+        //            result = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(jasperFile + ".jasper"));
+        //        } else {
+        result = compile(jasperFile);
+        //        }
         return result;
     }
 
@@ -58,14 +62,11 @@ public abstract class AbstractJasperResource {
 
     protected JasperReport compile(String reportName) throws JRException {
         long start = System.currentTimeMillis();
-        JasperDesign jasperDesign = JRXmlLoader.load(JRLoader.getLocationInputStream(reportName + ".jrxml"));
 
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+        JasperReport jasperReport = (JasperReport) JRLoader.loadObject(
+                JRLoader.getLocationInputStream(java.nio.file.Path.of(reportPath.get(), reportName + ".jasper").toString()));
 
-        // Save the compiled Jasper file
-        //JasperCompileManager.compileReportToFile(jasperDesign, reportName + ".jasper");
-
-        Log.infof("Compilation time : %s", (System.currentTimeMillis() - start));
+        Log.infof("Loading time : %s", (System.currentTimeMillis() - start));
 
         return jasperReport;
     }
