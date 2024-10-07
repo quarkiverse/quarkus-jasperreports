@@ -1,5 +1,5 @@
 name: quarkus-jasperreports
-title: Jasperreports
+title: JasperReports
 version: dev
 nav:
   - modules/ROOT/nav.adoc
