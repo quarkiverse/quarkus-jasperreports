@@ -12,7 +12,7 @@ import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildI
  * Borrowed from Camel Quarkus XSLT Saxon extension.
  * </p>
  */
-class SaxonProcessor {
+class SaxonProcessor extends AbstractJandexProcessor {
 
     /**
      * Registers the required Saxon and XML resolver classes for reflection and runtime initialization.

@@ -24,10 +24,6 @@
             <artifactId>quarkus-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jaxp</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.quarkiverse.poi</groupId>
             <artifactId>quarkus-poi</artifactId>
         </dependency>
@@ -67,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports-xalan</artifactId>
+            <artifactId>jasperreports-jaxen</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>

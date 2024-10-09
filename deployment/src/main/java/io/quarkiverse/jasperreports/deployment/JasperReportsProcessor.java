@@ -12,12 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
 
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -48,7 +45,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
  * including feature registration, resource merging, dependency indexing,
  * and reflection configuration.
  */
-class JasperReportsProcessor {
+class JasperReportsProcessor extends AbstractJandexProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
@@ -87,9 +84,9 @@ class JasperReportsProcessor {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-data-adapters"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-excel-poi"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jaxen"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf"));
-        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-xalan"));
     }
 
     /**
@@ -194,7 +191,7 @@ class JasperReportsProcessor {
 
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
-        Log.debugf("Reflection: %s", uniqueClasses);
+        Log.debugf("Jasper Reflection: %s", uniqueClasses);
 
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder(uniqueClasses.toArray(new String[0])).constructors().methods().fields()
@@ -231,11 +228,9 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.fonts.AwtFontManager.class.getPackageName(),
                 net.sf.jasperreports.engine.type.ColorEnum.class.getPackageName(),
                 net.sf.jasperreports.engine.util.JRQueryExecuterUtils.class.getPackageName(),
-                net.sf.jasperreports.poi.query.PoiQueryExecuterFactoryBundle.class.getName(),
-                net.sf.jasperreports.xalan.data.XalanXmlDataSource.class.getPackageName(),
-                net.sf.jasperreports.xalan.util.XalanNsAwareXPathExecuter.class.getPackageName()).toList());
+                net.sf.jasperreports.poi.query.PoiQueryExecuterFactoryBundle.class.getName()).toList());
         //@formatter:on
-        Log.debugf("Runtime: %s", classes);
+        Log.debugf("Jasper Runtime: %s", classes);
         classes.stream()
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
@@ -418,66 +413,6 @@ class JasperReportsProcessor {
                 watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.toString()));
             });
         }
-    }
-
-    private List<String> collectClassesInPackage(CombinedIndexBuildItem combinedIndex, String packageName) {
-        final List<String> classes = new ArrayList<>();
-        final List<DotName> packages = new ArrayList<>(combinedIndex.getIndex().getSubpackages(packageName));
-        packages.add(DotName.createSimple(packageName));
-        for (DotName aPackage : packages) {
-            final List<String> packageClasses = combinedIndex.getIndex()
-                    .getClassesInPackage(aPackage)
-                    .stream()
-                    .map(ClassInfo::toString)
-                    .toList();
-            classes.addAll(packageClasses);
-        }
-        Log.tracef("Package: %s", classes);
-        return classes;
-    }
-
-    private List<String> collectInterfacesInPackage(CombinedIndexBuildItem combinedIndex, String packageName) {
-        final List<String> classes = new ArrayList<>();
-        final List<DotName> packages = new ArrayList<>(combinedIndex.getIndex().getSubpackages(packageName));
-        packages.add(DotName.createSimple(packageName));
-        for (DotName aPackage : packages) {
-            final List<String> packageClasses = combinedIndex.getIndex()
-                    .getClassesInPackage(aPackage)
-                    .stream()
-                    .filter(ClassInfo::isInterface) // Filter only interfaces
-                    .map(ClassInfo::toString)
-                    .toList();
-            classes.addAll(packageClasses);
-        }
-        Log.tracef("Package: %s", classes);
-        return classes;
-    }
-
-    private List<String> collectSubclasses(CombinedIndexBuildItem combinedIndex, String className) {
-        List<String> classes = combinedIndex.getIndex()
-                .getAllKnownSubclasses(DotName.createSimple(className))
-                .stream()
-                .map(ClassInfo::toString)
-                .collect(Collectors.toList());
-        classes.add(className);
-        Log.tracef("Subclasses: %s", classes);
-        return classes;
-    }
-
-    public List<String> collectImplementors(CombinedIndexBuildItem combinedIndex, String className) {
-        Set<String> classes = combinedIndex.getIndex()
-                .getAllKnownImplementors(DotName.createSimple(className))
-                .stream()
-                .map(ClassInfo::toString)
-                .collect(Collectors.toCollection(HashSet::new));
-        classes.add(className);
-        Set<String> subclasses = new HashSet<>();
-        for (String implementationClass : classes) {
-            subclasses.addAll(collectSubclasses(combinedIndex, implementationClass));
-        }
-        classes.addAll(subclasses);
-        Log.tracef("Implementors: %s", classes);
-        return new ArrayList<>(classes);
     }
 
     static Path findProjectRoot(Path outputDirectory) {

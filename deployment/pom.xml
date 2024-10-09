@@ -22,10 +22,6 @@
             <artifactId>quarkus-awt-deployment</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jaxp-deployment</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.quarkiverse.poi</groupId>
             <artifactId>quarkus-poi-deployment</artifactId>
         </dependency>
