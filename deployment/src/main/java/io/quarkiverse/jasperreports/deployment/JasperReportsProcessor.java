@@ -233,9 +233,7 @@ class JasperReportsProcessor {
                 net.sf.jasperreports.engine.util.JRQueryExecuterUtils.class.getPackageName(),
                 net.sf.jasperreports.poi.query.PoiQueryExecuterFactoryBundle.class.getName(),
                 net.sf.jasperreports.xalan.data.XalanXmlDataSource.class.getPackageName(),
-                net.sf.jasperreports.xalan.util.XalanNsAwareXPathExecuter.class.getPackageName(),
-                org.apache.batik.anim.values.AnimatableTransformListValue.class.getPackageName(),
-                org.apache.xmlbeans.impl.schema.TypeSystemHolder.class.getName()).toList());
+                net.sf.jasperreports.xalan.util.XalanNsAwareXPathExecuter.class.getPackageName()).toList());
         //@formatter:on
         Log.debugf("Runtime: %s", classes);
         classes.stream()
