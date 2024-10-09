@@ -33,6 +33,7 @@
         <!-- Dependency Versions -->
         <version.quarkus>3.15.1</version.quarkus>
         <version.quarkus-poi>2.0.6</version.quarkus-poi>
+        <version.xalan>2.7.2</version.xalan>
         <version.jasperreports>7.0.1</version.jasperreports>
     </properties>
     <dependencyManagement>
@@ -88,6 +89,21 @@
                 <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-fonts</artifactId>
                 <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-annotation-processors</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>xalan</artifactId>
+                <version>${version.xalan}</version>
+            </dependency>
+            <dependency>
+                <groupId>xalan</groupId>
+                <artifactId>serializer</artifactId>
+                <version>${version.xalan}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
