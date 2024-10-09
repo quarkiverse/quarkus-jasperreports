@@ -17,16 +17,26 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
+import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.w3c.dom.Document;
 
 import io.quarkus.logging.Log;
@@ -70,6 +80,7 @@ import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
 @Path("/jasperreports")
 @ApplicationScoped
+@Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class JasperReportsResource {
 
     private static final String TEST_REPORT_NAME = "CustomersReport";
@@ -77,10 +88,12 @@ public class JasperReportsResource {
 
     private JasperReport compile(String reportName) throws JRException {
         long start = System.currentTimeMillis();
-        InputStream inputStream = JRLoader.getLocationInputStream(reportName + ".jrxml");
-        JasperDesign jasperDesign = JRXmlLoader.load(inputStream);
+        JasperDesign jasperDesign = JRXmlLoader.load(JRLoader.getLocationInputStream(reportName + ".jrxml"));
 
         JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
+
+        // Save the compiled Jasper file
+        //JasperCompileManager.compileReportToFile(jasperDesign, reportName + ".jasper");
 
         Log.infof("Compilation time : %s", (System.currentTimeMillis() - start));
 
@@ -89,9 +102,16 @@ public class JasperReportsResource {
 
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
+        JasperReport mainReport;
+        JasperReport subReport;
 
-        JasperReport mainReport = compile(TEST_REPORT_NAME);
-        JasperReport subReport = compile(TEST_SUB_REPORT_NAME);
+        if (isRunningInContainer()) {
+            mainReport = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(TEST_REPORT_NAME + ".jasper"));
+            subReport = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(TEST_SUB_REPORT_NAME + ".jasper"));
+        } else {
+            mainReport = compile(TEST_REPORT_NAME);
+            subReport = compile(TEST_SUB_REPORT_NAME);
+        }
 
         ReportContext reportContext = new SimpleReportContext();
 
@@ -116,27 +136,62 @@ public class JasperReportsResource {
         return jasperPrint;
     }
 
+    /**
+     * Determines if the application is running inside a container (such as Docker or Kubernetes).
+     * This is done by inspecting the '/proc/1/cgroup' file and checking for the presence of
+     * "docker" or "kubepods". Additionally, it checks specific environment variables to verify
+     * the container environment.
+     *
+     * @return {@code true} if the application is running inside a container; {@code false} otherwise.
+     */
+    public static boolean isRunningInContainer() {
+        if (isNativeImage())
+            return true;
+
+        try {
+            List<String> lines = Files.readAllLines(Paths.get("/proc/1/cgroup"));
+            for (String line : lines) {
+                if (line.contains("docker") || line.contains("kubepods")) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            // Ignore, likely not in a container if the file doesn't exist
+        }
+
+        // check environment variables
+        return System.getenv("CONTAINER") != null || System.getenv("KUBERNETES_SERVICE_HOST") != null;
+    }
+
+    private static boolean isNativeImage() {
+        return System.getProperty("org.graalvm.nativeimage.imagecode") != null;
+    }
+
     @GET
     @Path("csv")
-    public byte[] csv() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response csv() throws JRException {
         long start = System.currentTimeMillis();
-        JasperPrint jasperPrint = fill();
-
-        JRCsvExporter exporter = new JRCsvExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        JasperPrint jasperPrint = fill();
+        JRCsvExporter exporter = new JRCsvExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
 
         exporter.exportReport();
 
         Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.csv");
+        response.header("Content-Type", "text/csv");
+        return response.build();
     }
 
     @GET
     @Path("xml")
-    public byte[] xml(@QueryParam("embedded") boolean embedded) throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response xml(@QueryParam("embedded") boolean embedded) throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -150,12 +205,16 @@ public class JasperReportsResource {
         exporter.setExporterOutput(xmlOutput);
         exporter.exportReport();
         Log.infof("XML creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.xml");
+        response.header("Content-Type", "application/xml");
+        return response.build();
     }
 
     @GET
     @Path("html")
-    public byte[] html() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response html() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -166,12 +225,16 @@ public class JasperReportsResource {
 
         exporter.exportReport();
         Log.infof("HTML creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.html");
+        response.header("Content-Type", "text/html");
+        return response.build();
     }
 
     @GET
     @Path("rtf")
-    public byte[] rtf() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response rtf() throws JRException {
         long start = System.currentTimeMillis();
 
         JasperPrint jasperPrint = fill();
@@ -187,12 +250,16 @@ public class JasperReportsResource {
 
         Log.infof("RTF creation time : %s", (System.currentTimeMillis() - start));
 
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.rtf");
+        response.header("Content-Type", "application/rtf");
+        return response.build();
     }
 
     @GET
     @Path("odt")
-    public byte[] odt() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response odt() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -205,12 +272,16 @@ public class JasperReportsResource {
         exporter.exportReport();
 
         Log.infof("ODT creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.odt");
+        response.header("Content-Type", "application/vnd.oasis.opendocument.text");
+        return response.build();
     }
 
     @GET
     @Path("ods")
-    public byte[] ods() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response ods() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -226,12 +297,16 @@ public class JasperReportsResource {
         exporter.exportReport();
 
         Log.infof("ODS creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.ods");
+        response.header("Content-Type", "application/vnd.oasis.opendocument.spreadsheet");
+        return response.build();
     }
 
     @GET
     @Path("docx")
-    public byte[] docx() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response docx() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -244,12 +319,16 @@ public class JasperReportsResource {
         exporter.exportReport();
 
         Log.infof("DOCX creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.docx");
+        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        return response.build();
     }
 
     @GET
     @Path("xlsx")
-    public byte[] xlsx() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response xlsx() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -265,12 +344,16 @@ public class JasperReportsResource {
         exporter.exportReport();
 
         Log.infof("XLSX creation time : %s", (System.currentTimeMillis() - start));
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.xlsx");
+        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        return response.build();
     }
 
     @GET
     @Path("pptx")
-    public byte[] pptx() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response pptx() throws JRException {
         long start = System.currentTimeMillis();
 
         JasperPrint jasperPrint = fill();
@@ -285,21 +368,26 @@ public class JasperReportsResource {
 
         Log.infof("PPTX creation time : %s", (System.currentTimeMillis() - start));
 
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.pptx");
+        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        return response.build();
     }
 
     @GET
     @Path("print")
+    @Produces(MediaType.TEXT_PLAIN)
     public String print() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrintManager.printReport("CustomersReport.jrprint", true);
-        Log.infof("Printing time : %s", (System.currentTimeMillis() - start));
-        return "Printed";
+        Log.info("Printing time : " + (System.currentTimeMillis() - start));
+        return "Printing time : " + (System.currentTimeMillis() - start);
     }
 
     @GET
     @Path("xls")
-    public byte[] xls() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response xls() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -316,12 +404,16 @@ public class JasperReportsResource {
 
         Log.infof("XLS creation time : %s", (System.currentTimeMillis() - start));
 
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.xls");
+        response.header("Content-Type", "application/vnd.ms-excel");
+        return response.build();
     }
 
     @GET
     @Path("pdf")
-    public byte[] pdf() throws JRException {
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response pdf() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
 
@@ -335,7 +427,10 @@ public class JasperReportsResource {
 
         Log.infof("PDF creation time : %s", (System.currentTimeMillis() - start));
 
-        return outputStream.toByteArray();
+        final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
+        response.header("Content-Disposition", "attachment;filename=jasper.pdf");
+        response.header("Content-Type", "application/pdf");
+        return response.build();
     }
 
 }

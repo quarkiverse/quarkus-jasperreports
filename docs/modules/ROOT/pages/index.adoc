@@ -19,7 +19,13 @@ For instance, with Maven, add the following dependency to your POM file:
 </dependency>
 ----
 
-== Docker
+== Compiling Reports
+
+Jasper does not recommend compiling `.jrxml` reports on the fly, but if necessary, it can be done only in JVM mode. This approach will NOT work in native mode, as there is no Java compiler available and the required classes for compilation are missing. The best practice is to use precompiled `.jasper` files instead.
+
+CAUTION: Compiling `.jrxml` files will not work in Native mode!
+
+== Native
 
 When building native images in Docker using the standard Quarkus Docker configuration files some additional features need to be installed to support fonts.  Specifically font information is not included in https://developers.redhat.com/products/rhel/ubi[Red Hat's ubi-minimal images].  To install it
 simply add these lines to your `DockerFile.native` file:
