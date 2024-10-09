@@ -1,0 +1,20 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="main" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b8f46a87-be04-4208-91e4-2a7340aea5b7">
+	<property name="net.sf.jasperreports.export.text.character.width" value="7.238"/>
+	<property name="net.sf.jasperreports.export.text.character.height" value="13.948"/>
+	<query language="sql"><![CDATA[SELECT NOW() AS now]]></query>
+	<field name="now" class="java.sql.Timestamp"/>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<element kind="subreport" uuid="2ed8dc34-3c16-4483-8ce8-fc8a66990fe1" x="0" y="0" width="572" height="60">
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<expression><![CDATA["db-subreport.jasper"]]></expression>
+			</element>
+		</band>
+	</detail>
+	<summary height="30">
+		<element kind="textField" uuid="b1f547a3-b2e5-4ca5-ab9b-b59e650b8ab2" x="0" y="0" width="572" height="30">
+			<expression><![CDATA[$F{now}]]></expression>
+		</element>
+	</summary>
+</jasperReport>

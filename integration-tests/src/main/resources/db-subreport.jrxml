@@ -1,0 +1,18 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0-b478feaa9aab4375eba71de77b4ca138ad2f62aa  -->
+<jasperReport name="subreport" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd93914f-6f1a-49a5-8526-25937b9cdb1a">
+	<query language="SQL"><![CDATA[SELECT field
+FROM myentity]]></query>
+	<field name="field" class="java.lang.String"/>
+	<columnHeader height="30" splitType="Stretch">
+		<element kind="staticText" uuid="5d341265-1326-41a2-bc48-7bde709e726f" x="0" y="0" width="572" height="30">
+			<text><![CDATA[field]]></text>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<element kind="textField" uuid="2fa44bc1-63fd-4fbf-a80c-5b25b0aafc1d" x="0" y="0" width="572" height="30">
+				<expression><![CDATA[$F{field}]]></expression>
+			</element>
+		</band>
+	</detail>
+</jasperReport>

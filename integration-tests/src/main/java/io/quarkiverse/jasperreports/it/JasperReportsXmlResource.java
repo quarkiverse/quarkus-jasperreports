@@ -17,11 +17,7 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -43,13 +39,11 @@ import io.quarkus.logging.Log;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
-import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.HtmlExporter;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
@@ -64,7 +58,6 @@ import net.sf.jasperreports.engine.fill.SimpleJasperReportSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
@@ -78,40 +71,18 @@ import net.sf.jasperreports.poi.export.JRXlsExporter;
 import net.sf.jasperreports.repo.JasperDesignCache;
 import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
-@Path("/jasperreports")
+@Path("/jasper/xml/")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
-public class JasperReportsResource {
+public class JasperReportsXmlResource extends AbstractJasperResource {
 
     private static final String TEST_REPORT_NAME = "CustomersReport";
     private static final String TEST_SUB_REPORT_NAME = "OrdersReport";
 
-    private JasperReport compile(String reportName) throws JRException {
-        long start = System.currentTimeMillis();
-        JasperDesign jasperDesign = JRXmlLoader.load(JRLoader.getLocationInputStream(reportName + ".jrxml"));
-
-        JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
-
-        // Save the compiled Jasper file
-        //JasperCompileManager.compileReportToFile(jasperDesign, reportName + ".jasper");
-
-        Log.infof("Compilation time : %s", (System.currentTimeMillis() - start));
-
-        return jasperReport;
-    }
-
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
-        JasperReport mainReport;
-        JasperReport subReport;
-
-        if (isRunningInContainer()) {
-            mainReport = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(TEST_REPORT_NAME + ".jasper"));
-            subReport = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(TEST_SUB_REPORT_NAME + ".jasper"));
-        } else {
-            mainReport = compile(TEST_REPORT_NAME);
-            subReport = compile(TEST_SUB_REPORT_NAME);
-        }
+        JasperReport mainReport = compileReport(TEST_REPORT_NAME);
+        JasperReport subReport = compileReport(TEST_SUB_REPORT_NAME);
 
         ReportContext reportContext = new SimpleReportContext();
 
@@ -134,37 +105,6 @@ public class JasperReportsResource {
         Log.infof("Filling time : %s", (System.currentTimeMillis() - start));
 
         return jasperPrint;
-    }
-
-    /**
-     * Determines if the application is running inside a container (such as Docker or Kubernetes).
-     * This is done by inspecting the '/proc/1/cgroup' file and checking for the presence of
-     * "docker" or "kubepods". Additionally, it checks specific environment variables to verify
-     * the container environment.
-     *
-     * @return {@code true} if the application is running inside a container; {@code false} otherwise.
-     */
-    public static boolean isRunningInContainer() {
-        if (isNativeImage())
-            return true;
-
-        try {
-            List<String> lines = Files.readAllLines(Paths.get("/proc/1/cgroup"));
-            for (String line : lines) {
-                if (line.contains("docker") || line.contains("kubepods")) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            // Ignore, likely not in a container if the file doesn't exist
-        }
-
-        // check environment variables
-        return System.getenv("CONTAINER") != null || System.getenv("KUBERNETES_SERVICE_HOST") != null;
-    }
-
-    private static boolean isNativeImage() {
-        return System.getProperty("org.graalvm.nativeimage.imagecode") != null;
     }
 
     @GET

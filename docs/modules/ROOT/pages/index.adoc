@@ -25,10 +25,48 @@ Jasper does not recommend compiling `.jrxml` reports on the fly, but if necessar
 
 CAUTION: Compiling `.jrxml` files will not work in Native mode!
 
-== Native
+== Database Datasource
 
-When building native images in Docker using the standard Quarkus Docker configuration files some additional features need to be installed to support fonts.  Specifically font information is not included in https://developers.redhat.com/products/rhel/ubi[Red Hat's ubi-minimal images].  To install it
-simply add these lines to your `DockerFile.native` file:
+When utilizing an Agroal Datasource to generate your report, ensure it is not within an active transaction. JasperReports employs threads for sub-reports and various features, and a connection cannot be passed across thread boundaries while in a transaction. Failing to do so will result in the following error: `Enlisted connection used without active transaction`.
+
+[source,java]
+----
+Caused by: java.sql.SQLException: Enlisted connection used without active transaction
+2024-07-22T21:24:13.599110173Z  at io.agroal.pool.ConnectionHandler.verifyEnlistment(ConnectionHandler.java:398)
+2024-07-22T21:24:13.599149982Z  at io.agroal.pool.wrapper.ConnectionWrapper.getMetaData(ConnectionWrapper.java:452)
+2024-07-22T21:24:13.599212173Z  at net.sf.jasperreports.engine.query.OracleProcedureCallHandler.isOracle(OracleProcedureCallHandler.java:72)
+2024-07-22T21:24:13.599341106Z  at net.sf.jasperreports.engine.query.JRJdbcQueryExecuter.isProcedureCall(JRJdbcQueryExecuter.java:566)
+2024-07-22T21:24:13.599481640Z  at net.sf.jasperreports.engine.query.JRJdbcQueryExecuter.createStatement(JRJdbcQueryExecuter.java:389)
+----
+
+
+IMPORTANT: In your service you must use `@Transactional(Transactional.TxType.NEVER)` above the method that is filling your report.
+[source,java]
+----
+@Inject
+DataSource datasource;
+
+@Transactional(Transactional.TxType.NEVER)
+public byte[] text() throws JRException, SQLException {
+    JasperPrint jasperPrint = null;
+     try (final Connection connection = datasource.getConnection()) {
+         params.put(JRParameter.REPORT_CONNECTION, connection);
+
+         jasperPrint = JRFiller.fill(DefaultJasperReportsContext.getInstance(), SimpleJasperReportSource.from(mainReport, null, new SimpleRepositoryResourceContext()), params);
+     }
+    final JRTextExporter exporter = new JRTextExporter();
+    exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
+    exporter.exportReport();
+    return outputStream.toByteArray();
+}
+----
+
+
+== Native Container
+
+When building native images in Docker using the standard Quarkus Docker configuration files some additional features need to be installed to support fonts.  Specifically font information is not included in https://developers.redhat.com/products/rhel/ubi[Red Hat's ubi-minimal images].  To install it simply add these lines to your `DockerFile.native` file:
 
 [source]
 ----
