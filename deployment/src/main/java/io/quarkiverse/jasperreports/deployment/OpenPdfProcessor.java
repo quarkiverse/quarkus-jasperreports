@@ -2,10 +2,6 @@ package io.quarkiverse.jasperreports.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.jboss.jandex.ClassInfo;
-import org.jboss.jandex.DotName;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -18,7 +14,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.logging.Log;
 
-public class OpenPdfProcessor {
+public class OpenPdfProcessor extends AbstractJandexProcessor {
 
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
@@ -31,7 +27,7 @@ public class OpenPdfProcessor {
     }
 
     @BuildStep
-    void registerFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
+    void registerOpenPdfFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("**/pdf/fonts/**");
         builder.includeGlob("**/font-fallback/**");
@@ -39,7 +35,7 @@ public class OpenPdfProcessor {
     }
 
     @BuildStep
-    void registerResources(BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
+    void registerOpenPdfResources(BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
         // Register resource bundles
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("com/lowagie/text/error_messages/en.lng"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("com/lowagie/text/error_messages/nl.lng"));
@@ -52,12 +48,12 @@ public class OpenPdfProcessor {
      * @param runtimeInitializedPackages Producer for runtime initialized packages
      */
     @BuildStep
-    void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
+    void runtimeOpenPdfInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         List<String> classes = new ArrayList<>();
         classes.add(com.lowagie.text.pdf.PdfPublicKeySecurityHandler.class.getName());
 
-        Log.debugf("Runtime: %s", classes);
+        Log.debugf("OpenPdf Runtime: %s", classes);
         classes.stream()
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
@@ -65,7 +61,7 @@ public class OpenPdfProcessor {
     }
 
     @BuildStep
-    void registerForReflection(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+    void registerOpenPdfForReflection(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             CombinedIndexBuildItem combinedIndex) {
         final List<String> classNames = new ArrayList<>(
                 collectSubclasses(combinedIndex, com.lowagie.text.Image.class.getName()));
@@ -73,18 +69,10 @@ public class OpenPdfProcessor {
         classNames.add(com.lowagie.text.Utilities.class.getName());
         classNames.add(com.lowagie.text.pdf.PdfName.class.getName());
 
+        Log.debugf("OpenPdf Reflection: %s", classNames);
         // methods and fields
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder(classNames.toArray(new String[0])).methods().fields().build());
     }
 
-    public List<String> collectSubclasses(CombinedIndexBuildItem combinedIndex, String className) {
-        List<String> classes = combinedIndex.getIndex()
-                .getAllKnownSubclasses(DotName.createSimple(className))
-                .stream()
-                .map(ClassInfo::toString)
-                .collect(Collectors.toList());
-        classes.add(className);
-        return classes;
-    }
 }
