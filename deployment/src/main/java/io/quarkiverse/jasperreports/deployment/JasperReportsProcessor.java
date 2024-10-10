@@ -11,15 +11,17 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkiverse.jasperreports.deployment.config.ReportConfig;
+import io.quarkiverse.jasperreports.deployment.item.CompiledReportFileBuildItem;
+import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
+import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -54,7 +56,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
-    private static final String DEFAULT_ROOT_PATH = "src/main/resources";
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -281,44 +282,24 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * @param nativeImageResourcePatterns Producer for native image resource patterns
      * @param additionalClasses Producer for additional generated classes
      * @param reflectiveClassProducer Producer for reflective classes
-     * @param outputTarget The output target build item
+     * @param compiledReports The list of all found compiled report files
      */
     @BuildStep
     void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns,
             BuildProducer<GeneratedClassBuildItem> additionalClasses,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
-            OutputTargetBuildItem outputTarget) {
+            List<CompiledReportFileBuildItem> compiledReports) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_REPORT);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_COMPILED);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_STYLE);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_REPORT);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_COMPILED);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_STYLE);
         nativeImageResourcePatterns.produce(builder.build());
 
-        Path startDir = findProjectRoot(outputTarget.getOutputDirectory());
-        Log.debugf("JasperReport Source Directory: %s", startDir);
-        Set<Path> foundFiles = new HashSet<>();
-
-        try {
-            // compiled - .jasper
-            Files.walkFileTree(startDir, new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    // Check if the file has one of the desired extensions
-                    String filePath = file.toString();
-                    if (filePath.endsWith(ReportFileBuildItem.EXT_COMPILED)) {
-                        Log.debugf("Jasper compiled report: %s", filePath);
-                        foundFiles.add(file);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            Log.error("Error looking for JasperReport files.", e);
-        }
-
-        foundFiles.forEach((file) -> {
+        // only care about compiled - .jasper files
+        for (CompiledReportFileBuildItem reportFile : compiledReports) {
+            Log.debugf("Jasper compiled report: %s", reportFile.getPath());
             try {
-                String jasperFilePath = file.toFile().getAbsolutePath();
+                String jasperFilePath = reportFile.getPath().toFile().getAbsolutePath();
                 JasperReport report = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(jasperFilePath));
                 JRReportCompileData reportData = (JRReportCompileData) report.getCompileData();
                 ReportExpressionEvaluationData mainData = (ReportExpressionEvaluationData) reportData
@@ -329,15 +310,15 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                     Log.debugf("JasperReport Data Class: %s Size: %d", reportDataClass, bytes.length);
 
                     reflectiveClassProducer
-                            .produce(ReflectiveClassBuildItem.builder(reportDataClass).constructors().methods().serialization()
+                            .produce(ReflectiveClassBuildItem.builder(reportDataClass).constructors().methods()
+                                    .serialization()
                                     .build());
                     additionalClasses.produce(new GeneratedClassBuildItem(true, reportDataClass, bytes));
                 }
-
             } catch (JRException e) {
                 Log.error("Error loading JasperReport file class.", e);
             }
-        });
+        }
     }
 
     /**
@@ -377,19 +358,46 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         nativeImageResourcePatterns.produce(builder.build());
     }
 
+    /**
+     * Determines the default report root directory based on the provided configuration.
+     *
+     * @param config The ReportConfig containing build configuration settings.
+     * @return A ReportRootBuildItem representing the default report root directory.
+     *         If build is enabled and a source is specified in the config, it returns that source.
+     *         Otherwise, it returns the default source path defined in ReportConfig.
+     */
     @BuildStep
     ReportRootBuildItem defaultReportRoot(ReportConfig config) {
-        if (config.build().enable()) {
+        if (config.build().enable() && config.build().source().isPresent()) {
             return new ReportRootBuildItem(config.build().source().get().toString());
         }
-        return new ReportRootBuildItem(DEFAULT_ROOT_PATH);
+        return new ReportRootBuildItem(ReportConfig.DEFAULT_SOURCE_PATH);
     }
 
+    /**
+     * Collects report files from specified report roots and produces build items for each file.
+     * <p>
+     * This method walks through the directory tree of each report root, identifying files
+     * with extensions matching those defined in ReportFileBuildItem.EXTENSIONS. It produces
+     * a ReportFileBuildItem for each matching file, and a CompiledReportFileBuildItem for
+     * pre-compiled (.jasper) files.
+     *
+     * @param reportRoots A list of ReportRootBuildItem representing the root directories to search.
+     * @param reportFilesProducer A BuildProducer for ReportFileBuildItem to handle found report files.
+     * @param compiledReportFileProducer A BuildProducer for CompiledReportFileBuildItem to handle pre-compiled report files.
+     * @param outputTarget The OutputTargetBuildItem containing information about the build output directory.
+     */
     @BuildStep
-    void collectReportFiles(List<ReportRootBuildItem> reportRoots, BuildProducer<ReportFileBuildItem> reportFiles) {
+    void collectReportFiles(List<ReportRootBuildItem> reportRoots, BuildProducer<ReportFileBuildItem> reportFilesProducer,
+            BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer, OutputTargetBuildItem outputTarget) {
         final AtomicInteger count = new AtomicInteger(0);
         for (ReportRootBuildItem reportRoot : reportRoots) {
-            Path startDir = Paths.get(reportRoot.getPath()); // Specify your starting directory
+            Path startDir = findProjectRoot(outputTarget.getOutputDirectory(), Paths.get(reportRoot.getPath()));
+
+            if (!Files.exists(startDir)) {
+                Log.warnf("JasperReport Source Directory: %s does not exist!", startDir);
+                continue;
+            }
 
             try {
                 // reports - .jrxml
@@ -400,9 +408,15 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                         // Check if the file has one of the desired extensions
                         for (String ext : ReportFileBuildItem.EXTENSIONS) {
-                            if (file.toString().endsWith(ext)) {
+                            String filePath = file.toString();
+                            if (filePath.endsWith(ext)) {
                                 count.incrementAndGet();
-                                reportFiles.produce(new ReportFileBuildItem(file));
+                                reportFilesProducer.produce(new ReportFileBuildItem(file));
+
+                                // allow pre-compiled files to be processed
+                                if (filePath.endsWith(ReportFileBuildItem.EXT_COMPILED)) {
+                                    compiledReportFileProducer.produce(new CompiledReportFileBuildItem(file));
+                                }
                                 break;
                             }
                         }
@@ -410,13 +424,23 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                     }
                 });
             } catch (IOException e) {
-                Log.error("Error looking for report files.", e);
+                Log.error("Error looking for JasperReport files.", e);
             }
         }
 
         Log.debugf("Collected %s report file(s)", count.get());
     }
 
+    /**
+     * Watches report files for hot deployment in development mode.
+     * <p>
+     * This method is only executed during development and is responsible for setting up
+     * hot deployment watching for JasperReport files. It iterates through the list of
+     * report files and adds each file to the list of watched paths for hot deployment.
+     *
+     * @param watchedPaths A BuildProducer for HotDeploymentWatchedFileBuildItem to register files for watching.
+     * @param reportFiles A list of ReportFileBuildItem representing the report files to be watched.
+     */
     @BuildStep(onlyIf = IsDevelopment.class)
     void watchReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
             List<ReportFileBuildItem> reportFiles) {
@@ -428,64 +452,86 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         });
     }
 
+    /**
+     * Compiles JasperReports files during the build process.
+     * <p>
+     * This method is responsible for compiling JasperReports (.jrxml) files into their compiled (.jasper) format.
+     * It processes all report files found in the project, compiles them, and produces the necessary build items.
+     *
+     * @param config The ReportConfig containing configuration settings for report compilation.
+     * @param reportFiles A list of ReportFileBuildItem representing the report files to be compiled.
+     * @param compiledReportProducer A producer for GeneratedClassBuildItem to handle compiled report classes.
+     * @param compiledReportFileProducer A producer for CompiledReportFileBuildItem to handle compiled report files.
+     * @param outputTarget The OutputTargetBuildItem containing information about the build output directory.
+     */
     @BuildStep
     void compileReports(ReportConfig config, List<ReportFileBuildItem> reportFiles,
-            BuildProducer<GeneratedClassBuildItem> compiledReportProducer, OutputTargetBuildItem outputTarget) {
+            BuildProducer<GeneratedClassBuildItem> compiledReportProducer,
+            BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer,
+            OutputTargetBuildItem outputTarget) {
 
-        if (config.build().enable()) {
-            Log.debugf("Found %s report(s) to compile?", reportFiles.size());
-            try {
-                // make sure the destination path exists before we try to write files to it
-                Path outputFilePath = Path.of(outputTarget.getOutputDirectory().toString(), "classes",
-                        config.build().destination().get().toString());
-
-                if (!Files.exists(outputFilePath)) {
-                    Files.createDirectories(outputFilePath);
-                }
-
-                // TODO - only compile if the report file has changed?
-                for (ReportFileBuildItem item : reportFiles) {
-                    try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
-                        String outputFile = Path
-                                .of(outputFilePath.toString(), item.getFileName().replace("." + ReportFileBuildItem.EXT_REPORT,
-                                        "." + ReportFileBuildItem.EXT_COMPILED))
-                                .toString();
-
-                        Log.debugf("Compiling %s into %s", item.getPath().toString(), outputFile);
-
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        JasperCompileManager.compileReportToStream(inputStream, outputStream);
-
-                        Log.debugf("Compiled size is %s", outputStream.size());
-
-                        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-                            outputStream.writeTo(fos);
-                        }
-
-                        compiledReportProducer
-                                .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
-                    } catch (JRException ex) {
-                        Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
-                        Log.debug(ex);
-                    }
-                }
-            } catch (IOException ex) {
-                Log.fatalf("I/O Error while compiling reports: %s", ex.getMessage());
-                Log.debug(ex);
-            }
-        } else {
+        if (!config.build().enable()) {
             Log.debug("Automatic report compilation disabled");
+        }
+
+        Log.debugf("Found %s report(s) to compile", reportFiles.size());
+        try {
+            // make sure the destination path exists before we try to write files to it
+            Path outputDirectoryPath = Path.of(outputTarget.getOutputDirectory().toString(), "classes",
+                    config.build().destination().orElse(Paths.get(ReportConfig.DEFAULT_DEST_PATH)).toString());
+
+            if (!Files.exists(outputDirectoryPath)) {
+                Files.createDirectories(outputDirectoryPath);
+            }
+
+            // TODO - only compile if the report file has changed?
+            for (ReportFileBuildItem item : reportFiles) {
+                try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
+                    Path outputFilePath = Path.of(outputDirectoryPath.toString(),
+                            item.getFileName().replace("." + ReportFileBuildItem.EXT_REPORT,
+                                    "." + ReportFileBuildItem.EXT_COMPILED));
+                    String outputFile = outputFilePath.toString();
+
+                    Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
+
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    JasperCompileManager.compileReportToStream(inputStream, outputStream);
+
+                    Log.debugf("Compiled size is %s", outputStream.size());
+
+                    try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                        outputStream.writeTo(fos);
+                    }
+
+                    // allow dynamically compiled files to be processed
+                    compiledReportFileProducer.produce(new CompiledReportFileBuildItem(outputFilePath));
+                    compiledReportProducer
+                            .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
+                } catch (JRException ex) {
+                    Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
+                    Log.debug(ex);
+                }
+            }
+        } catch (IOException ex) {
+            Log.fatalf("I/O Error while compiling reports: %s", ex.getMessage());
+            Log.debug(ex);
         }
     }
 
-    static Path findProjectRoot(Path outputDirectory) {
+    /**
+     * Finds the project root directory. It starts with build target and searches for a directory under that and if that is not
+     * found it uses the start directory.
+     *
+     * @param outputDirectory The output directory path.
+     * @param startDirectory The starting directory path to search from.
+     * @return The path to the project root directory.
+     */
+    static Path findProjectRoot(Path outputDirectory, Path startDirectory) {
         Path currentPath = outputDirectory.getParent();
-        Log.tracef("Current Directory: %s", currentPath);
-        Path root = Paths.get(DEFAULT_ROOT_PATH);
-        if (Files.exists(currentPath.resolve(root))) {
-            return currentPath.resolve(root).normalize();
+        if (Files.exists(currentPath.resolve(startDirectory))) {
+            return currentPath.resolve(startDirectory).normalize();
         } else {
-            return outputDirectory;
+            return startDirectory;
         }
     }
 }

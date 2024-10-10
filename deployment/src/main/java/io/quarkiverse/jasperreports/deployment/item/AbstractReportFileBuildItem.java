@@ -1,4 +1,4 @@
-package io.quarkiverse.jasperreports.deployment;
+package io.quarkiverse.jasperreports.deployment.item;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -11,7 +11,7 @@ import io.quarkus.builder.item.MultiBuildItem;
 /**
  * This build item represents a single watched Report file either .jrxml, .jasper, or .jrtx
  */
-public final class ReportFileBuildItem extends MultiBuildItem {
+public abstract class AbstractReportFileBuildItem extends MultiBuildItem {
 
     public final static String EXT_REPORT = "jrxml";
     public final static String EXT_STYLE = "jrtx";
@@ -20,7 +20,7 @@ public final class ReportFileBuildItem extends MultiBuildItem {
 
     private final Path path;
 
-    public ReportFileBuildItem(Path path) {
+    public AbstractReportFileBuildItem(Path path) {
         this.path = path;
     }
 

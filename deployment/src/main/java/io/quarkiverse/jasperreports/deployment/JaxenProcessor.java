@@ -37,7 +37,7 @@ class JaxenProcessor extends AbstractJandexProcessor {
                 org.jaxen.xom.DocumentNavigator.class.getPackageName()
         ).toList());
         //@formatter:on
-        Log.warnf("Jaxen Runtime: %s", classes);
+        Log.debugf("Jaxen Runtime: %s", classes);
         classes.stream()
                 .map(RuntimeInitializedPackageBuildItem::new)
                 .forEach(runtimeInitializedPackages::produce);
@@ -51,7 +51,7 @@ class JaxenProcessor extends AbstractJandexProcessor {
         classNames.add(net.sf.jasperreports.jaxen.data.JaxenXmlDataSource.class.getName());
         classNames.add(org.jaxen.saxpath.base.XPathReader.class.getName());
 
-        Log.warnf("Jaxen Reflection: %s", classNames);
+        Log.debugf("Jaxen Reflection: %s", classNames);
         // methods and fields
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder(classNames.toArray(new String[0])).methods().fields().build());
