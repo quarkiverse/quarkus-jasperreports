@@ -8,7 +8,7 @@
 		<band height="60" splitType="Stretch">
 			<element kind="subreport" uuid="2ed8dc34-3c16-4483-8ce8-fc8a66990fe1" x="0" y="0" width="572" height="60">
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<expression><![CDATA["db-subreport.jasper"]]></expression>
+				<expression><![CDATA["DbDatasourceSubreport.jasper"]]></expression>
 			</element>
 		</band>
 	</detail>

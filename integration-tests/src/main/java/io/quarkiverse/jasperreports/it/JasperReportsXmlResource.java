@@ -45,7 +45,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
@@ -76,8 +75,8 @@ import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class JasperReportsXmlResource extends AbstractJasperResource {
 
-    private static final String TEST_REPORT_NAME = "CustomersReport";
-    private static final String TEST_SUB_REPORT_NAME = "OrdersReport";
+    private static final String TEST_REPORT_NAME = "XmlDatasourceCustomersReport";
+    private static final String TEST_SUB_REPORT_NAME = "XmlDatasourceOrdersReport";
 
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
@@ -95,7 +94,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
         params.put(JRParameter.REPORT_CONTEXT, reportContext);
 
-        JasperDesignCache.getInstance(DefaultJasperReportsContext.getInstance(), reportContext).set("OrdersReport.jasper",
+        JasperDesignCache.getInstance(DefaultJasperReportsContext.getInstance(), reportContext).set(
+                TEST_SUB_REPORT_NAME + ".jasper",
                 subReport);
 
         JasperPrint jasperPrint = JRFiller.fill(DefaultJasperReportsContext.getInstance(),
@@ -112,15 +112,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
     public Response csv() throws JRException {
         long start = System.currentTimeMillis();
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
         JasperPrint jasperPrint = fill();
-        JRCsvExporter exporter = new JRCsvExporter();
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-
-        exporter.exportReport();
-
+        ByteArrayOutputStream outputStream = exportCsv(jasperPrint);
         Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
         response.header("Content-Disposition", "attachment;filename=jasper.csv");

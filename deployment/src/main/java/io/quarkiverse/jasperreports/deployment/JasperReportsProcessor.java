@@ -151,21 +151,29 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.repo.DefaultRepositoryExtensionsRegistryFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.util.JsonLoader.class.getPackageName()));
 
-        // basic Java classes found in reports
-        classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, java.time.temporal.TemporalAccessor.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
+        // basic Java classes found in reports for serialization
+        classNames.add("java.util.Collections$CheckedCollection");
+        classNames.add("java.util.Collections$CheckedList");
+        classNames.add("java.util.Collections$CheckedMap");
+        classNames.add("java.util.Collections$CheckedQueue");
+        classNames.add("java.util.Collections$CheckedSet");
+        classNames.add("java.util.Collections$SynchronizedCollection");
+        classNames.add("java.util.Collections$SynchronizedList");
+        classNames.add("java.util.Collections$SynchronizedMap");
+        classNames.add("java.util.Collections$SynchronizedNavigableMap");
+        classNames.add("java.util.Collections$SynchronizedRandomAccessList");
+        classNames.add("java.util.Collections$SynchronizedSortedMap");
         classNames.add(byte.class.getName());
         classNames.add(byte[].class.getName());
-        classNames.add(java.awt.color.ColorSpace.class.getName());
         classNames.add(java.awt.Color.class.getName());
+        classNames.add(java.awt.color.ColorSpace.class.getName());
         classNames.add(java.io.Serializable.class.getName());
         classNames.add(java.lang.Boolean.class.getName());
         classNames.add(java.lang.Byte.class.getName());
-        classNames.add(java.lang.Enum.class.getName());
         classNames.add(java.lang.Byte.class.getName());
         classNames.add(java.lang.Character.class.getName());
         classNames.add(java.lang.Double.class.getName());
+        classNames.add(java.lang.Enum.class.getName());
         classNames.add(java.lang.Float.class.getName());
         classNames.add(java.lang.Integer.class.getName());
         classNames.add(java.lang.Iterable.class.getName());
@@ -180,6 +188,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.add(java.util.AbstractMap.class.getName());
         classNames.add(java.util.ArrayList.class.getName());
         classNames.add(java.util.Calendar.class.getName());
+        classNames.add(java.util.Collections.class.getName());
         classNames.add(java.util.Date.class.getName());
         classNames.add(java.util.GregorianCalendar.class.getName());
         classNames.add(java.util.HashMap.class.getName());
@@ -194,6 +203,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.add(java.util.TreeMap.class.getName());
         classNames.add(java.util.UUID.class.getName());
         classNames.add(java.util.Vector.class.getName());
+        classNames.addAll(collectImplementors(combinedIndex, java.time.temporal.TemporalAccessor.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
 
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
@@ -268,11 +280,12 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages-defaults"));
 
-        // Register resource patterns for OOXML export
+        // Register resource patterns for OOXML export and font icons
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("**/export/ooxml/docx/**");
         builder.includeGlob("**/export/ooxml/pptx/**");
         builder.includeGlob("**/export/ooxml/xlsx/**");
+        builder.includeGlob("**/sf/jasperreports/fonts/icons/**");
         nativeImageResourcePatterns.produce(builder.build());
     }
 

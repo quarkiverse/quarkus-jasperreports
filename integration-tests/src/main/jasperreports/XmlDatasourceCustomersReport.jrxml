@@ -30,7 +30,7 @@
             </element>
             <element kind="line" uuid="2d5a60ee-3d8d-4f50-ba2a-72f82e76e38e" x="0" y="20" width="515" height="1" printWhenDetailOverflows="true"/>
             <element kind="subreport" uuid="e7de82f1-2e1c-4459-bef3-307e57903e0b" x="5" y="25" width="507" height="20" backcolor="#FFCC99" printRepeatedValues="false" removeLineWhenBlank="true">
-                <expression><![CDATA["OrdersReport.jasper"]]></expression>
+                <expression><![CDATA["XmlDatasourceOrdersReport.jasper"]]></expression>
                 <parameter name="XML_DATA_DOCUMENT">
                     <expression><![CDATA[$P{XML_DATA_DOCUMENT}]]></expression>
                 </parameter>
