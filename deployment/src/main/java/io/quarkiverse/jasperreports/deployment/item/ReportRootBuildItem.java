@@ -1,4 +1,4 @@
-package io.quarkiverse.jasperreports.deployment;
+package io.quarkiverse.jasperreports.deployment.item;
 
 import io.quarkus.builder.item.MultiBuildItem;
 

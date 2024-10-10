@@ -2,7 +2,7 @@ package io.quarkiverse.jasperreports.deployment.devui;
 
 import java.util.List;
 
-import io.quarkiverse.jasperreports.deployment.ReportFileBuildItem;
+import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;

@@ -1,4 +1,4 @@
-package io.quarkiverse.jasperreports.deployment;
+package io.quarkiverse.jasperreports.deployment.config;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -11,6 +11,9 @@ import io.smallrye.config.WithDefault;
 @ConfigMapping(prefix = "quarkus.jasperreports")
 @ConfigRoot(phase = ConfigPhase.BUILD_TIME)
 public interface ReportConfig {
+
+    String DEFAULT_SOURCE_PATH = "src/main/jasperreports";
+    String DEFAULT_DEST_PATH = "jasperreports";
 
     /**
      * Configuration options related to automatically building reports.
@@ -28,13 +31,13 @@ public interface ReportConfig {
         /**
          * The path where all source .jrxml files are located.
          */
-        @WithDefault("src/main/jasperreports")
+        @WithDefault(DEFAULT_SOURCE_PATH)
         Optional<Path> source();
 
         /**
          * The path where compiled reports are located.
          */
-        @WithDefault("jasperreports")
+        @WithDefault(DEFAULT_DEST_PATH)
         Optional<Path> destination();
 
     }
