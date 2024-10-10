@@ -32,8 +32,8 @@ import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 @Transactional(Transactional.TxType.NEVER)
 public class DatabaseReportService extends AbstractJasperResource {
 
-    private static final String TEST_REPORT_NAME = "db-main";
-    private static final String TEST_SUB_REPORT_NAME = "db-subreport";
+    private static final String TEST_REPORT_NAME = "DbDatasourceMain";
+    private static final String TEST_SUB_REPORT_NAME = "DbDatasourceSubreport";
 
     @Inject
     DataSource datasource;
