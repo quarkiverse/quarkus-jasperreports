@@ -1,0 +1,65 @@
+:summaryTableId: quarkus-jasperreports_quarkus-jasperreports
+[.configuration-legend]
+icon:lock[title=Fixed at build time] Configuration property fixed at build time - All other configuration properties are overridable at runtime
+[.configuration-reference.searchable, cols="80,.^10,.^10"]
+|===
+
+h|[.header-title]##Configuration property##
+h|Type
+h|Default
+
+a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperreports-build-enable]] [.property-path]##link:#quarkus-jasperreports_quarkus-jasperreports-build-enable[`quarkus.jasperreports.build.enable`]##
+
+[.description]
+--
+Enable building all report files.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_JASPERREPORTS_BUILD_ENABLE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_ENABLE+++`
+endif::add-copy-button-to-env-var[]
+--
+|boolean
+|`true`
+
+a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperreports-build-source]] [.property-path]##link:#quarkus-jasperreports_quarkus-jasperreports-build-source[`quarkus.jasperreports.build.source`]##
+
+[.description]
+--
+The path where all source .jrxml files are located.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_JASPERREPORTS_BUILD_SOURCE+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_SOURCE+++`
+endif::add-copy-button-to-env-var[]
+--
+|path
+|`src/main/jasperreports`
+
+a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperreports-build-destination]] [.property-path]##link:#quarkus-jasperreports_quarkus-jasperreports-build-destination[`quarkus.jasperreports.build.destination`]##
+
+[.description]
+--
+The path where compiled reports are located next to compiled classes.
+
+
+ifdef::add-copy-button-to-env-var[]
+Environment variable: env_var_with_copy_button:+++QUARKUS_JASPERREPORTS_BUILD_DESTINATION+++[]
+endif::add-copy-button-to-env-var[]
+ifndef::add-copy-button-to-env-var[]
+Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_DESTINATION+++`
+endif::add-copy-button-to-env-var[]
+--
+|path
+|`jasperreports`
+
+|===
+
+
+:!summaryTableId:
