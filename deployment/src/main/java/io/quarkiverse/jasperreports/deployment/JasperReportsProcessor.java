@@ -381,8 +381,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      */
     @BuildStep
     ReportRootBuildItem defaultReportRoot(ReportConfig config) {
-        if (config.build().enable() && config.build().source().isPresent()) {
-            return new ReportRootBuildItem(config.build().source().get().toString());
+        if (config.build().enable()) {
+            return new ReportRootBuildItem(config.build().source().toString());
         }
         return new ReportRootBuildItem(ReportConfig.DEFAULT_SOURCE_PATH);
     }
@@ -491,7 +491,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         try {
             // make sure the destination path exists before we try to write files to it
             Path outputDirectoryPath = Path.of(outputTarget.getOutputDirectory().toString(), "classes",
-                    config.build().destination().orElse(Paths.get(ReportConfig.DEFAULT_DEST_PATH)).toString());
+                    config.build().destination().toString());
 
             if (!Files.exists(outputDirectoryPath)) {
                 Files.createDirectories(outputDirectoryPath);
