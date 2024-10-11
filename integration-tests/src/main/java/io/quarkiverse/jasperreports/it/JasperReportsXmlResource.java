@@ -86,7 +86,7 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         ReportContext reportContext = new SimpleReportContext();
 
         Map<String, Object> params = new HashMap<>();
-        Document document = JRXmlUtils.parse(JRLoader.getLocationInputStream("northwind.xml"));
+        Document document = JRXmlUtils.parse(JRLoader.getLocationInputStream("data/northwind.xml"));
         params.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
         params.put(JRXPathQueryExecuterFactory.XML_DATE_PATTERN, "yyyy-MM-dd");
         params.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "#,##0.##");

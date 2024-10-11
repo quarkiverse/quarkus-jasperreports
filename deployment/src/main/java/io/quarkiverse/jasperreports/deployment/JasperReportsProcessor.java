@@ -92,6 +92,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-excel-poi"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jaxen"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-json"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf"));
     }
 
@@ -111,17 +112,17 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         //@formatter:off
         final List<String> classNames = new ArrayList<>();
         // By Implementors: jasper interfaces/abstract classes that are created with Class.forName
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.design.JRCompiler.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistry.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRDataSource.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRDataSourceProvider.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRVisitor.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.xml.ReportLoader.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRTemplate.class.getName()));
-        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.query.QueryExecuterFactory.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRVisitor.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.design.JRCompiler.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.query.JRQueryExecuter.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.query.QueryExecuterFactory.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.util.xml.JRXPathExecuterFactory.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.xml.ReportLoader.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistry.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName()));
         classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.engine.JRAbstractExporter.class.getName()));
 
         // By Package (utilities etc)
@@ -293,20 +294,33 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * Registers report files for native image compilation and processes compiled report files.
      *
      * @param nativeImageResourcePatterns Producer for native image resource patterns
+     */
+    @BuildStep
+    void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
+        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_REPORT);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_COMPILED);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_STYLE);
+        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_DATA_ADAPTER);
+        builder.includeGlob("*." + ReportFileBuildItem.EXT_REPORT);
+        builder.includeGlob("*." + ReportFileBuildItem.EXT_COMPILED);
+        builder.includeGlob("*." + ReportFileBuildItem.EXT_STYLE);
+        builder.includeGlob("*." + ReportFileBuildItem.EXT_DATA_ADAPTER);
+        nativeImageResourcePatterns.produce(builder.build());
+    }
+
+    /**
+     * Registers report files for native image compilation and processes compiled report files.
+     *
      * @param additionalClasses Producer for additional generated classes
      * @param reflectiveClassProducer Producer for reflective classes
      * @param compiledReports The list of all found compiled report files
      */
     @BuildStep
-    void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns,
+    void registerCompiledReports(
             BuildProducer<GeneratedClassBuildItem> additionalClasses,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
             List<CompiledReportFileBuildItem> compiledReports) {
-        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_REPORT);
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_COMPILED);
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_STYLE);
-        nativeImageResourcePatterns.produce(builder.build());
 
         // only care about compiled - .jasper files
         for (CompiledReportFileBuildItem reportFile : compiledReports) {

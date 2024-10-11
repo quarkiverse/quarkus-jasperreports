@@ -15,8 +15,10 @@ public abstract class AbstractReportFileBuildItem extends MultiBuildItem {
 
     public final static String EXT_REPORT = "jrxml";
     public final static String EXT_STYLE = "jrtx";
+    public final static String EXT_DATA_ADAPTER = "jrdax";
     public final static String EXT_COMPILED = "jasper";
-    public final static List<String> EXTENSIONS = List.of("." + EXT_REPORT, "." + EXT_COMPILED, "." + EXT_STYLE);
+    public final static List<String> EXTENSIONS = List.of("." + EXT_REPORT, "." + EXT_COMPILED, "." + EXT_STYLE,
+            "." + EXT_DATA_ADAPTER);
 
     private final Path path;
 
@@ -42,6 +44,7 @@ public abstract class AbstractReportFileBuildItem extends MultiBuildItem {
             case EXT_COMPILED -> "COMPILED";
             case EXT_REPORT -> "REPORT";
             case EXT_STYLE -> "STYLES";
+            case EXT_DATA_ADAPTER -> "ADAPTER";
             default -> "???";
         };
     }
