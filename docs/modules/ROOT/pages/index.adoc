@@ -96,6 +96,4 @@ CAUTION: Make sure `.dockerignore` does not exclude `.so` files!
 [[extension-configuration-reference]]
 == Extension Configuration Reference
 
-TIP: Remove this section if you don't have Quarkus configuration properties in your extension.
-
 include::includes/quarkus-jasperreports.adoc[leveloffset=+1, opts=optional]
