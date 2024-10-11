@@ -1,7 +1,6 @@
 package io.quarkiverse.jasperreports.deployment.config;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
@@ -32,14 +31,13 @@ public interface ReportConfig {
          * The path where all source .jrxml files are located.
          */
         @WithDefault(DEFAULT_SOURCE_PATH)
-        Optional<Path> source();
+        Path source();
 
         /**
-         * The path where compiled reports are located.
+         * The path where compiled reports are located next to compiled classes.
          */
         @WithDefault(DEFAULT_DEST_PATH)
-        Optional<Path> destination();
-
+        Path destination();
     }
 
 }
