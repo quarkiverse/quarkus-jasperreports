@@ -29,7 +29,7 @@ a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperrep
 
 [.description]
 --
-The path where all source .jrxml files are located.
+The path where all source `.jrxml` and `.jrtx` files are located.
 
 
 ifdef::add-copy-button-to-env-var[]

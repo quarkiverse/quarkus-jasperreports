@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -35,13 +36,14 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.w3c.dom.Document;
 
+import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.export.HtmlExporter;
@@ -52,8 +54,6 @@ import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
-import net.sf.jasperreports.engine.fill.JRFiller;
-import net.sf.jasperreports.engine.fill.SimpleJasperReportSource;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
@@ -67,21 +67,19 @@ import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.export.SimpleXmlExporterOutput;
 import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.poi.export.JRXlsExporter;
-import net.sf.jasperreports.repo.JasperDesignCache;
-import net.sf.jasperreports.repo.SimpleRepositoryResourceContext;
 
 @Path("/jasper/xml/")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class JasperReportsXmlResource extends AbstractJasperResource {
 
-    private static final String TEST_REPORT_NAME = "XmlDatasourceCustomersReport";
-    private static final String TEST_SUB_REPORT_NAME = "XmlDatasourceOrdersReport";
+    private static final String TEST_REPORT_NAME = "XmlDatasourceCustomersReport.jasper";
+
+    @Inject
+    ReadOnlyStreamingService repo;
 
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
-        JasperReport mainReport = compileReport(TEST_REPORT_NAME);
-        JasperReport subReport = compileReport(TEST_SUB_REPORT_NAME);
 
         ReportContext reportContext = new SimpleReportContext();
 
@@ -94,13 +92,7 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
         params.put(JRParameter.REPORT_CONTEXT, reportContext);
 
-        JasperDesignCache.getInstance(DefaultJasperReportsContext.getInstance(), reportContext).set(
-                TEST_SUB_REPORT_NAME + ".jasper",
-                subReport);
-
-        JasperPrint jasperPrint = JRFiller.fill(DefaultJasperReportsContext.getInstance(),
-                SimpleJasperReportSource.from(mainReport, null, new SimpleRepositoryResourceContext()),
-                params);
+        JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params);
 
         Log.infof("Filling time : %s", (System.currentTimeMillis() - start));
 
