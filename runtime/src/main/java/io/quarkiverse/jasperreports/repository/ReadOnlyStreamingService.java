@@ -1,22 +1,16 @@
 package io.quarkiverse.jasperreports.repository;
 
-import static io.quarkiverse.jasperreports.Constants.EXT_COMPILED;
-import static io.quarkiverse.jasperreports.Constants.EXT_DATA_ADAPTER;
-import static io.quarkiverse.jasperreports.Constants.EXT_STYLE;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_COMPILED;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_DATA_ADAPTER;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_STYLE;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.Optional;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.context.Dependent;
-
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import io.quarkiverse.jasperreports.Constants;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -31,73 +25,116 @@ import net.sf.jasperreports.repo.Resource;
 import net.sf.jasperreports.repo.SimpleRepositoryContext;
 import net.sf.jasperreports.repo.StreamRepositoryService;
 
-@Dependent
+/**
+ * A read-only implementation of StreamRepositoryService for JasperReports.
+ * This service provides access to compiled reports, styles, and data adapters
+ * from a specified destination path.
+ */
 public class ReadOnlyStreamingService implements StreamRepositoryService {
 
     private static final Logger LOG = Logger.getLogger(ReadOnlyStreamingService.class);
 
     private final JasperReportsContext context = new SimpleJasperReportsContext();
+    private final Path destinationPath;
 
-    // TODO - why is it not picking up the default value from ReportConfig???
-    @ConfigProperty(name = "quarkus.jasperreports.build.destination", defaultValue = Constants.DEFAULT_DEST_PATH)
-    Optional<Path> reportPathConfig;
-
-    @PostConstruct
-    public void onInit() {
-        ((SimpleJasperReportsContext) context).setExtensions(RepositoryService.class, Collections.singletonList(this));
-        ((SimpleJasperReportsContext) context).setExtensions(PersistenceServiceFactory.class,
+    /**
+     * Constructs a new ReadOnlyStreamingService with the specified destination path.
+     *
+     * @param destinationPath The path where compiled reports and styles are located.
+     */
+    public ReadOnlyStreamingService(Path destinationPath) {
+        this.destinationPath = destinationPath;
+        SimpleJasperReportsContext simpleContext = ((SimpleJasperReportsContext) context);
+        simpleContext.setExtensions(RepositoryService.class, Collections.singletonList(this));
+        simpleContext.setExtensions(PersistenceServiceFactory.class,
                 Collections.singletonList(FileRepositoryPersistenceServiceFactory.getInstance()));
     }
 
+    /**
+     * Returns the JasperReportsContext associated with this service.
+     *
+     * @return The JasperReportsContext instance.
+     */
     public JasperReportsContext getContext() {
         return context;
     }
 
+    /**
+     * Retrieves an InputStream for the specified URI.
+     * This method handles compiled reports, styles, and data adapters.
+     *
+     * @param uri The URI of the resource to retrieve.
+     * @return An InputStream for the requested resource, or null if not found.
+     */
     @Override
     public InputStream getInputStream(String uri) {
-        InputStream is = null;
+        String logType = null;
+        String filePath = uri;
 
         if (uri.endsWith(EXT_COMPILED) || uri.endsWith(EXT_STYLE)) {
-            final Path reportPath = Path.of(reportPathConfig.get().toString(), uri);
-            final String reportFile = reportPath.toString();
-
-            try {
-                LOG.debugf("Loading %s file %s", (uri.endsWith(EXT_COMPILED) ? "report" : "style"), reportFile);
-
-                return JRLoader.getLocationInputStream(reportFile);
-            } catch (JRException ex) {
-                LOG.warnf("Failed to load %s - %s", (uri.endsWith(EXT_COMPILED) ? "report" : "style"), ex.getMessage());
-                LOG.debug(ex);
-            }
+            logType = uri.endsWith(EXT_COMPILED) ? "report" : "style";
+            filePath = Path.of(this.destinationPath.toString(), uri).toString();
         } else if (uri.endsWith(EXT_DATA_ADAPTER)) {
-            try {
-                LOG.debugf("Loading data adapter file %s", uri);
+            logType = "data adapter";
+        }
 
-                return JRLoader.getLocationInputStream(uri);
+        if (logType != null) {
+            try {
+                LOG.debugf("Loading %s file %s", logType, filePath);
+                return JRLoader.getLocationInputStream(filePath);
             } catch (JRException ex) {
-                LOG.warnf("Failed to load data adapter - %s", ex.getMessage());
+                LOG.warnf("Failed to load %s - %s", logType, ex.getMessage());
                 LOG.debug(ex);
             }
         }
 
-        return is;
+        return null;
     }
 
+    /**
+     * This method is not supported in this read-only implementation.
+     *
+     * @param uri The URI of the resource.
+     * @return This method always throws an IllegalStateException.
+     * @throws IllegalStateException Always thrown as this repository is read-only.
+     */
     @Override
     public OutputStream getOutputStream(String uri) {
         throw new IllegalStateException("This repository is read only");
     }
 
+    /**
+     * This method is not supported in this implementation.
+     *
+     * @param uri The URI of the resource.
+     * @return This method always throws an IllegalStateException.
+     * @throws IllegalStateException Always thrown as this method is not supported.
+     */
     @Override
     public Resource getResource(String uri) {
         throw new IllegalStateException("Can only return an InputStream");
     }
 
+    /**
+     * This method is not supported in this read-only implementation.
+     *
+     * @param uri The URI of the resource.
+     * @param resource The resource to save.
+     * @throws IllegalStateException Always thrown as this repository is read-only.
+     */
     @Override
     public void saveResource(String uri, Resource resource) {
         throw new IllegalStateException("This repository is read only");
     }
 
+    /**
+     * Retrieves a resource of the specified type for the given URI.
+     *
+     * @param <T> The type of resource to retrieve.
+     * @param uri The URI of the resource.
+     * @param resourceType The class of the resource type.
+     * @return The requested resource, or null if not found or if no appropriate PersistenceService is available.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Resource> T getResource(String uri, Class<T> resourceType) {

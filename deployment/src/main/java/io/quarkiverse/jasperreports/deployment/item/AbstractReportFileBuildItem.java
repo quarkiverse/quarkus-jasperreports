@@ -1,9 +1,9 @@
 package io.quarkiverse.jasperreports.deployment.item;
 
-import static io.quarkiverse.jasperreports.Constants.EXT_COMPILED;
-import static io.quarkiverse.jasperreports.Constants.EXT_DATA_ADAPTER;
-import static io.quarkiverse.jasperreports.Constants.EXT_REPORT;
-import static io.quarkiverse.jasperreports.Constants.EXT_STYLE;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_COMPILED;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_DATA_ADAPTER;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_REPORT;
+import static io.quarkiverse.jasperreports.config.Constants.EXT_STYLE;
 
 import java.nio.file.Path;
 import java.util.List;

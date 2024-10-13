@@ -1,4 +1,4 @@
-package io.quarkiverse.jasperreports.deployment.config;
+package io.quarkiverse.jasperreports.config;
 
 import java.nio.file.Path;
 
@@ -8,8 +8,8 @@ import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
 
 @ConfigMapping(prefix = "quarkus.jasperreports")
-@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
-public interface ReportConfig {
+@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
+public interface ReportBuildTimeConfig {
 
     String DEFAULT_SOURCE_PATH = "src/main/jasperreports";
     String DEFAULT_DEST_PATH = "jasperreports";
