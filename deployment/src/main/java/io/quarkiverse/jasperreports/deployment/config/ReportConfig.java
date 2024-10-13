@@ -28,7 +28,7 @@ public interface ReportConfig {
         boolean enable();
 
         /**
-         * The path where all source .jrxml files are located.
+         * The path where all source <code>.jrxml</code> and <code>.jrtx</code> files are located.
          */
         @WithDefault(DEFAULT_SOURCE_PATH)
         Path source();

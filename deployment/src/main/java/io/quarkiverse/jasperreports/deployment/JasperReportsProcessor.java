@@ -18,10 +18,13 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.quarkiverse.jasperreports.Constants;
 import io.quarkiverse.jasperreports.deployment.config.ReportConfig;
 import io.quarkiverse.jasperreports.deployment.item.CompiledReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
+import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
+import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -298,14 +301,14 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep
     void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_REPORT);
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_COMPILED);
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_STYLE);
-        builder.includeGlob("**/*." + ReportFileBuildItem.EXT_DATA_ADAPTER);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_REPORT);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_COMPILED);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_STYLE);
-        builder.includeGlob("*." + ReportFileBuildItem.EXT_DATA_ADAPTER);
+        builder.includeGlob("**/*." + Constants.EXT_REPORT);
+        builder.includeGlob("**/*." + Constants.EXT_COMPILED);
+        builder.includeGlob("**/*." + Constants.EXT_STYLE);
+        builder.includeGlob("**/*." + Constants.EXT_DATA_ADAPTER);
+        builder.includeGlob("*." + Constants.EXT_REPORT);
+        builder.includeGlob("*." + Constants.EXT_COMPILED);
+        builder.includeGlob("*." + Constants.EXT_STYLE);
+        builder.includeGlob("*." + Constants.EXT_DATA_ADAPTER);
         nativeImageResourcePatterns.produce(builder.build());
     }
 
@@ -398,7 +401,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         if (config.build().enable()) {
             return new ReportRootBuildItem(config.build().source().toString());
         }
-        return new ReportRootBuildItem(ReportConfig.DEFAULT_SOURCE_PATH);
+        return new ReportRootBuildItem(Constants.DEFAULT_SOURCE_PATH);
     }
 
     /**
@@ -441,7 +444,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                                 reportFilesProducer.produce(new ReportFileBuildItem(file));
 
                                 // allow pre-compiled files to be processed
-                                if (filePath.endsWith(ReportFileBuildItem.EXT_COMPILED)) {
+                                if (filePath.endsWith(Constants.EXT_COMPILED)) {
                                     compiledReportFileProducer.produce(new CompiledReportFileBuildItem(file));
                                 }
                                 break;
@@ -515,8 +518,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             for (ReportFileBuildItem item : reportFiles) {
                 try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
                     Path outputFilePath = Path.of(outputDirectoryPath.toString(),
-                            item.getFileName().replace("." + ReportFileBuildItem.EXT_REPORT,
-                                    "." + ReportFileBuildItem.EXT_COMPILED));
+                            item.getFileName().replace("." + Constants.EXT_REPORT,
+                                    "." + Constants.EXT_COMPILED));
                     String outputFile = outputFilePath.toString();
 
                     Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
@@ -543,6 +546,11 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             Log.fatalf("I/O Error while compiling reports: %s", ex.getMessage());
             Log.debug(ex);
         }
+    }
+
+    @BuildStep
+    AdditionalBeanBuildItem additionalBeans() {
+        return AdditionalBeanBuildItem.unremovableOf(ReadOnlyStreamingService.class);
     }
 
     /**

@@ -93,6 +93,22 @@ CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
 
 CAUTION: Make sure `.dockerignore` does not exclude `.so` files!
 
+== Read-Only Streaming Service
+
+A JasperReports repository can handle loading all of the resources a report needs, including any referenced subreports.  Simply inject the repository,
+then use it with the fill manager to produce the report.
+
+[source,java]
+----
+    @Inject
+    ReadOnlyStreamingService repo;
+
+    public JasperPrint fill() throws JRException {
+        Map<String, Object> params = new HashMap<>();
+        return JasperFillManager.getInstance(repo.getContext()).fillFromRepo("MyReport.jasper", params);
+    }
+----
+
 [[extension-configuration-reference]]
 == Extension Configuration Reference
 

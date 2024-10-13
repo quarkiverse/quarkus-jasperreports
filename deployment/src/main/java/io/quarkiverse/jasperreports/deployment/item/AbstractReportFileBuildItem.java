@@ -1,5 +1,10 @@
 package io.quarkiverse.jasperreports.deployment.item;
 
+import static io.quarkiverse.jasperreports.Constants.EXT_COMPILED;
+import static io.quarkiverse.jasperreports.Constants.EXT_DATA_ADAPTER;
+import static io.quarkiverse.jasperreports.Constants.EXT_REPORT;
+import static io.quarkiverse.jasperreports.Constants.EXT_STYLE;
+
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
@@ -13,10 +18,6 @@ import io.quarkus.builder.item.MultiBuildItem;
  */
 public abstract class AbstractReportFileBuildItem extends MultiBuildItem {
 
-    public final static String EXT_REPORT = "jrxml";
-    public final static String EXT_STYLE = "jrtx";
-    public final static String EXT_DATA_ADAPTER = "jrdax";
-    public final static String EXT_COMPILED = "jasper";
     public final static List<String> EXTENSIONS = List.of("." + EXT_REPORT, "." + EXT_COMPILED, "." + EXT_STYLE,
             "." + EXT_DATA_ADAPTER);
 
