@@ -1,4 +1,4 @@
-package io.quarkiverse.jasperreports;
+package io.quarkiverse.jasperreports.config;
 
 public interface Constants {
 

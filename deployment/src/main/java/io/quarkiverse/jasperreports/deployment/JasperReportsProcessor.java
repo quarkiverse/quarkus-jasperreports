@@ -18,16 +18,20 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkiverse.jasperreports.Constants;
-import io.quarkiverse.jasperreports.deployment.config.ReportConfig;
+import io.quarkiverse.jasperreports.JasperReportsBeanProducer;
+import io.quarkiverse.jasperreports.JasperReportsRecorder;
+import io.quarkiverse.jasperreports.config.Constants;
+import io.quarkiverse.jasperreports.config.ReportBuildTimeConfig;
 import io.quarkiverse.jasperreports.deployment.item.CompiledReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
-import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
+import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedClassBuildItem;
@@ -397,7 +401,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      *         Otherwise, it returns the default source path defined in ReportConfig.
      */
     @BuildStep
-    ReportRootBuildItem defaultReportRoot(ReportConfig config) {
+    ReportRootBuildItem defaultReportRoot(ReportBuildTimeConfig config) {
         if (config.build().enable()) {
             return new ReportRootBuildItem(config.build().source().toString());
         }
@@ -495,7 +499,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * @param outputTarget The OutputTargetBuildItem containing information about the build output directory.
      */
     @BuildStep
-    void compileReports(ReportConfig config, List<ReportFileBuildItem> reportFiles,
+    void compileReports(ReportBuildTimeConfig config, List<ReportFileBuildItem> reportFiles,
             BuildProducer<GeneratedClassBuildItem> compiledReportProducer,
             BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer,
             OutputTargetBuildItem outputTarget) {
@@ -548,9 +552,28 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         }
     }
 
+    /**
+     * Registers the JasperReportsBeanProducer as an unremovable bean.
+     *
+     * @return An AdditionalBeanBuildItem for the JasperReportsBeanProducer.
+     */
     @BuildStep
-    AdditionalBeanBuildItem additionalBeans() {
-        return AdditionalBeanBuildItem.unremovableOf(ReadOnlyStreamingService.class);
+    AdditionalBeanBuildItem registerBeanProducer() {
+        return AdditionalBeanBuildItem.unremovableOf(JasperReportsBeanProducer.class);
+    }
+
+    /**
+     * Initializes the JasperReports producer at runtime.
+     *
+     * @param recorder The JasperReportsRecorder to use for initialization.
+     * @param beanContainer The BeanContainerBuildItem containing the bean container.
+     * @param config The ReportBuildTimeConfig to use for initialization.
+     */
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    void initializeBeanProducer(JasperReportsRecorder recorder, BeanContainerBuildItem beanContainer,
+            ReportBuildTimeConfig config) {
+        recorder.initProducer(beanContainer.getValue(), config);
     }
 
     /**
