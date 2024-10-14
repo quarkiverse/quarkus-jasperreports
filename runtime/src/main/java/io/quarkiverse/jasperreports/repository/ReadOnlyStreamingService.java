@@ -11,6 +11,7 @@ import java.util.Collections;
 
 import org.jboss.logging.Logger;
 
+import io.quarkus.runtime.util.ClassPathUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
@@ -68,20 +69,22 @@ public class ReadOnlyStreamingService implements StreamRepositoryService {
      */
     @Override
     public InputStream getInputStream(String uri) {
+        LOG.debugf("Loading getInputStream %s", uri);
         String logType = null;
-        String filePath = uri;
+        String filePath = null;
 
         if (uri.endsWith(EXT_COMPILED) || uri.endsWith(EXT_STYLE)) {
             logType = uri.endsWith(EXT_COMPILED) ? "report" : "style";
-            filePath = Path.of(this.destinationPath.toString(), uri).toString();
+            filePath = ClassPathUtils.toResourceName(Path.of(this.destinationPath.toString(), uri));
         } else if (uri.endsWith(EXT_DATA_ADAPTER)) {
             logType = "data adapter";
         }
 
         if (logType != null) {
             try {
-                LOG.debugf("Loading %s file %s", logType, filePath);
-                return JRLoader.getLocationInputStream(filePath);
+                InputStream is = JRLoader.getLocationInputStream(filePath);
+                LOG.debugf("Loading %s file %s %s", logType, filePath, is);
+                return is;
             } catch (JRException ex) {
                 LOG.warnf("Failed to load %s - %s", logType, ex.getMessage());
                 LOG.debug(ex);
@@ -100,6 +103,7 @@ public class ReadOnlyStreamingService implements StreamRepositoryService {
      */
     @Override
     public OutputStream getOutputStream(String uri) {
+        LOG.warnf("Read-Only repository called getOutputStream: %s", uri);
         throw new IllegalStateException("This repository is read only");
     }
 
@@ -112,6 +116,7 @@ public class ReadOnlyStreamingService implements StreamRepositoryService {
      */
     @Override
     public Resource getResource(String uri) {
+        LOG.warnf("Read-Only repository called getResource: %s", uri);
         throw new IllegalStateException("Can only return an InputStream");
     }
 
@@ -124,6 +129,7 @@ public class ReadOnlyStreamingService implements StreamRepositoryService {
      */
     @Override
     public void saveResource(String uri, Resource resource) {
+        LOG.warnf("Read-Only repository called saveResource: %s", uri);
         throw new IllegalStateException("This repository is read only");
     }
 
@@ -138,6 +144,7 @@ public class ReadOnlyStreamingService implements StreamRepositoryService {
     @Override
     @SuppressWarnings("unchecked")
     public <T extends Resource> T getResource(String uri, Class<T> resourceType) {
+        LOG.debugf("getResource %s type %s", uri, resourceType);
         final PersistenceService persistenceService = PersistenceUtil.getInstance(context).getService(
                 FileRepositoryService.class,
                 resourceType);
