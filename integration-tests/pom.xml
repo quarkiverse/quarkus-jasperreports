@@ -179,7 +179,7 @@
                 </quarkus.native.additional-build-args>
             </properties>
             <build>
-                <defaultGoal>clean package -Dquarkus.native.native-image-xmx=13g</defaultGoal>
+                <defaultGoal>clean package</defaultGoal>
                 <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>

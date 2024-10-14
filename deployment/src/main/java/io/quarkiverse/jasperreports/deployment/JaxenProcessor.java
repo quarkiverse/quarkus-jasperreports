@@ -2,14 +2,12 @@ package io.quarkiverse.jasperreports.deployment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.logging.Log;
 
 /**
@@ -24,23 +22,8 @@ class JaxenProcessor extends AbstractJandexProcessor {
 
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
-        //index.produce(new IndexDependencyBuildItem("jaxen", "jaxen"));
-    }
-
-    @BuildStep
-    void runtimeJaxenInitializedClasses(CombinedIndexBuildItem combinedIndex,
-            BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
-        //@formatter:off
-        List<String> classes = new ArrayList<>(Stream.of(
-                org.jaxen.dom4j.DocumentNavigator.class.getPackageName(),
-                org.jaxen.jdom.DocumentNavigator.class.getPackageName(),
-                org.jaxen.xom.DocumentNavigator.class.getPackageName()
-        ).toList());
-        //@formatter:on
-        Log.debugf("Jaxen Runtime: %s", classes);
-        classes.stream()
-                .map(RuntimeInitializedPackageBuildItem::new)
-                .forEach(runtimeInitializedPackages::produce);
+        // IMPORTANT: this must not be indexed, or it then requires Dom4J, JDOM, and XOM on classpath.
+        // index.produce(new IndexDependencyBuildItem("jaxen", "jaxen"));
     }
 
     @BuildStep
