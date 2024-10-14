@@ -27,6 +27,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -46,11 +47,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
-import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JRRtfExporter;
-import net.sf.jasperreports.engine.export.JRXmlExporter;
-import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
-import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -58,13 +54,9 @@ import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
-import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
-import net.sf.jasperreports.export.SimpleXmlExporterOutput;
 import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.poi.export.JRXlsExporter;
 
@@ -108,8 +100,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         ByteArrayOutputStream outputStream = exportCsv(jasperPrint);
         Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.csv");
-        response.header("Content-Type", "text/csv");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.csv");
+        response.type(ExtendedMediaType.TEXT_CSV);
         return response.build();
     }
 
@@ -119,20 +111,11 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     public Response xml(@QueryParam("embedded") boolean embedded) throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-
-        JRXmlExporter exporter = new JRXmlExporter(DefaultJasperReportsContext.getInstance());
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        SimpleXmlExporterOutput xmlOutput = new SimpleXmlExporterOutput(outputStream);
-        xmlOutput.setEmbeddingImages(embedded);
-        exporter.setExporterOutput(xmlOutput);
-        exporter.exportReport();
+        ByteArrayOutputStream outputStream = exportXml(jasperPrint, embedded);
         Log.infof("XML creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.xml");
-        response.header("Content-Type", "application/xml");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.xml");
+        response.type(MediaType.APPLICATION_XML);
         return response.build();
     }
 
@@ -142,17 +125,11 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     public Response html() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-
-        HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleHtmlExporterOutput(outputStream));
-
-        exporter.exportReport();
+        ByteArrayOutputStream outputStream = exportHtml(jasperPrint);
         Log.infof("HTML creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.html");
-        response.header("Content-Type", "text/html");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.html");
+        response.type(MediaType.TEXT_HTML);
         return response.build();
     }
 
@@ -161,23 +138,12 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
     public Response rtf() throws JRException {
         long start = System.currentTimeMillis();
-
         JasperPrint jasperPrint = fill();
-
-        JRRtfExporter exporter = new JRRtfExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleWriterExporterOutput(outputStream));
-
-        exporter.exportReport();
-
+        ByteArrayOutputStream outputStream = exportRtf(jasperPrint);
         Log.infof("RTF creation time : %s", (System.currentTimeMillis() - start));
-
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.rtf");
-        response.header("Content-Type", "application/rtf");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.rtf");
+        response.type(ExtendedMediaType.APPLICATION_RTF);
         return response.build();
     }
 
@@ -187,19 +153,11 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     public Response odt() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-
-        JROdtExporter exporter = new JROdtExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-
-        exporter.exportReport();
-
+        ByteArrayOutputStream outputStream = exportOdt(jasperPrint);
         Log.infof("ODT creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.odt");
-        response.header("Content-Type", "application/vnd.oasis.opendocument.text");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.odt");
+        response.type(ExtendedMediaType.APPLICATION_OPENDOCUMENT_TEXT);
         return response.build();
     }
 
@@ -209,22 +167,11 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     public Response ods() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-
-        JROdsExporter exporter = new JROdsExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-        SimpleOdsReportConfiguration configuration = new SimpleOdsReportConfiguration();
-        configuration.setOnePagePerSheet(true);
-        exporter.setConfiguration(configuration);
-
-        exporter.exportReport();
-
+        ByteArrayOutputStream outputStream = exportOds(jasperPrint);
         Log.infof("ODS creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.ods");
-        response.header("Content-Type", "application/vnd.oasis.opendocument.spreadsheet");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.ods");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_OPENDOCUMENT_SPREADSHEET);
         return response.build();
     }
 
@@ -245,8 +192,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
 
         Log.infof("DOCX creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.docx");
-        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.docx");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_DOCX);
         return response.build();
     }
 
@@ -270,8 +217,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
 
         Log.infof("XLSX creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.xlsx");
-        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.xlsx");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_XLSX);
         return response.build();
     }
 
@@ -294,8 +241,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         Log.infof("PPTX creation time : %s", (System.currentTimeMillis() - start));
 
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.pptx");
-        response.header("Content-Type", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.pptx");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_PPTX);
         return response.build();
     }
 
@@ -330,8 +277,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         Log.infof("XLS creation time : %s", (System.currentTimeMillis() - start));
 
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.xls");
-        response.header("Content-Type", "application/vnd.ms-excel");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.xls");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_XLS);
         return response.build();
     }
 
@@ -353,8 +300,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         Log.infof("PDF creation time : %s", (System.currentTimeMillis() - start));
 
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-        response.header("Content-Disposition", "attachment;filename=jasper.pdf");
-        response.header("Content-Type", "application/pdf");
+        response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.pdf");
+        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_PDF);
         return response.build();
     }
 

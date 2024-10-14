@@ -520,30 +520,41 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
             // TODO - only compile if the report file has changed?
             for (ReportFileBuildItem item : reportFiles) {
-                try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
+                if (item.getFileName().endsWith("." + Constants.EXT_REPORT)) {
+                    try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
+                        Path outputFilePath = Path.of(outputDirectoryPath.toString(),
+                                item.getFileName().replace("." + Constants.EXT_REPORT,
+                                        "." + Constants.EXT_COMPILED));
+                        String outputFile = outputFilePath.toString();
+
+                        Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        JasperCompileManager.compileReportToStream(inputStream, outputStream);
+
+                        Log.debugf("Compiled size is %s", outputStream.size());
+
+                        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                            outputStream.writeTo(fos);
+                        }
+
+                        // allow dynamically compiled files to be processed
+                        compiledReportFileProducer.produce(new CompiledReportFileBuildItem(outputFilePath));
+                        compiledReportProducer
+                                .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
+                    } catch (JRException ex) {
+                        Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
+                        Log.debug(ex);
+                    }
+                } else if (item.getFileName().endsWith("." + Constants.EXT_STYLE)) {
                     Path outputFilePath = Path.of(outputDirectoryPath.toString(),
-                            item.getFileName().replace("." + Constants.EXT_REPORT,
-                                    "." + Constants.EXT_COMPILED));
+                            item.getFileName());
                     String outputFile = outputFilePath.toString();
-
-                    Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
-
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    JasperCompileManager.compileReportToStream(inputStream, outputStream);
-
-                    Log.debugf("Compiled size is %s", outputStream.size());
+                    Log.infof("Copying %s into %s", item.getPath().toString(), outputFile);
 
                     try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-                        outputStream.writeTo(fos);
+                        Files.copy(item.getPath(), fos);
                     }
-
-                    // allow dynamically compiled files to be processed
-                    compiledReportFileProducer.produce(new CompiledReportFileBuildItem(outputFilePath));
-                    compiledReportProducer
-                            .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
-                } catch (JRException ex) {
-                    Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
-                    Log.debug(ex);
                 }
             }
         } catch (IOException ex) {
