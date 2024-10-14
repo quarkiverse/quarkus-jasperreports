@@ -1,5 +1,7 @@
 package io.quarkiverse.jasperreports.deployment;
 
+import static org.jboss.jandex.AnnotationTarget.Kind.CLASS;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -17,6 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.jandex.AnnotationInstance;
+import org.jboss.jandex.AnnotationTarget;
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.IndexView;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.quarkiverse.jasperreports.JasperReportsBeanProducer;
 import io.quarkiverse.jasperreports.JasperReportsRecorder;
@@ -45,6 +53,7 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
+import io.quarkus.jackson.deployment.IgnoreJsonDeserializeClassBuildItem;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.compilers.ReportExpressionEvaluationData;
 import net.sf.jasperreports.engine.JRException;
@@ -63,6 +72,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
+    private static final DotName JSON_DESERIALIZE = DotName.createSimple(JsonDeserialize.class.getName());
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -111,11 +121,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      *
      * @param reflectiveClass The BuildProducer for ReflectiveClassBuildItem, used to register
      *        classes for reflection.
-     * @param combinedIndex The CombinedIndexBuildItem containing information about indexed classes.
      */
     @BuildStep
-    void registerForReflection(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
-            CombinedIndexBuildItem combinedIndex) {
+    void registerForReflection(CombinedIndexBuildItem combinedIndex, BuildProducer<ReflectiveClassBuildItem> reflectiveClass) {
         //@formatter:off
         final List<String> classNames = new ArrayList<>();
         // By Implementors: jasper interfaces/abstract classes that are created with Class.forName
@@ -131,6 +139,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistry.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName()));
         classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.engine.JRAbstractExporter.class.getName()));
+        classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.dataadapters.AbstractDataAdapter.class.getName()));
 
         // By Package (utilities etc)
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.compilers.ReportExpressionEvaluationData.class.getPackageName()));
@@ -154,6 +163,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.jackson.util.JacksonUtil.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.parts.PartComponentsExtensionsRegistryFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.repo.DefaultRepositoryExtensionsRegistryFactory.class.getPackageName()));
@@ -228,11 +238,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * Registers classes and packages that need to be initialized at runtime.
      *
      * @param runtimeInitializedPackages Producer for runtime initialized packages
-     * @param combinedIndex Combined index of classes in the application
      */
     @BuildStep
-    void runtimeInitializedClasses(BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages,
-            CombinedIndexBuildItem combinedIndex) {
+    void runtimeInitializedClasses(CombinedIndexBuildItem combinedIndex,
+            BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         List<String> classes = collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName());
         classes.addAll(Stream.of("javax.swing",
@@ -362,11 +371,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * packages and registers them as proxy definitions for the native image build process.
      *
      * @param proxyDefinitions The producer for NativeImageProxyDefinitionBuildItem
-     * @param combinedIndex The combined index of classes for the build
      */
     @BuildStep
-    void registerJasperReportsProxies(BuildProducer<NativeImageProxyDefinitionBuildItem> proxyDefinitions,
-            CombinedIndexBuildItem combinedIndex) {
+    void registerJasperReportsProxies(CombinedIndexBuildItem combinedIndex,
+            BuildProducer<NativeImageProxyDefinitionBuildItem> proxyDefinitions) {
         // Register the proxy for exporters
         List<String> classes = new ArrayList<>(collectInterfacesInPackage(combinedIndex,
                 net.sf.jasperreports.export.CsvExporterConfiguration.class.getPackageName()));
@@ -390,6 +398,34 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("**/fonts/dejavu/**");
         nativeImageResourcePatterns.produce(builder.build());
+    }
+
+    /**
+     * A build step that processes the `@JsonDeserialize` annotations in the application,
+     * specifically targeting classes within the `net.sf.jasperreports` package.
+     * Any class annotated with `@JsonDeserialize` that belongs to this package will be ignored
+     * for JSON deserialization purposes by producing an {@link IgnoreJsonDeserializeClassBuildItem}.
+     *
+     * @param combinedIndex The build item that contains the index of all annotations and classes in the application.
+     * @param ignoredJsonDeserializationClasses The build producer used to generate {@link IgnoreJsonDeserializeClassBuildItem}
+     *        instances for classes that should be ignored for deserialization.
+     */
+    @BuildStep
+    void ignoreJacksonDeserialize(CombinedIndexBuildItem combinedIndex,
+            BuildProducer<IgnoreJsonDeserializeClassBuildItem> ignoredJsonDeserializationClasses) {
+        IndexView index = combinedIndex.getIndex();
+
+        // handle the various @JsonDeserialize cases
+        for (AnnotationInstance deserializeInstance : index.getAnnotations(JSON_DESERIALIZE)) {
+            AnnotationTarget annotationTarget = deserializeInstance.target();
+            if (CLASS.equals(annotationTarget.kind())) {
+                DotName dotName = annotationTarget.asClass().name();
+                if (dotName.packagePrefix().startsWith("net.sf.jasperreports")) {
+                    Log.debugf("Ignore @JsonDeserialize: %s", dotName);
+                    ignoredJsonDeserializationClasses.produce(new IgnoreJsonDeserializeClassBuildItem(dotName));
+                }
+            }
+        }
     }
 
     /**
