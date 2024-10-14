@@ -45,7 +45,6 @@ import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperPrintManager;
-import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
@@ -73,8 +72,6 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
 
-        ReportContext reportContext = new SimpleReportContext();
-
         Map<String, Object> params = new HashMap<>();
         Document document = JRXmlUtils.parse(JRLoader.getLocationInputStream("data/northwind.xml"));
         params.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
@@ -82,7 +79,7 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         params.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "#,##0.##");
         params.put(JRXPathQueryExecuterFactory.XML_LOCALE, Locale.ENGLISH);
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, reportContext);
+        params.put(JRParameter.REPORT_CONTEXT, new SimpleReportContext());
 
         JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params);
 

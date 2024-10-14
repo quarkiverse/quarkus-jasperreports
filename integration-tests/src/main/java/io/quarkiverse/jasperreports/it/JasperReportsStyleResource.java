@@ -52,7 +52,6 @@ import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -84,7 +83,6 @@ public class JasperReportsStyleResource extends AbstractJasperResource {
     @GET
     public Response get(@Context HttpHeaders headers,
             @DefaultValue("false") @QueryParam("embedded") boolean embedded) throws JRException {
-        final ReportContext reportContext = new SimpleReportContext();
 
         final Map<String, Object> params = new HashMap<>();
         Document document = JRXmlUtils.parse(JRLoader.getLocationInputStream("data/northwind.xml"));
@@ -93,7 +91,7 @@ public class JasperReportsStyleResource extends AbstractJasperResource {
         params.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "#,##0.##");
         params.put(JRXPathQueryExecuterFactory.XML_LOCALE, Locale.ENGLISH);
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, reportContext);
+        params.put(JRParameter.REPORT_CONTEXT, new SimpleReportContext());
 
         final long start = System.currentTimeMillis();
         final JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params);
