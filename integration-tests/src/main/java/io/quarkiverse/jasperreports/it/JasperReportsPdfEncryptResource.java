@@ -22,6 +22,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -80,8 +81,8 @@ public class JasperReportsPdfEncryptResource extends AbstractJasperResource {
             Log.infof("PDF creation time : %s", (System.currentTimeMillis() - start));
 
             final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-            response.header("Content-Disposition", "attachment;filename=encrypted.pdf");
-            response.header("Content-Type", "application/pdf");
+            response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=encrypted.pdf");
+            response.header(HttpHeaders.CONTENT_TYPE, "application/pdf");
             return response.build();
         } catch (final JRException ex) {
             Log.error("Unexpected DB Error", ex);

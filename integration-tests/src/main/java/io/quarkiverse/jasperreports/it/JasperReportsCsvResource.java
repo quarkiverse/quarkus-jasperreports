@@ -26,6 +26,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
@@ -77,8 +78,8 @@ public class JasperReportsCsvResource extends AbstractJasperResource {
 
             Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));
             final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
-            response.header("Content-Disposition", "attachment;filename=csvdatasource.csv");
-            response.header("Content-Type", "text/csv");
+            response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=csvdatasource.csv");
+            response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.TEXT_CSV);
             return response.build();
         } catch (final JRException ex) {
             Log.error("Unexpected DB Error", ex);
