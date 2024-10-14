@@ -22,8 +22,7 @@ class JaxenProcessor extends AbstractJandexProcessor {
 
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
-        // IMPORTANT: this must not be indexed, or it then requires Dom4J, JDOM, and XOM on classpath.
-        // index.produce(new IndexDependencyBuildItem("jaxen", "jaxen"));
+        index.produce(new IndexDependencyBuildItem("jaxen", "jaxen"));
     }
 
     @BuildStep
