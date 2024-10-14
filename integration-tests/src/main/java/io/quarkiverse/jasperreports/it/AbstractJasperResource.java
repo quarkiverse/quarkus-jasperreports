@@ -17,6 +17,7 @@ import net.sf.jasperreports.export.SimpleOdsReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXmlExporterOutput;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 
 public abstract class AbstractJasperResource {
 
@@ -87,6 +88,17 @@ public abstract class AbstractJasperResource {
         SimpleOdsReportConfiguration configuration = new SimpleOdsReportConfiguration();
         configuration.setOnePagePerSheet(true);
         exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+        return outputStream;
+    }
+
+    protected ByteArrayOutputStream exportPdf(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JRPdfExporter exporter = new JRPdfExporter();
+
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
         exporter.exportReport();
         return outputStream;
