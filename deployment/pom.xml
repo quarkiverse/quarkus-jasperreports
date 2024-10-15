@@ -26,6 +26,10 @@
             <artifactId>quarkus-poi-deployment</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkiverse.openpdf</groupId>
+            <artifactId>quarkus-openpdf-deployment</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-vertx-http-dev-ui-spi</artifactId>
         </dependency>
