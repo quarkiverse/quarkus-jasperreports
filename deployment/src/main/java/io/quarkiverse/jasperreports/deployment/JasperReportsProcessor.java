@@ -162,12 +162,14 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.governors.GovernorExtensionsRegistryFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.jackson.util.JacksonUtil.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.parts.PartComponentsExtensionsRegistryFactory.class.getPackageName()));
-        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
-        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.renderers.AbstractSvgDataToGraphics2DRenderer.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.renderers.util.SvgFontProcessor.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.repo.DefaultRepositoryExtensionsRegistryFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.util.JsonLoader.class.getPackageName()));
+
+        // PDF
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
 
         // basic Java classes found in reports for serialization
         classNames.add("java.util.Collections$CheckedCollection");
