@@ -11,6 +11,9 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 import net.sf.jasperreports.engine.JRRuntimeException;
 
+/**
+ * OpenPDF between 1.X and 2.X renamed getRadioField() to getKidField().
+ */
 @TargetClass(className = "net.sf.jasperreports.pdf.classic.ClassicRadioCheck")
 final class ClassicRadioCheckSubstitution {
 
@@ -22,12 +25,10 @@ final class ClassicRadioCheckSubstitution {
     @Substitute
     public void addToGroup() throws IOException {
         PdfFormField radioGroup = this.pdfProducer.getRadioGroup(this.radioCheckField);
-
         try {
             radioGroup.addKid(this.radioCheckField.getKidField());
         } catch (DocumentException var3) {
-            DocumentException e = var3;
-            throw new JRRuntimeException(e);
+            throw new JRRuntimeException(var3);
         }
     }
 
