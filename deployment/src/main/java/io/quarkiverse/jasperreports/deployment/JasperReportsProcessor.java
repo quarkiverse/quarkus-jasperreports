@@ -107,7 +107,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-data-adapters"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-excel-poi"));
-        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jaxen"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-json"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf"));
@@ -301,10 +300,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
         // Register resource patterns for OOXML export and font icons
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("**/export/ooxml/docx/**");
-        builder.includeGlob("**/export/ooxml/pptx/**");
-        builder.includeGlob("**/export/ooxml/xlsx/**");
-        builder.includeGlob("**/sf/jasperreports/fonts/icons/**");
+        builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/docx/**");
+        builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/pptx/**");
+        builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/xlsx/**");
+        builder.includeGlob("net/sf/jasperreports/fonts/icons/**");
         nativeImageResourcePatterns.produce(builder.build());
     }
 

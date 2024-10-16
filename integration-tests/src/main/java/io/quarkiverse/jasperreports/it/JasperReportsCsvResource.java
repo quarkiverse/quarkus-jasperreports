@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ServerErrorException;
@@ -35,6 +36,7 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -46,7 +48,10 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ApplicationScoped
 public class JasperReportsCsvResource extends AbstractJasperResource {
 
-    private static final String TEST_DS_NAME = "CsvDataSourceReport";
+    private static final String TEST_REPORT_NAME = "CsvDataSourceReport.jasper";
+
+    @Inject
+    ReadOnlyStreamingService repo;
 
     @GET
     @Path("ds")
@@ -68,12 +73,8 @@ public class JasperReportsCsvResource extends AbstractJasperResource {
             //				dataSource.setUseFirstRowAsHeader(true);
             dataSource.setColumnNames(columnNames);
 
-            JasperFillManager.fillReportToFile("target/classes/jasperreports/" + TEST_DS_NAME + ".jasper", parameters,
-                    dataSource);
-            Log.infof("Report : CsvDataSourceReport.jasper. Filling time : %d", (System.currentTimeMillis() - start));
-
-            JasperPrint jasperPrint = (JasperPrint) JRLoader
-                    .loadObject(JRLoader.getLocationInputStream("target/classes/jasperreports/" + TEST_DS_NAME + ".jrprint"));
+            JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME,
+                    parameters, dataSource);
             ByteArrayOutputStream outputStream = exportCsv(jasperPrint);
 
             Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));

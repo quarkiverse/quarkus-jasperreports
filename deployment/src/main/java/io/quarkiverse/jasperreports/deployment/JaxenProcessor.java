@@ -22,6 +22,7 @@ class JaxenProcessor extends AbstractJandexProcessor {
 
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jaxen"));
         index.produce(new IndexDependencyBuildItem("jaxen", "jaxen"));
     }
 

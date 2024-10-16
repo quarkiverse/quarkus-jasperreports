@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -35,12 +36,13 @@ import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
+import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import io.quarkus.logging.Log;
+import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.json.query.JsonQueryExecuterFactory;
 
 @Path("/jasper/json/")
@@ -48,8 +50,11 @@ import net.sf.jasperreports.json.query.JsonQueryExecuterFactory;
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class JasperReportsJsonResource extends AbstractJasperResource {
 
-    private static final String TEST_JSON_REPORT_NAME = "JsonCustomersReport";
-    private static final String TEST_JSONQL_REPORT_NAME = "NorthwindOrdersReport";
+    private static final String TEST_JSON_REPORT_NAME = "JsonCustomersReport.jasper";
+    private static final String TEST_JSONQL_REPORT_NAME = "NorthwindOrdersReport.jasper";
+
+    @Inject
+    ReadOnlyStreamingService repo;
 
     @GET
     @Path("ds")
@@ -73,14 +78,8 @@ public class JasperReportsJsonResource extends AbstractJasperResource {
     protected Response fillToCsv(String reportFile, Map<String, Object> params) {
         try {
             long start = System.currentTimeMillis();
-
-            JasperFillManager.fillReportToFile("target/classes/jasperreports/" + reportFile + ".jasper", params);
-            Log.infof("Report : %s.jasper. Filling time : %d", reportFile, (System.currentTimeMillis() - start));
-
-            JasperPrint jasperPrint = (JasperPrint) JRLoader
-                    .loadObject(
-                            JRLoader.getLocationInputStream(
-                                    "target/classes/jasperreports/" + reportFile + ".jrprint"));
+            JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(reportFile,
+                    params, new JREmptyDataSource());
             ByteArrayOutputStream outputStream = exportCsv(jasperPrint);
 
             Log.infof("CSV creation time : %s", (System.currentTimeMillis() - start));

@@ -63,6 +63,21 @@ public byte[] text() throws JRException, SQLException {
 }
 ----
 
+== Read-Only Streaming Service
+
+This extension offers an injectable JasperReports repository capable of managing all the resources required for a report, including referenced sub-reports. Just inject the `ReadOnlyStreamingService` repository and use it with the fill manager to generate the report.
+
+[source,java]
+----
+    @Inject
+    ReadOnlyStreamingService jasperService;
+
+    public JasperPrint fill() throws JRException {
+        Map<String, Object> params = new HashMap<>();
+        return JasperFillManager.getInstance(jasperService.getContext()).fillFromRepo("MyReport.jasper", params);
+    }
+----
+
 
 == Native Container
 
@@ -92,22 +107,6 @@ CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
 ----
 
 CAUTION: Make sure `.dockerignore` does not exclude `.so` files!
-
-== Read-Only Streaming Service
-
-A JasperReports repository can handle loading all of the resources a report needs, including any referenced subreports.  Simply inject the repository,
-then use it with the fill manager to produce the report.
-
-[source,java]
-----
-    @Inject
-    ReadOnlyStreamingService repo;
-
-    public JasperPrint fill() throws JRException {
-        Map<String, Object> params = new HashMap<>();
-        return JasperFillManager.getInstance(repo.getContext()).fillFromRepo("MyReport.jasper", params);
-    }
-----
 
 [[extension-configuration-reference]]
 == Extension Configuration Reference

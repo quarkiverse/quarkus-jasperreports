@@ -8,6 +8,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.logging.Log;
@@ -16,8 +17,15 @@ public class BatikProcessor extends AbstractJandexProcessor {
 
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-anim"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-awt-util"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-bridge"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-constants"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-css"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-dom"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-gvt"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-svg-dom"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-util"));
     }
 
     /**
@@ -56,12 +64,22 @@ public class BatikProcessor extends AbstractJandexProcessor {
     @BuildStep
     void registerBatikForReflection(BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             CombinedIndexBuildItem combinedIndex) {
-        final List<String> classNames = new ArrayList<>(
-                collectClassesInPackage(combinedIndex, org.apache.batik.gvt.font.AWTGVTFont.class.getPackageName()));
+        final List<String> classNames = new ArrayList<>();
+        classNames.addAll(collectImplementors(combinedIndex, org.apache.batik.css.parser.ExtendedParser.class.getName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, org.apache.batik.gvt.font.AWTGVTFont.class.getPackageName()));
 
         Log.debugf("Batik Reflection: %s", classNames);
         // methods and fields
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder(classNames.toArray(new String[0])).methods().fields().build());
     }
+
+    @BuildStep
+    void registerBatikResources(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
+        // Register all message bundles
+        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
+        builder.includeGlob("**/apache/batik/**/resources/**");
+        nativeImageResourcePatterns.produce(builder.build());
+    }
+
 }
