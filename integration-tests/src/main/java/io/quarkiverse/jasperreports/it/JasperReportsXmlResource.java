@@ -17,6 +17,7 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -48,14 +49,12 @@ import net.sf.jasperreports.engine.JasperPrintManager;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.query.JRXPathQueryExecuterFactory;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.engine.util.JRXmlUtils;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
-import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.poi.export.JRXlsExporter;
 
@@ -69,6 +68,8 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     @Inject
     ReadOnlyStreamingService repo;
 
+    final SimpleReportContext reportContext = new SimpleReportContext();
+
     private JasperPrint fill() throws JRException {
         long start = System.currentTimeMillis();
 
@@ -79,7 +80,7 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
         params.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "#,##0.##");
         params.put(JRXPathQueryExecuterFactory.XML_LOCALE, Locale.ENGLISH);
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, new SimpleReportContext());
+        params.put(JRParameter.REPORT_CONTEXT, reportContext);
 
         JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params);
 
@@ -119,10 +120,10 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     @GET
     @Path("html")
     @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
-    public Response html() throws JRException {
+    public Response html() throws JRException, IOException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-        ByteArrayOutputStream outputStream = exportHtml(jasperPrint);
+        ByteArrayOutputStream outputStream = exportHtml(jasperPrint, reportContext);
         Log.infof("HTML creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
         response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.html");
@@ -200,22 +201,11 @@ public class JasperReportsXmlResource extends AbstractJasperResource {
     public Response xlsx() throws JRException {
         long start = System.currentTimeMillis();
         JasperPrint jasperPrint = fill();
-
-        JRXlsxExporter exporter = new JRXlsxExporter();
-
-        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
-        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
-        configuration.setOnePagePerSheet(true);
-        exporter.setConfiguration(configuration);
-
-        exporter.exportReport();
-
+        ByteArrayOutputStream outputStream = exportXlsx(jasperPrint);
         Log.infof("XLSX creation time : %s", (System.currentTimeMillis() - start));
         final Response.ResponseBuilder response = Response.ok(outputStream.toByteArray());
         response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.xlsx");
-        response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_XLSX);
+        response.type(ExtendedMediaType.APPLICATION_XLSX);
         return response.build();
     }
 
