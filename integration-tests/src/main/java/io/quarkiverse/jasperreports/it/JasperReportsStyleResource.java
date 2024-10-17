@@ -84,6 +84,7 @@ public class JasperReportsStyleResource extends AbstractJasperResource {
     public Response get(@Context HttpHeaders headers,
             @DefaultValue("false") @QueryParam("embedded") boolean embedded) throws JRException {
 
+        final SimpleReportContext reportContext = new SimpleReportContext();
         final Map<String, Object> params = new HashMap<>();
         Document document = JRXmlUtils.parse(JRLoader.getLocationInputStream("data/northwind.xml"));
         params.put(JRXPathQueryExecuterFactory.PARAMETER_XML_DATA_DOCUMENT, document);
@@ -91,7 +92,7 @@ public class JasperReportsStyleResource extends AbstractJasperResource {
         params.put(JRXPathQueryExecuterFactory.XML_NUMBER_PATTERN, "#,##0.##");
         params.put(JRXPathQueryExecuterFactory.XML_LOCALE, Locale.ENGLISH);
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, new SimpleReportContext());
+        params.put(JRParameter.REPORT_CONTEXT, reportContext);
 
         final long start = System.currentTimeMillis();
         final JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params);
@@ -114,7 +115,7 @@ public class JasperReportsStyleResource extends AbstractJasperResource {
                 response.type(MediaType.APPLICATION_XML);
             }
             case TEXT_HTML -> {
-                ByteArrayOutputStream outputStream = exportHtml(jasperPrint);
+                ByteArrayOutputStream outputStream = exportHtml(jasperPrint, reportContext);
                 Log.infof("HTML creation time : %s", (System.currentTimeMillis() - start));
                 response.entity(outputStream.toByteArray());
                 response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=jasper.html");
