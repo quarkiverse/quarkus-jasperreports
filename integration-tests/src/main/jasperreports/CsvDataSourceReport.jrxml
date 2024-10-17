@@ -10,7 +10,7 @@
 	<field name="address" class="java.lang.String"/>
 	<field name="city" class="java.lang.String"/>
 	<field name="state" class="java.lang.String"/>
-	<sortField name="city" order="Descending"/>
+	<sortField name="city" order="Ascending"/>
 	<sortField name="name"/>
 	<variable name="CityNumber" incrementType="Group" calculation="Count" incrementGroup="CityGroup" class="java.lang.Integer">
 		<expression><![CDATA[Boolean.TRUE]]></expression>

@@ -8,6 +8,7 @@ import static io.quarkiverse.jasperreports.config.Constants.EXT_STYLE;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
+import java.util.StringJoiner;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -50,4 +51,10 @@ public abstract class AbstractReportFileBuildItem extends MultiBuildItem {
         };
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ", AbstractReportFileBuildItem.class.getSimpleName() + "[", "]")
+                .add("path=" + path)
+                .toString();
+    }
 }
