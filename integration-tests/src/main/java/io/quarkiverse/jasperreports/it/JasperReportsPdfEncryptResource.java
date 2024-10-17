@@ -17,8 +17,10 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.ServerErrorException;
@@ -33,13 +35,13 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
 import com.lowagie.text.pdf.PdfWriter;
 
+import io.quarkiverse.jasperreports.repository.ReadOnlyStreamingService;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.pdf.JRPdfExporter;
@@ -49,7 +51,10 @@ import net.sf.jasperreports.pdf.SimplePdfExporterConfiguration;
 @ApplicationScoped
 public class JasperReportsPdfEncryptResource extends AbstractJasperResource {
 
-    private static final String TEST_REPORT_NAME = "PdfEncryptReport";
+    private static final String TEST_REPORT_NAME = "PdfEncryptReport.jasper";
+
+    @Inject
+    ReadOnlyStreamingService repo;
 
     @GET
     @Path("encrypt")
@@ -57,13 +62,9 @@ public class JasperReportsPdfEncryptResource extends AbstractJasperResource {
     public Response encrypt() {
         try {
             long start = System.currentTimeMillis();
-            JasperFillManager.fillReportToFile("target/classes/jasperreports/" + TEST_REPORT_NAME + ".jasper", null,
-                    new JREmptyDataSource());
+            JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME,
+                    new HashMap<>(), new JREmptyDataSource());
             Log.infof("Report : %s.jasper. Filling time : %d", TEST_REPORT_NAME, (System.currentTimeMillis() - start));
-
-            JasperPrint jasperPrint = (JasperPrint) JRLoader
-                    .loadObject(
-                            JRLoader.getLocationInputStream("target/classes/jasperreports/" + TEST_REPORT_NAME + ".jrprint"));
             JRPdfExporter exporter = new JRPdfExporter(DefaultJasperReportsContext.getInstance());
             SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
             configuration.setEncrypted(true);
