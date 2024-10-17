@@ -298,7 +298,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("metadata_messages-defaults"));
 
-        // Register resource patterns for OOXML export and font icons
+        // Register resource patterns for POI export and font icons
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/docx/**");
         builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/pptx/**");
@@ -515,11 +515,12 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep(onlyIf = IsDevelopment.class)
     void watchReportFiles(BuildProducer<HotDeploymentWatchedFileBuildItem> watchedPaths,
             List<ReportFileBuildItem> reportFiles) {
-
-        // Print the found files
         reportFiles.forEach((file) -> {
-            Log.tracef("Watching report file %s", file);
-            watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.getFileName()));
+
+            if (Files.isRegularFile(file.getPath())) {
+                Log.debugf("Watching report file %s", file);
+                watchedPaths.produce(new HotDeploymentWatchedFileBuildItem(file.getPath().toString()));
+            }
         });
     }
 
@@ -531,13 +532,11 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      *
      * @param config The ReportConfig containing configuration settings for report compilation.
      * @param reportFiles A list of ReportFileBuildItem representing the report files to be compiled.
-     * @param compiledReportProducer A producer for GeneratedClassBuildItem to handle compiled report classes.
      * @param compiledReportFileProducer A producer for CompiledReportFileBuildItem to handle compiled report files.
      * @param outputTarget The OutputTargetBuildItem containing information about the build output directory.
      */
     @BuildStep
     void compileReports(ReportBuildTimeConfig config, List<ReportFileBuildItem> reportFiles,
-            BuildProducer<GeneratedClassBuildItem> compiledReportProducer,
             BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer,
             OutputTargetBuildItem outputTarget) {
 
@@ -577,8 +576,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
                         // allow dynamically compiled files to be processed
                         compiledReportFileProducer.produce(new CompiledReportFileBuildItem(outputFilePath));
-                        compiledReportProducer
-                                .produce(new GeneratedClassBuildItem(true, item.getFileName(), outputStream.toByteArray()));
                     } catch (JRException ex) {
                         Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
                         Log.debug(ex);
