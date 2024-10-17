@@ -21,9 +21,10 @@ For instance, with Maven, add the following dependency to your POM file:
 
 == Compiling Reports
 
-Jasper does not recommend compiling `.jrxml` reports on the fly, but if necessary, it can be done only in JVM mode. This approach will NOT work in native mode, as there is no Java compiler available and the required classes for compilation are missing. The best practice is to use precompiled `.jasper` files instead.
+JasperReports advises **against** compiling `.jrxml` reports on the fly. However, if necessary, this can only be done in JVM mode, as native mode does not support Java compilation due to the absence of a Java compiler and the required classes for compilation. The recommended best practice is to use precompiled `.jasper` files.
 
-CAUTION: Compiling `.jrxml` files will not work in Native mode!
+This extension provides built-in functionality to assist with this. If you place your `.jrxml` files in the `quarkus.jasperreports.build.source` directory, they will be automatically compiled into `.jasper` files in the `quarkus.jasperreports.build.dest` directory. In `DEV` mode, it will monitor changes in the `.jrxml` files and recompile them, enhancing developer productivity and joy!
+
 
 == Database Datasource
 
