@@ -3,20 +3,22 @@ package io.quarkiverse.jasperreports.it;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
-import org.jboss.logging.Logger;
-
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
+import lombok.Getter;
+import lombok.extern.jbosslog.JBossLog;
 import net.sf.jasperreports.engine.export.FileHtmlResourceHandler;
 
 @ApplicationScoped
+@Getter
+@JBossLog
 public class Application {
-
-    private static final Logger LOG = Logger.getLogger(Application.class);
 
     private FileHtmlResourceHandler imageHandler;
 
@@ -27,28 +29,21 @@ public class Application {
         imageHandler = new FileHtmlResourceHandler(tempFolder.toFile(), "/images/{0}");
     }
 
-    void onStop(@Observes ShutdownEvent evt) throws IOException {
-        if (null != tempFolder) {
-            Files.walk(tempFolder).forEach((p) -> {
-                try {
-                    Files.delete(p);
-                } catch (IOException ex) {
-                    LOG.warn(ex.getMessage());
-                }
-            });
-
-            if (Files.exists(tempFolder)) {
-                Files.delete(tempFolder);
+    void onStop(@Observes ShutdownEvent evt) {
+        if (tempFolder != null && Files.exists(tempFolder)) {
+            try (Stream<Path> paths = Files.walk(tempFolder)) {
+                paths.sorted(Comparator.reverseOrder()) // Delete files before directories
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                            } catch (IOException ex) {
+                                log.warn("Failed to delete: " + p, ex);
+                            }
+                        });
+            } catch (IOException e) {
+                log.error("Error occurred while deleting temp folder: " + tempFolder, e);
             }
         }
-    }
-
-    public FileHtmlResourceHandler getImageHandler() {
-        return imageHandler;
-    }
-
-    public Path getTempFolder() {
-        return tempFolder;
     }
 
 }

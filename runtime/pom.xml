@@ -103,11 +103,6 @@
             <version>2.19.0</version>
         </dependency>
         <dependency>
-            <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>1.7.15</version>
-        </dependency>
-        <dependency>
             <groupId>com.ibm.icu</groupId>
             <artifactId>icu4j</artifactId>
             <version>75.1</version>
@@ -116,11 +111,6 @@
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
             <version>12.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.javaparser</groupId>
-            <artifactId>javaparser-core</artifactId>
-            <version>3.26.2</version>
         </dependency>
         <dependency>
             <groupId>net.tascalate.javaflow</groupId>

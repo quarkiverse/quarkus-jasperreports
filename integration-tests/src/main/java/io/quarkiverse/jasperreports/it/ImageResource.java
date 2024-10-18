@@ -13,13 +13,12 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 
-import org.jboss.logging.Logger;
+import lombok.extern.jbosslog.JBossLog;
 
 @Path("images")
 @RequestScoped
+@JBossLog
 public class ImageResource {
-
-    private static final Logger LOG = Logger.getLogger(ImageResource.class);
 
     @Inject
     Application app;
@@ -32,7 +31,7 @@ public class ImageResource {
         if (Files.exists(path) && Files.isRegularFile(path) && Files.isReadable(path)) {
             final String contentType = Files.probeContentType(path);
 
-            LOG.debugf("Loading file %s of type %s", path.toString(), contentType);
+            log.debugf("Loading file %s of type %s", path.toString(), contentType);
 
             try (final InputStream is = Files.newInputStream(path)) {
                 return Response.ok(is.readAllBytes(), contentType).build();
