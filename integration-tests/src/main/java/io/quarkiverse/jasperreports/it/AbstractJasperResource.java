@@ -1,7 +1,6 @@
 package io.quarkiverse.jasperreports.it;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 
 import jakarta.inject.Inject;
 
@@ -55,7 +54,7 @@ public abstract class AbstractJasperResource {
     }
 
     protected ByteArrayOutputStream exportHtml(JasperPrint jasperPrint, ReportContext reportContext)
-            throws JRException, IOException {
+            throws JRException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         HtmlExporter exporter = new HtmlExporter(DefaultJasperReportsContext.getInstance());
 

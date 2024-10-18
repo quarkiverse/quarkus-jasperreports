@@ -5,7 +5,6 @@ import static io.quarkiverse.jasperreports.it.ExtendedMediaType.APPLICATION_XLSX
 import static jakarta.ws.rs.core.MediaType.TEXT_HTML;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -46,16 +45,10 @@ public class JasperReportsImageResource extends AbstractJasperResource {
     @APIResponse(responseCode = "200", description = "Fetch an HTML report with images", content = @Content(mediaType = TEXT_HTML))
     @GET
     @Path("html")
-    public Response getHtml() throws JRException, IOException {
-        final SimpleReportContext reportContext = new SimpleReportContext();
-        final Map<String, Object> params = new HashMap<>();
-        params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, reportContext);
-        params.put("QUARKUS_URL", uriInfo.getBaseUri().toString());
-
+    public Response getHtml() throws JRException {
         final long start = System.currentTimeMillis();
-        final JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params,
-                new JREmptyDataSource());
+        final SimpleReportContext reportContext = new SimpleReportContext();
+        final JasperPrint jasperPrint = print(reportContext);
 
         final Response.ResponseBuilder response = Response.ok();
         ByteArrayOutputStream outputStream = exportHtml(jasperPrint, reportContext);
@@ -70,15 +63,8 @@ public class JasperReportsImageResource extends AbstractJasperResource {
     @GET
     @Path("pdf")
     public Response getPdf() throws JRException {
-        final SimpleReportContext reportContext = new SimpleReportContext();
-        final Map<String, Object> params = new HashMap<>();
-        params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, reportContext);
-        params.put("QUARKUS_URL", uriInfo.getBaseUri().toString());
-
         final long start = System.currentTimeMillis();
-        final JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params,
-                new JREmptyDataSource());
+        final JasperPrint jasperPrint = print(new SimpleReportContext());
 
         final Response.ResponseBuilder response = Response.ok();
         ByteArrayOutputStream outputStream = exportPdf(jasperPrint);
@@ -94,15 +80,8 @@ public class JasperReportsImageResource extends AbstractJasperResource {
     @GET
     @Path("xlsx")
     public Response getXlsx() throws JRException {
-        final SimpleReportContext reportContext = new SimpleReportContext();
-        final Map<String, Object> params = new HashMap<>();
-        params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        params.put(JRParameter.REPORT_CONTEXT, reportContext);
-        params.put("QUARKUS_URL", uriInfo.getBaseUri().toString());
-
         final long start = System.currentTimeMillis();
-        final JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params,
-                new JREmptyDataSource());
+        final JasperPrint jasperPrint = print(new SimpleReportContext());
 
         final Response.ResponseBuilder response = Response.ok();
         ByteArrayOutputStream outputStream = exportXlsx(jasperPrint);
@@ -114,4 +93,13 @@ public class JasperReportsImageResource extends AbstractJasperResource {
         return response.build();
     }
 
+    private JasperPrint print(SimpleReportContext reportContext) throws JRException {
+        final Map<String, Object> params = new HashMap<>();
+        params.put(JRParameter.REPORT_LOCALE, Locale.US);
+        params.put(JRParameter.REPORT_CONTEXT, reportContext);
+        params.put("QUARKUS_URL", uriInfo.getBaseUri().toString());
+
+        return JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params,
+                new JREmptyDataSource());
+    }
 }
