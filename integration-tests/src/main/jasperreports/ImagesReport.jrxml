@@ -1,0 +1,31 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0  -->
+<jasperReport name="ImagesReport" language="java" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="7ed005ff-df0a-4cda-8daa-ffa0721c8e4f">
+	<parameter name="QUARKUS_URL" class="java.lang.String">
+		<defaultValueExpression><![CDATA["http://localhost:8080"]]></defaultValueExpression>
+	</parameter>
+	<title height="530" splitType="Stretch">
+		<element kind="staticText" uuid="465ce796-bd9a-432d-b0fe-70672e692e72" x="0" y="0" width="572" height="30" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Images]]></text>
+		</element>
+		<element kind="staticText" uuid="fa677fd0-4085-4b99-9dab-2262569dfb15" x="0" y="40" width="280" height="50" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Relative to report]]></text>
+		</element>
+		<element kind="image" uuid="63ad371f-62a0-4324-bae6-4088e6b359bd" x="280" y="40" width="50" height="50" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["images/jasperreports.svg"]]></expression>
+		</element>
+		<element kind="staticText" uuid="ae851b5b-8475-43bb-9d82-9e2d020c7d41" x="0" y="100" width="280" height="50" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[URL to localhost, gif]]></text>
+		</element>
+		<element kind="image" uuid="72c0a16f-5b16-4a1d-9132-00387f80b179" x="280" y="100" width="50" height="50" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA[$P{QUARKUS_URL} + "/jasperreports.gif"]]></expression>
+		</element>
+		<element kind="staticText" uuid="f8eb2a65-ed08-4dd4-9d93-da923703a386" x="0" y="160" width="280" height="50" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[URL to remote server]]></text>
+		</element>
+		<element kind="image" uuid="183403c6-1aef-410a-b6f1-5767241f28bf" x="280" y="160" width="50" height="50" linkType="Reference" linkTarget="Blank" hImageAlign="Center" vImageAlign="Middle">
+			<expression><![CDATA["https://raw.githubusercontent.com/quarkiverse/quarkus-jasperreports/refs/heads/main/docs/modules/ROOT/assets/images/jasperreports.svg"]]></expression>
+			<hyperlinkReferenceExpression><![CDATA["https://raw.githubusercontent.com/quarkiverse/quarkus-jasperreports/refs/heads/main/docs/modules/ROOT/assets/images/jasperreports.svg"]]></hyperlinkReferenceExpression>
+			<hyperlinkTooltipExpression><![CDATA["Image from GitHub"]]></hyperlinkTooltipExpression>
+		</element>
+	</title>
+</jasperReport>
