@@ -31,7 +31,12 @@ public class BarcodeProcessor extends AbstractJandexProcessor {
         //@formatter:off
         List<String> classes = new ArrayList<>(
                 Stream.of(org.krysalis.barcode4j.output.bitmap.BitmapEncoderRegistry.class.getName(),
-                        net.sf.jasperreports.barcode4j.BarcodeUtils.class.getName()
+                        net.sf.jasperreports.barcode4j.BarcodeUtils.class.getName(),
+                        "javax.swing.plaf.metal",
+                        "javax.swing.text.html",
+                        "javax.swing.text.rtf",
+                        "sun.datatransfer",
+                        "sun.swing"
                ).toList());
         //@formatter:on
         Log.debugf("Barcode4J Runtime: %s", classes);
