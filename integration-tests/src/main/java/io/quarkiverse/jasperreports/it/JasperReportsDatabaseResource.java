@@ -34,6 +34,8 @@ import net.sf.jasperreports.engine.JRException;
 @ApplicationScoped
 public class JasperReportsDatabaseResource extends AbstractJasperResource {
 
+    private static final String TEST_REPORT_NAME = "DbDatasourceMain.jasper";
+
     @Inject
     DatabaseReportService databaseReportService;
 
@@ -48,7 +50,7 @@ public class JasperReportsDatabaseResource extends AbstractJasperResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String text() {
         try {
-            return new String(databaseReportService.text());
+            return new String(databaseReportService.text(TEST_REPORT_NAME));
         } catch (final JRException | SQLException ex) {
             Log.error("Unexpected DB Error", ex);
             throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR, ex);

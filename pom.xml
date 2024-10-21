@@ -71,6 +71,21 @@
             </dependency>
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-chart-customizers</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-chart-themes</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-charts</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-jdt</artifactId>
                 <version>${version.jasperreports}</version>
             </dependency>
