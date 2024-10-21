@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<fontFamilies>
+
+    <fontFamily name="Lobster Two">
+        <normal>
+            <ttf>fonts/lobstertwo/LobsterTwo-Regular.otf</ttf>
+            <pdf>fonts/lobstertwo/LobsterTwo-Regular.otf</pdf>
+        </normal>
+        <bold>
+            <ttf>fonts/lobstertwo/LobsterTwo-Bold.otf</ttf>
+            <pdf>fonts/lobstertwo/LobsterTwo-Bold.otf</pdf>
+        </bold>
+        <italic>
+            <ttf>fonts/lobstertwo/LobsterTwo-Italic.otf</ttf>
+            <pdf>fonts/lobstertwo/LobsterTwo-Italic.otf</pdf>
+        </italic>
+        <boldItalic>
+            <ttf>fonts/lobstertwo/LobsterTwo-BoldItalic.otf</ttf>
+            <pdf>fonts/lobstertwo/LobsterTwo-BoldItalic.otf</pdf>
+        </boldItalic>
+        <pdfEncoding>Cp1252</pdfEncoding>
+        <pdfEmbedded>true</pdfEmbedded>
+    </fontFamily>
+
+</fontFamilies>

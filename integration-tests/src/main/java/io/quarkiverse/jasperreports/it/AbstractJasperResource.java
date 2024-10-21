@@ -14,6 +14,7 @@ import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXmlExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdsExporter;
 import net.sf.jasperreports.engine.export.oasis.JROdtExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
@@ -129,6 +130,18 @@ public abstract class AbstractJasperResource {
         SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
         configuration.setOnePagePerSheet(true);
         exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+        return outputStream;
+    }
+
+    protected ByteArrayOutputStream exportDocx(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        JRDocxExporter exporter = new JRDocxExporter();
+
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
         exporter.exportReport();
         return outputStream;
