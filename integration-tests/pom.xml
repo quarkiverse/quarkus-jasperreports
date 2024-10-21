@@ -189,7 +189,7 @@
                 <skipITs>true</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
                 <quarkus.native.additional-build-args>
-                    --trace-object-instantiation=net.sf.jasperreports.engine.component.DefaultComponentsBundle
+                    --trace-object-instantiation=java.awt.BasicStroke
                 </quarkus.native.additional-build-args>
             </properties>
             <build>

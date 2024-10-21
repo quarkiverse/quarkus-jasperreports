@@ -24,7 +24,9 @@ public class BatikProcessor extends AbstractJandexProcessor {
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-css"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-dom"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-gvt"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-il8n"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-svg-dom"));
+        index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-svggen"));
         index.produce(new IndexDependencyBuildItem("org.apache.xmlgraphics", "batik-util"));
     }
 
@@ -52,8 +54,10 @@ public class BatikProcessor extends AbstractJandexProcessor {
                 org.apache.batik.ext.awt.image.spi.DefaultBrokenLinkProvider.class.getName(),
                 org.apache.batik.gvt.CompositeGraphicsNode.class.getPackageName(),
                 org.apache.batik.gvt.renderer.MacRenderer.class.getPackageName(),
+                org.apache.batik.script.InterpreterPool.class.getName(),
                 org.apache.batik.script.jpython.JPythonInterpreter.class.getPackageName(),
-                org.apache.batik.script.InterpreterPool.class.getName()).toList());
+                org.apache.batik.svggen.SVGClip.class.getPackageName()
+        ).toList());
         //@formatter:on
         Log.debugf("Batik Runtime: %s", classes);
         classes.stream()
