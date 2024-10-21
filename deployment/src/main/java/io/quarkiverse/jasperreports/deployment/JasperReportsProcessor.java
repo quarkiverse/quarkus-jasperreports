@@ -105,6 +105,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep
     void indexTransitiveDependencies(BuildProducer<IndexDependencyBuildItem> index) {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-charts"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-chart-customizers"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-chart-themes"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-data-adapters"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-excel-poi"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
@@ -245,7 +248,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         List<String> classes = collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName());
-        classes.addAll(Stream.of("javax.swing",
+        classes.addAll(Stream.of(
+                "java.awt",
+                "javax.swing",
                 "javax.swing.plaf.metal",
                 "javax.swing.text.html",
                 "javax.swing.text.rtf",

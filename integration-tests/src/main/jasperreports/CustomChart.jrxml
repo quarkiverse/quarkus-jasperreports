@@ -1,0 +1,38 @@
+<!-- Created with Jaspersoft Studio version 7.0.0.final using JasperReports Library version 7.0.0  -->
+<jasperReport name="CustomChart" language="java" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="cc707d51-bcf7-44bb-bb94-744598a3d011">
+	<query language="sql"><![CDATA[SELECT 
+    nums.item, nums.num, nums.item * nums.num AS mult
+FROM (
+    SELECT
+        data.item, row_number() over (ORDER BY data.item) AS num
+    FROM (
+        SELECT X AS item FROM SYSTEM_RANGE(0, 20)
+    ) AS data
+    ORDER BY data.item
+) AS nums
+]]></query>
+	<field name="item" class="java.lang.Integer"/>
+	<field name="num" class="java.lang.Integer"/>
+	<field name="mult" class="java.lang.Integer"/>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<printWhenExpression><![CDATA[false]]></printWhenExpression>
+			<element kind="textField" uuid="85928695-87b1-436a-888f-5a98ac899dc4" x="0" y="0" width="100" height="30">
+				<expression><![CDATA[$F{mult}]]></expression>
+			</element>
+		</band>
+	</detail>
+	<summary height="245" splitType="Stretch">
+		<element kind="chart" chartType="xyLine" uuid="d7d5b5fb-e919-4980-9c63-3687941c2d6e" x="0" y="0" width="572" height="245" evaluationTime="Report" linkTarget="Self" customizerClass="io.quarkiverse.jasperreports.it.ChartCustomizer">
+			<dataset kind="xy">
+				<series>
+					<seriesExpression><![CDATA["SERIES 1"]]></seriesExpression>
+					<itemHyperlink linkType="None" linkTarget="Self"/>
+					<xvalueExpression><![CDATA[$F{item}]]></xvalueExpression>
+					<yvalueExpression><![CDATA[$F{mult}]]></yvalueExpression>
+				</series>
+			</dataset>
+			<plot categoryAxisLabelColor="#000000" categoryAxisTickLabelColor="#000000" categoryAxisLineColor="#000000" valueAxisLabelColor="#000000" valueAxisTickLabelColor="#000000" valueAxisLineColor="#000000"/>
+		</element>
+	</summary>
+</jasperReport>

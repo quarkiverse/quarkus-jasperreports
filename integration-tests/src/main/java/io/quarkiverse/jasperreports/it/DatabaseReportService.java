@@ -22,13 +22,13 @@ import net.sf.jasperreports.engine.ReportContext;
 import net.sf.jasperreports.engine.SimpleReportContext;
 import net.sf.jasperreports.engine.export.JRTextExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 
 @ApplicationScoped
 @Transactional(Transactional.TxType.NEVER)
 public class DatabaseReportService extends AbstractJasperResource {
-
-    private static final String TEST_REPORT_NAME = "DbDatasourceMain.jasper";
 
     @Inject
     ReadOnlyStreamingService repo;
@@ -36,9 +36,8 @@ public class DatabaseReportService extends AbstractJasperResource {
     @Inject
     DataSource datasource;
 
-    @Transactional(Transactional.TxType.NEVER)
-    public byte[] text() throws JRException, SQLException {
-        final JasperPrint jasperPrint = fill();
+    public byte[] text(final String reportName) throws JRException, SQLException {
+        final JasperPrint jasperPrint = fill(reportName);
         final JRTextExporter exporter = new JRTextExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -47,7 +46,17 @@ public class DatabaseReportService extends AbstractJasperResource {
         return outputStream.toByteArray();
     }
 
-    private JasperPrint fill() throws JRException, SQLException {
+    public byte[] pdf(final String reportName) throws JRException, SQLException {
+        final JasperPrint jasperPrint = fill(reportName);
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final JRPdfExporter exporter = new JRPdfExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+        exporter.exportReport();
+        return outputStream.toByteArray();
+    }
+
+    private JasperPrint fill(final String reportName) throws JRException, SQLException {
         final ReportContext reportContext = new SimpleReportContext();
 
         final Map<String, Object> params = new HashMap<>();
@@ -55,7 +64,7 @@ public class DatabaseReportService extends AbstractJasperResource {
         params.put(JRParameter.REPORT_CONTEXT, reportContext);
 
         try (final Connection connection = datasource.getConnection()) {
-            return JasperFillManager.getInstance(repo.getContext()).fillFromRepo(TEST_REPORT_NAME, params, connection);
+            return JasperFillManager.getInstance(repo.getContext()).fillFromRepo(reportName, params, connection);
         }
     }
 
