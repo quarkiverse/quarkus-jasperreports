@@ -8,6 +8,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.ServerErrorException;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
 
 import io.quarkus.logging.Log;
@@ -23,9 +24,12 @@ public class JasperReportChartResource {
     @GET
     @Path("")
     @Produces(ExtendedMediaType.APPLICATION_PDF)
-    public byte[] pdf() {
+    public Response pdf() {
         try {
-            return databaseReportService.pdf("CustomChart.jasper");
+            final Response.ResponseBuilder response = Response.ok(databaseReportService.pdf("CustomChart.jasper"));
+            response.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=charts.pdf");
+            response.header(HttpHeaders.CONTENT_TYPE, ExtendedMediaType.APPLICATION_PDF);
+            return response.build();
         } catch (final JRException | SQLException ex) {
             Log.error("Unexpected DB Error", ex);
             throw new ServerErrorException(Response.Status.INTERNAL_SERVER_ERROR, ex);
