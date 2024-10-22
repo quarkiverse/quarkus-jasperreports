@@ -44,7 +44,7 @@ When building native images in Docker using the standard Quarkus Docker configur
 simply add these lines to your `DockerFile.native` file:
 
 ```shell
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.10
 
 ######################### Set up environment for POI #############################
 RUN microdnf update && microdnf install freetype fontconfig && microdnf clean all
