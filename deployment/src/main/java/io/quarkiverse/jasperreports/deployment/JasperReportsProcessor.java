@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
@@ -465,8 +466,12 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer, OutputTargetBuildItem outputTarget) {
         final AtomicInteger count = new AtomicInteger(0);
         for (ReportRootBuildItem reportRoot : reportRoots) {
-            Path startDir = findProjectRoot(outputTarget.getOutputDirectory(), Paths.get(reportRoot.getPath()));
-
+            final Path projectRoot = findProjectRoot(outputTarget.getOutputDirectory());
+            if (projectRoot == null) {
+                Log.warnf("JasperReport Source Directory does not exist!");
+                continue;
+            }
+            final Path startDir = projectRoot.resolve(Paths.get(reportRoot.getPath())).normalize();
             if (!Files.exists(startDir)) {
                 Log.warnf("JasperReport Source Directory: %s does not exist!", startDir);
                 continue;
@@ -544,11 +549,13 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
         if (!config.build().enable()) {
             Log.debug("Automatic report compilation disabled");
+            return; // Exit early if compilation is disabled
         }
 
         Log.debugf("Found %s report(s) to compile", reportFiles.size());
+
         try {
-            // make sure the destination path exists before we try to write files to it
+            // Ensure the destination directory exists
             Path outputDirectoryPath = Path.of(outputTarget.getOutputDirectory().toString(), "classes",
                     config.build().destination().toString());
 
@@ -556,40 +563,61 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 Files.createDirectories(outputDirectoryPath);
             }
 
-            // TODO - only compile if the report file has changed?
             for (ReportFileBuildItem item : reportFiles) {
-                if (item.getFileName().endsWith("." + Constants.EXT_REPORT)) {
-                    try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString())) {
-                        Path outputFilePath = Path.of(outputDirectoryPath.toString(),
-                                item.getFileName().replace("." + Constants.EXT_REPORT,
-                                        "." + Constants.EXT_COMPILED));
-                        String outputFile = outputFilePath.toString();
+                if (item.getFileName().endsWith("." + Constants.EXT_REPORT)) { // Handling .jrxml files
+                    Path outputFilePath = Path.of(outputDirectoryPath.toString(),
+                            item.getFileName().replace("." + Constants.EXT_REPORT, "." + Constants.EXT_COMPILED));
+                    String outputFile = outputFilePath.toString();
 
-                        Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
+                    try {
+                        boolean shouldCompile = true;
 
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        JasperCompileManager.compileReportToStream(inputStream, outputStream);
+                        // Check if output file exists
+                        if (Files.exists(outputFilePath)) {
+                            // Compare last modified times
+                            FileTime inputFileLastModifiedTime = Files.getLastModifiedTime(item.getPath());
+                            FileTime outputFileLastModifiedTime = Files.getLastModifiedTime(outputFilePath);
 
-                        Log.debugf("Compiled size is %s", outputStream.size());
-
-                        try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-                            outputStream.writeTo(fos);
+                            // Skip compilation if output file is newer or the same as the input file
+                            if (outputFileLastModifiedTime.compareTo(inputFileLastModifiedTime) >= 0) {
+                                shouldCompile = false;
+                                Log.debugf("Skipping compilation, output file %s is up to date.", outputFile);
+                            }
                         }
 
-                        // allow dynamically compiled files to be processed
+                        if (shouldCompile) {
+                            Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
+
+                            try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString());
+                                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+
+                                // Compile the report
+                                JasperCompileManager.compileReportToStream(inputStream, outputStream);
+                                Log.debugf("Compiled size is %s", outputStream.size());
+
+                                // Write the compiled output to the file
+                                try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                                    outputStream.writeTo(fos);
+                                }
+                            }
+                        }
+
+                        // Allow dynamically compiled files to be processed
                         compiledReportFileProducer.produce(new CompiledReportFileBuildItem(outputFilePath));
-                    } catch (JRException ex) {
-                        Log.fatalf("JasperReports error while compiling reports: %s", ex.getMessage());
+                    } catch (JRException | IOException ex) {
+                        Log.fatalf("Error while compiling report %s: %s", item.getPath(), ex.getMessage());
                         Log.debug(ex);
                     }
-                } else if (item.getFileName().endsWith("." + Constants.EXT_STYLE)) {
-                    Path outputFilePath = Path.of(outputDirectoryPath.toString(),
-                            item.getFileName());
+                } else if (item.getFileName().endsWith("." + Constants.EXT_STYLE)) { // Handling .jrtx files
+                    Path outputFilePath = Path.of(outputDirectoryPath.toString(), item.getFileName());
                     String outputFile = outputFilePath.toString();
                     Log.infof("Copying %s into %s", item.getPath().toString(), outputFile);
 
                     try (FileOutputStream fos = new FileOutputStream(outputFile)) {
                         Files.copy(item.getPath(), fos);
+                    } catch (IOException ex) {
+                        Log.fatalf("I/O Error while copying styles: %s", ex.getMessage());
+                        Log.debug(ex);
                     }
                 }
             }
@@ -628,15 +656,22 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * found it uses the start directory.
      *
      * @param outputDirectory The output directory path.
-     * @param startDirectory The starting directory path to search from.
      * @return The path to the project root directory.
      */
-    static Path findProjectRoot(Path outputDirectory, Path startDirectory) {
-        Path currentPath = outputDirectory.getParent();
-        if (Files.exists(currentPath.resolve(startDirectory))) {
-            return currentPath.resolve(startDirectory).normalize();
-        } else {
-            return startDirectory;
-        }
+    private static Path findProjectRoot(Path outputDirectory) {
+        Path currentPath = outputDirectory;
+        do {
+            if (Files.exists(currentPath.resolve(Paths.get("src", "main")))
+                    || Files.exists(currentPath.resolve(Paths.get("config", "application.properties")))
+                    || Files.exists(currentPath.resolve(Paths.get("config", "application.yaml")))
+                    || Files.exists(currentPath.resolve(Paths.get("config", "application.yml")))) {
+                return currentPath.normalize();
+            }
+            if (currentPath.getParent() != null && Files.exists(currentPath.getParent())) {
+                currentPath = currentPath.getParent();
+            } else {
+                return null;
+            }
+        } while (true);
     }
 }
