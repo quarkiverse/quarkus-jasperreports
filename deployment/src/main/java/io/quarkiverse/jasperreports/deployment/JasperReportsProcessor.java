@@ -570,22 +570,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                     String outputFile = outputFilePath.toString();
 
                     try {
-                        boolean shouldCompile = true;
-
-                        // Check if output file exists
-                        if (Files.exists(outputFilePath)) {
-                            // Compare last modified times
-                            FileTime inputFileLastModifiedTime = Files.getLastModifiedTime(item.getPath());
-                            FileTime outputFileLastModifiedTime = Files.getLastModifiedTime(outputFilePath);
-
-                            // Skip compilation if output file is newer or the same as the input file
-                            if (outputFileLastModifiedTime.compareTo(inputFileLastModifiedTime) >= 0) {
-                                shouldCompile = false;
-                                Log.debugf("Skipping compilation, output file %s is up to date.", outputFile);
-                            }
-                        }
-
-                        if (shouldCompile) {
+                        // Use the helper method to check if the output file needs updating
+                        if (shouldUpdateFile(item.getPath(), outputFilePath)) {
                             Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
 
                             try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString());
@@ -611,10 +597,16 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 } else if (item.getFileName().endsWith("." + Constants.EXT_STYLE)) { // Handling .jrtx files
                     Path outputFilePath = Path.of(outputDirectoryPath.toString(), item.getFileName());
                     String outputFile = outputFilePath.toString();
-                    Log.infof("Copying %s into %s", item.getPath().toString(), outputFile);
 
-                    try (FileOutputStream fos = new FileOutputStream(outputFile)) {
-                        Files.copy(item.getPath(), fos);
+                    try {
+                        // Use the helper method to check if the style file needs copying
+                        if (shouldUpdateFile(item.getPath(), outputFilePath)) {
+                            Log.infof("Copying %s into %s", item.getPath().toString(), outputFile);
+
+                            try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                                Files.copy(item.getPath(), fos);
+                            }
+                        }
                     } catch (IOException ex) {
                         Log.fatalf("I/O Error while copying styles: %s", ex.getMessage());
                         Log.debug(ex);
@@ -649,6 +641,23 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     void initializeBeanProducer(JasperReportsRecorder recorder, BeanContainerBuildItem beanContainer,
             ReportBuildTimeConfig config) {
         recorder.initProducer(beanContainer.getValue(), config);
+    }
+
+    // Helper method to check if the file should be updated
+    private static boolean shouldUpdateFile(Path inputFilePath, Path outputFilePath) throws IOException {
+        if (Files.exists(outputFilePath)) {
+            // Compare last modified times
+            FileTime inputFileLastModifiedTime = Files.getLastModifiedTime(inputFilePath);
+            FileTime outputFileLastModifiedTime = Files.getLastModifiedTime(outputFilePath);
+
+            // Return false if output file is newer or the same as the input file
+            if (outputFileLastModifiedTime.compareTo(inputFileLastModifiedTime) >= 0) {
+                Log.debugf("Skipping update, output file %s is up to date.", outputFilePath.toString());
+                return false;
+            }
+        }
+        // If the file doesn't exist or is older, we should update it
+        return true;
     }
 
     /**
