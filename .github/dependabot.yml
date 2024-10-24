@@ -11,10 +11,10 @@ updates:
       interval: "daily"
     ignore:
       - dependency-name: "io.quarkus:quarkus-bom"
-      - dependency-name: "io.quarkus:quarkus-maven-plugin"
       - dependency-name: "io.quarkus:quarkus-extension-processor"
+      - dependency-name: "io.quarkus:quarkus-maven-plugin"
       - dependency-name: "io.quarkus:quarkus-extension-maven-plugin"
-      - dependency-name: "xalan:xalan"
+      - dependency-name: "io.quarkus:quarkus-config-doc-maven-plugin"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
