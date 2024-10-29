@@ -401,6 +401,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     void registerFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
         builder.includeGlob("**/fonts/dejavu/**");
+        builder.includeGlob("fonts/**");
         nativeImageResourcePatterns.produce(builder.build());
     }
 
