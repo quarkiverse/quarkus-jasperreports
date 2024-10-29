@@ -84,7 +84,7 @@ This extension offers an injectable JasperReports repository capable of managing
 
 When building native images in Docker using the standard Quarkus Docker configuration files some additional features need to be installed to support fonts.  Specifically font information is not included in https://developers.redhat.com/products/rhel/ubi[Red Hat's ubi-minimal images].  To install it simply add these lines to your `DockerFile.native` file:
 
-[source]
+[source, dockerfile]
 ----
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9
 
