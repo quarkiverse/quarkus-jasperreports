@@ -51,6 +51,10 @@
 			<component kind="barcode4j:Code39">
 				<codeExpression><![CDATA["0123456789"]]></codeExpression>
 			</component>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 		</element>
 		<element kind="staticText" uuid="8ca7d2e2-c66f-4c25-ab3d-2fb15453b8b0" x="0" y="285" width="100" height="30" style="Barcode">
 			<text><![CDATA[USPS Intelligent Mail]]></text>
