@@ -1,11 +1,13 @@
 package io.quarkiverse.jasperreports.deployment;
 
+import static io.quarkus.deployment.pkg.PackageConfig.JarConfig.JarType.UBER_JAR;
 import static org.jboss.jandex.AnnotationTarget.Kind.CLASS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,10 +16,19 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
+
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObject;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonWriter;
+import jakarta.json.JsonWriterFactory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.jandex.AnnotationInstance;
@@ -37,6 +48,7 @@ import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.deployment.IsDevelopment;
+import io.quarkus.deployment.IsNormal;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -44,14 +56,18 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedClassBuildItem;
+import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
+import io.quarkus.deployment.pkg.NativeConfig;
+import io.quarkus.deployment.pkg.PackageConfig;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 import io.quarkus.jackson.deployment.IgnoreJsonDeserializeClassBuildItem;
@@ -81,17 +97,23 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     }
 
     /**
-     * Merges the JasperReports extension properties file into the Uber JAR.
-     * <p>
-     * This build step ensures that the JasperReports extension properties file
-     * is included in the final Uber JAR, allowing JasperReports to properly
-     * load its extensions at runtime.
+     * Merges specified JSON/Properties files if the package type is UBER_JAR and generates them
+     * as resources in the Uber JAR.
      *
-     * @return A {@link UberJarMergedResourceBuildItem} representing the merged resource
+     * @param generatedResourcesProducer the producer to add generated resources
+     * @param packageConfig the package configuration to check for UBER_JAR type
      */
-    @BuildStep
-    UberJarMergedResourceBuildItem mergeResource() {
-        return new UberJarMergedResourceBuildItem(EXTENSIONS_FILE);
+    @BuildStep(onlyIf = IsNormal.class)
+    void uberJarFiles(BuildProducer<GeneratedResourceBuildItem> generatedResourcesProducer,
+            BuildProducer<UberJarMergedResourceBuildItem> uberJarMergedProducer,
+            PackageConfig packageConfig) {
+        if (packageConfig.jar().type() == UBER_JAR) {
+            mergeAndGenerateJson("properties-metadata.json", generatedResourcesProducer);
+        }
+
+        // Merges the JasperReports extension properties file into the Uber JAR.
+        uberJarMergedProducer.produce(new UberJarMergedResourceBuildItem(EXTENSIONS_FILE));
+        uberJarMergedProducer.produce(new UberJarMergedResourceBuildItem("metadata_messages-defaults.properties"));
     }
 
     /**
@@ -642,6 +664,58 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     void initializeBeanProducer(JasperReportsRecorder recorder, BeanContainerBuildItem beanContainer,
             ReportBuildTimeConfig config) {
         recorder.initProducer(beanContainer.getValue(), config);
+    }
+
+    @BuildStep
+    SystemPropertyBuildItem sysPropHeadless(NativeConfig nativeConfig) {
+        if (nativeConfig.enabled()) {
+            // see https://github.com/quarkiverse/quarkus-jasperreports/issues/156
+            return new SystemPropertyBuildItem("java.awt.headless", "true");
+        }
+        return null;
+    }
+
+    /**
+     * Merges multiple JSON resources with the specified filename from the classpath into a single JSON array
+     * and produces the merged JSON as a resource for inclusion in the build.
+     *
+     * @param filename the name of the JSON files to search for and combine.
+     * @param generatedResourcesProducer the producer responsible for outputting the generated combined JSON resource.
+     */
+    private static void mergeAndGenerateJson(String filename,
+            BuildProducer<GeneratedResourceBuildItem> generatedResourcesProducer) {
+        // Output stream for writing the final merged JSON array
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
+
+            // Retrieve all instances of the specified file in the resources
+            List<URL> resources = Collections.list(Thread.currentThread().getContextClassLoader().getResources(filename));
+
+            // Append each JSON resource file found to the JSON array
+            for (URL resource : resources) {
+                Log.debugf("Appending JSON: %s", resource);
+                try (InputStream is = resource.openStream(); JsonReader reader = Json.createReader(is)) {
+                    // Parse JSON object from the resource and add it to the array
+                    JsonObject json = reader.readObject();
+                    arrayBuilder.add(json);
+                }
+            }
+
+            // Write combined JSON array to output stream
+            Map<String, Object> config = Collections.emptyMap();
+            JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+            try (JsonWriter writer = writerFactory.createWriter(outputStream)) {
+                writer.writeArray(arrayBuilder.build());
+            }
+
+            // Produce the merged resource for inclusion in the Uber JAR
+            Log.warnf("JSON Combined: %s", filename);
+            generatedResourcesProducer.produce(new GeneratedResourceBuildItem(filename, outputStream.toByteArray()));
+        } catch (IOException ex) {
+            // Log an error if an exception occurs during processing
+            Log.errorf("Unexpected error combining %s", filename, ex);
+        }
     }
 
     // Helper method to check if the file should be updated
