@@ -65,6 +65,15 @@
         "test",
         "bug"
       ]
+    },
+    {
+      "login": "dmlloyd",
+      "name": "David M. Lloyd",
+      "avatar_url": "https://avatars.githubusercontent.com/u/124581?v=4",
+      "profile": "https://github.com/dmlloyd",
+      "contributions": [
+        "question"
+      ]
     }
   ],
   "contributorsPerLine": 7,
