@@ -22,6 +22,14 @@
             <artifactId>quarkus-openpdf-deployment</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.quarkiverse.barcode</groupId>
+            <artifactId>quarkus-barcode4j-deployment</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.barcode</groupId>
+            <artifactId>quarkus-zxing-deployment</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-vertx-http-dev-ui-spi</artifactId>
         </dependency>
