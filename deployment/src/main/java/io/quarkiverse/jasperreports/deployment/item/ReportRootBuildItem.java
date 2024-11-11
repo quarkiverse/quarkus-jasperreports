@@ -1,5 +1,7 @@
 package io.quarkiverse.jasperreports.deployment.item;
 
+import java.nio.file.Path;
+
 import io.quarkus.builder.item.MultiBuildItem;
 
 /**
@@ -12,14 +14,20 @@ import io.quarkus.builder.item.MultiBuildItem;
  */
 public final class ReportRootBuildItem extends MultiBuildItem {
 
+    private final Path originalPath;
     private final String path;
 
-    public ReportRootBuildItem(String path) {
-        this.path = normalize(path);
+    public ReportRootBuildItem(Path path) {
+        this.originalPath = path;
+        this.path = normalize(path.toString());
     }
 
     public String getPath() {
         return path;
+    }
+
+    public Path getOriginalPath() {
+        return originalPath;
     }
 
     static String normalize(String path) {
