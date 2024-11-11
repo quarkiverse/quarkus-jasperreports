@@ -74,6 +74,16 @@
       "contributions": [
         "question"
       ]
+    },
+    {
+      "login": "joggl71xpt",
+      "name": "joggl71xpt",
+      "avatar_url": "https://avatars.githubusercontent.com/u/115216319?v=4",
+      "profile": "https://github.com/joggl71xpt",
+      "contributions": [
+        "bug",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
