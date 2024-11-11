@@ -107,6 +107,11 @@
             </dependency>
             <dependency>
                 <groupId>net.sf.jasperreports</groupId>
+                <artifactId>jasperreports-functions</artifactId>
+                <version>${version.jasperreports}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.sf.jasperreports</groupId>
                 <artifactId>jasperreports-jdt</artifactId>
                 <version>${version.jasperreports}</version>
             </dependency>
