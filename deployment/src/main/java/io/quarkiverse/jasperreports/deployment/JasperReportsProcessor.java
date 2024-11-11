@@ -466,9 +466,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep
     ReportRootBuildItem defaultReportRoot(ReportBuildTimeConfig config) {
         if (config.build().enable()) {
-            return new ReportRootBuildItem(config.build().source().toString());
+            return new ReportRootBuildItem(config.build().source());
         }
-        return new ReportRootBuildItem(Constants.DEFAULT_SOURCE_PATH);
+        return new ReportRootBuildItem(Path.of(Constants.DEFAULT_SOURCE_PATH));
     }
 
     /**
@@ -489,15 +489,23 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<CompiledReportFileBuildItem> compiledReportFileProducer, OutputTargetBuildItem outputTarget) {
         final AtomicInteger count = new AtomicInteger(0);
         for (ReportRootBuildItem reportRoot : reportRoots) {
-            final Path projectRoot = findProjectRoot(outputTarget.getOutputDirectory());
-            if (projectRoot == null) {
-                Log.warnf("JasperReport Source Directory does not exist!");
-                continue;
+            Path startDir = null;
+            // #167 allow an external directory so check if the core path exists first
+            if (Files.exists(reportRoot.getOriginalPath())) {
+                Log.debugf("JasperReport Source Directory: %s", reportRoot.getOriginalPath());
+                startDir = reportRoot.getOriginalPath();
             }
-            final Path startDir = projectRoot.resolve(Paths.get(reportRoot.getPath())).normalize();
-            if (!Files.exists(startDir)) {
-                Log.warnf("JasperReport Source Directory: %s does not exist!", startDir);
-                continue;
+            if (startDir == null) {
+                final Path projectRoot = findProjectRoot(outputTarget.getOutputDirectory());
+                if (projectRoot == null) {
+                    Log.warnf("JasperReport Source Directory does not exist!");
+                    continue;
+                }
+                startDir = projectRoot.resolve(Paths.get(reportRoot.getPath())).normalize();
+                if (!Files.exists(startDir)) {
+                    Log.warnf("JasperReport Source Directory: %s does not exist!", startDir);
+                    continue;
+                }
             }
 
             try {
