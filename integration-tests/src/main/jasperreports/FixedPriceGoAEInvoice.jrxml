@@ -566,7 +566,7 @@
 						</columnHeader>
 						<detailCell height="15" style="Table_TD">
 							<element kind="textField" uuid="8ffe68a4-a4a6-460b-ad6c-6a4cf7732127" stretchType="ContainerHeight" x="0" y="0" width="40" height="15" textAdjust="StretchHeight" pattern="#,##0.00;-#,##0.00" hTextAlign="Right" vTextAlign="Middle" style="Table_TD">
-								<expression><![CDATA[$F{grossAmount}]]></expression>
+								<expression><![CDATA[$F{grossAmount}/100.0]]></expression>
 								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 								<box padding="2" style="Table_TD"/>
 							</element>
