@@ -1,0 +1,773 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.0  -->
+<jasperReport name="FixedPriceGoAEInvoice" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="data/expertinvoice" uuid="3c9c92fd-cb9f-40e9-8a42-3479c083ea4f" floatColumnFooter="true">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="dataAdapter/GotExampleDataAdapter.xml"/>
+	<property name="ireport.jasperserver.url" value="https://jasper.k8s.xpertyme.com/jasperserver/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.reportUnit" value="/reports/FixedPriceGoAEInvoice"/>
+	<property name="com.jaspersoft.studio.unit." value="mm"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="mm"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="mm"/>
+	<property name="ireport.jasperserver.report.resource" value="/reports/FixedPriceGoAEInvoice_files/main_jrxml"/>
+	<style name="Table_TH" mode="Opaque" backcolor="#DCDCDC" fontName="SansSerif" fontSize="8.0" bold="true" italic="false">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Table_TD" mode="Opaque" backcolor="#FFFFFF" fontName="SansSerif" fontSize="8.0">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineColor="#000000"/>
+			<bottomPen lineWidth="0.5" lineColor="#000000"/>
+			<rightPen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="footer_text" fontName="SansSerif" fontSize="7.0"/>
+	<style name="InvoiceText" fontName="SansSerif" fontSize="10.0"/>
+	<style name="InvoiceData" fontName="SansSerif" fontSize="10.0"/>
+	<style name="InvoiceAddressFrom" fontName="SansSerif" fontSize="7.0"/>
+	<style name="InvoiceAddressTo" fontName="SansSerif" fontSize="10.0"/>
+	<dataset name="InvoicePositionsDataset" uuid="ddede0cd-3d54-4ebd-908e-7897e89f4775">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="dataAdapter\GotExampleDataAdapter.xml"/>
+		<query language="json"><![CDATA[positions]]></query>
+		<field name="product" class="java.lang.String">
+			<description><![CDATA[product]]></description>
+		</field>
+		<field name="description" class="java.lang.String">
+			<description><![CDATA[description]]></description>
+		</field>
+		<field name="additionalInfo" class="java.lang.String">
+			<description><![CDATA[additionalInfo]]></description>
+		</field>
+		<field name="units" class="java.lang.Double">
+			<description><![CDATA[units]]></description>
+		</field>
+		<field name="pricePerUnit" class="java.lang.Double">
+			<description><![CDATA[pricePerUnit]]></description>
+		</field>
+		<field name="netAmount" class="java.lang.Double">
+			<description><![CDATA[netAmount]]></description>
+		</field>
+		<field name="vatRate" class="java.lang.Double">
+			<description><![CDATA[vatRate]]></description>
+		</field>
+		<field name="vatAmount" class="java.lang.Double">
+			<description><![CDATA[vatAmount]]></description>
+		</field>
+		<field name="grossAmount" class="java.lang.Double">
+			<description><![CDATA[grossAmount]]></description>
+		</field>
+		<field name="unit" class="java.lang.String">
+			<description><![CDATA[unit]]></description>
+		</field>
+		<field name="deliveryTimestamp" class="java.lang.String">
+			<description><![CDATA[deliveryTimestamp]]></description>
+		</field>
+		<field name="medFactor" class="java.lang.Double">
+			<description><![CDATA[medFactor]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="medFactor"/>
+		</field>
+		<field name="medNumber" class="java.lang.String">
+			<description><![CDATA[medNumber]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="medNumber"/>
+		</field>
+		<field name="gotNumber" class="java.lang.String">
+			<description><![CDATA[invoicePositionSpecificData.details]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="invoicePositionSpecificData.details"/>
+		</field>
+		<field name="gotDescription" class="java.lang.String">
+			<description><![CDATA[invoicePositionSpecificData.description]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="invoicePositionSpecificData.description"/>
+		</field>
+	</dataset>
+	<dataset name="TaxDetailsDataset" uuid="55778d5f-24ed-4c31-843a-18855c2cc8e7">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="InvoiceSampleJSON"/>
+		<query language="json"><![CDATA[taxPositions]]></query>
+		<field name="vatRate" class="java.lang.Double">
+			<description><![CDATA[vatRate]]></description>
+		</field>
+		<field name="vatAmount" class="java.lang.Double">
+			<description><![CDATA[vatAmount]]></description>
+		</field>
+	</dataset>
+	<parameter name="jsonString" class="java.lang.String"/>
+	<parameter name="JSON_INPUT_STREAM" class="java.io.InputStream">
+		<defaultValueExpression><![CDATA[new java.io.ByteArrayInputStream($P{jsonString}.getBytes("UTF-8"))]]></defaultValueExpression>
+	</parameter>
+	<query language="json"><![CDATA[]]></query>
+	<field name="templateId" class="java.lang.String">
+		<description><![CDATA[templateId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="templateId"/>
+	</field>
+	<field name="locale" class="java.lang.String">
+		<description><![CDATA[locale]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="locale"/>
+	</field>
+	<field name="invoicingFullname" class="java.lang.String">
+		<description><![CDATA[invoicingFullname]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingFullname"/>
+	</field>
+	<field name="invoicingSecondNameLine" class="java.lang.String">
+		<description><![CDATA[invoicingSecondNameLine]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingSecondNameLine"/>
+	</field>
+	<field name="invoicingStreet" class="java.lang.String">
+		<description><![CDATA[invoicingStreet]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingStreet"/>
+	</field>
+	<field name="invoicingHousenumber" class="java.lang.String">
+		<description><![CDATA[invoicingHousenumber]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingHousenumber"/>
+	</field>
+	<field name="invoicingAdditionalAddressLine" class="java.lang.String">
+		<description><![CDATA[invoicingAdditionalAddressLine]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingAdditionalAddressLine"/>
+	</field>
+	<field name="invoicingZIP" class="java.lang.String">
+		<description><![CDATA[invoicingZIP]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingZIP"/>
+	</field>
+	<field name="invoicingCity" class="java.lang.String">
+		<description><![CDATA[invoicingCity]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCity"/>
+	</field>
+	<field name="invoicingCountry" class="java.lang.String">
+		<description><![CDATA[invoicingCountry]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCountry"/>
+	</field>
+	<field name="invoicingVatId" class="java.lang.String">
+		<description><![CDATA[invoicingVatId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingVatId"/>
+	</field>
+	<field name="invoicingTaxId" class="java.lang.String">
+		<description><![CDATA[invoicingTaxId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingTaxId"/>
+	</field>
+	<field name="invoicingCompanyLegalForm" class="java.lang.String">
+		<description><![CDATA[invoicingCompanyLegalForm]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCompanyLegalForm"/>
+	</field>
+	<field name="invoicingCompanyHeadOffice" class="java.lang.String">
+		<description><![CDATA[invoicingCompanyHeadOffice]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCompanyHeadOffice"/>
+	</field>
+	<field name="invoicingCompanyChairman" class="java.lang.String">
+		<description><![CDATA[invoicingCompanyChairman]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCompanyChairman"/>
+	</field>
+	<field name="invoicingCompanyRegistrationData" class="java.lang.String">
+		<description><![CDATA[invoicingCompanyRegistrationData]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCompanyRegistrationData"/>
+	</field>
+	<field name="invoicingCompanyLegalRepresentatives" class="java.lang.String">
+		<description><![CDATA[invoicingCompanyLegalRepresentatives]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingCompanyLegalRepresentatives"/>
+	</field>
+	<field name="invoicingTypeOfLegalRepresentatives" class="java.lang.String">
+		<description><![CDATA[invoicingTypeOfLegalRepresentatives]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingTypeOfLegalRepresentatives"/>
+	</field>
+	<field name="invoicingIBAN" class="java.lang.String">
+		<description><![CDATA[invoicingIBAN]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingIBAN"/>
+	</field>
+	<field name="invoicingBankName" class="java.lang.String">
+		<description><![CDATA[invoicingBankName]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingBankName"/>
+	</field>
+	<field name="invoicingFooterline" class="java.lang.String">
+		<description><![CDATA[invoicingFooterline]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingFooterline"/>
+	</field>
+	<field name="invoicingReferenceNumber" class="java.lang.String">
+		<description><![CDATA[invoicingReferenceNumber]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingReferenceNumber"/>
+	</field>
+	<field name="invoicingEMail" class="java.lang.String">
+		<description><![CDATA[invoicingEMail]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingEMail"/>
+	</field>
+	<field name="invoicingPhone" class="java.lang.String">
+		<description><![CDATA[invoicingPhone]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingPhone"/>
+	</field>
+	<field name="invoicingFax" class="java.lang.String">
+		<description><![CDATA[invoicingFax]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingFax"/>
+	</field>
+	<field name="invoicingHomepage" class="java.lang.String">
+		<description><![CDATA[invoicingHomepage]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoicingHomepage"/>
+	</field>
+	<field name="salutation" class="java.lang.String">
+		<description><![CDATA[salutation]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="salutation"/>
+	</field>
+	<field name="companyName" class="java.lang.String">
+		<description><![CDATA[companyName]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="companyName"/>
+	</field>
+	<field name="nameSecondLine" class="java.lang.String">
+		<description><![CDATA[nameSecondLine]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="nameSecondLine"/>
+	</field>
+	<field name="street" class="java.lang.String">
+		<description><![CDATA[street]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="street"/>
+	</field>
+	<field name="additionalAddressLine" class="java.lang.String">
+		<description><![CDATA[additionalAddressLine]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="additionalAddressLine"/>
+	</field>
+	<field name="zip" class="java.lang.String">
+		<description><![CDATA[zip]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="zip"/>
+	</field>
+	<field name="housenumber" class="java.lang.String">
+		<description><![CDATA[housenumber]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="housenumber"/>
+	</field>
+	<field name="city" class="java.lang.String">
+		<description><![CDATA[city]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="city"/>
+	</field>
+	<field name="country" class="java.lang.String">
+		<description><![CDATA[country]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="country"/>
+	</field>
+	<field name="vatId" class="java.lang.String">
+		<description><![CDATA[vatId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="vatId"/>
+	</field>
+	<field name="billIssueDate" class="java.lang.String">
+		<description><![CDATA[billIssueDate]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="billIssueDate"/>
+	</field>
+	<field name="invoiceNumber" class="java.lang.String">
+		<description><![CDATA[invoiceNumber]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoiceNumber"/>
+	</field>
+	<field name="positions" class="java.lang.String">
+		<description><![CDATA[positions]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="positions"/>
+	</field>
+	<field name="totalNetAmount" class="java.lang.Double">
+		<description><![CDATA[totalNetAmount]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="totalNetAmount"/>
+	</field>
+	<field name="taxPositions" class="java.lang.String">
+		<description><![CDATA[taxPositions]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="taxPositions"/>
+	</field>
+	<field name="totalGrossAmount" class="java.lang.Double">
+		<description><![CDATA[totalGrossAmount]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="totalGrossAmount"/>
+	</field>
+	<field name="paymentType" class="java.lang.String">
+		<description><![CDATA[paymentType]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="paymentType"/>
+	</field>
+	<field name="creditcardType" class="java.lang.String">
+		<description><![CDATA[creditcardType]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="creditcardType"/>
+	</field>
+	<field name="currency" class="java.lang.String">
+		<description><![CDATA[currency]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="currency"/>
+	</field>
+	<field name="additionalInvoiceText" class="java.lang.String">
+		<description><![CDATA[additionalInvoiceText]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="additionalInvoiceText"/>
+	</field>
+	<field name="additionalInvoiceNote" class="java.lang.String">
+		<description><![CDATA[additionalInvoiceNote]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="additionalInvoiceNote"/>
+	</field>
+	<field name="clientId" class="java.lang.String">
+		<description><![CDATA[clientId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="clientId"/>
+	</field>
+	<field name="receiverCustomerId" class="java.lang.String">
+		<description><![CDATA[receiverCustomerId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="receiverCustomerId"/>
+	</field>
+	<field name="expertId" class="java.lang.String">
+		<description><![CDATA[expertId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="expertId"/>
+	</field>
+	<field name="receiverFirstname" class="java.lang.String">
+		<description><![CDATA[receiverFirstname]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="receiverFirstname"/>
+	</field>
+	<field name="receiverLastname" class="java.lang.String">
+		<description><![CDATA[receiverLastname]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="receiverLastname"/>
+	</field>
+	<field name="receiverEmail" class="java.lang.String">
+		<description><![CDATA[receiverEmail]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="receiverEmail"/>
+	</field>
+	<field name="invoiceTextData" class="java.lang.String">
+		<description><![CDATA[invoiceTextData]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoiceTextData"/>
+	</field>
+	<field name="directDebitType" class="java.lang.String">
+		<description><![CDATA[directDebitType]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="directDebitType"/>
+	</field>
+	<field name="petName" class="java.lang.String">
+		<description><![CDATA[invoiceSpecificData.petName]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoiceSpecificData.petName"/>
+	</field>
+	<field name="petType" class="java.lang.String">
+		<description><![CDATA[invoiceSpecificData.petType]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="invoiceSpecificData.petType"/>
+	</field>
+	<field name="customerId" class="java.lang.String">
+		<description><![CDATA[customerId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="customerId"/>
+	</field>
+	<field name="customerExternalId" class="java.lang.String">
+		<description><![CDATA[customerExternalId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="customerExternalId"/>
+	</field>
+	<field name="orderId" class="java.lang.String">
+		<description><![CDATA[orderId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="orderId"/>
+	</field>
+	<field name="contractId" class="java.lang.String">
+		<description><![CDATA[contractId]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="contractId"/>
+	</field>
+	<field name="fullname" class="java.lang.String">
+		<description><![CDATA[fullname]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="fullname"/>
+	</field>
+	<background height="802" splitType="Stretch">
+		<element kind="line" uuid="5ece3ab6-528b-4f3b-88a2-8a9952f82e99" x="-10" y="420" width="8" height="1">
+			<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+			<pen lineWidth="0.25" lineStyle="Solid"/>
+		</element>
+		<element kind="line" uuid="4e644868-fa42-4b28-8e5a-c72c9086b630" x="-10" y="297" width="8" height="1">
+			<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+			<pen lineWidth="0.25" lineStyle="Solid"/>
+		</element>
+		<element kind="line" uuid="b21cbc74-10f5-451a-aac5-e733d281b33f" x="-10" y="595" width="8" height="1">
+			<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+			<pen lineWidth="0.25" lineStyle="Solid"/>
+		</element>
+	</background>
+	<title height="268" splitType="Stretch">
+		<element kind="frame" uuid="ab7674b1-a1c4-4c4f-81f8-193ca99f9280" x="36" y="128" width="264" height="127">
+			<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+			<property name="com.jaspersoft.studio.unit.width" value="mm"/>
+			<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+			<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+			<element kind="textField" uuid="e8914096-0c59-4795-a71a-c6f031de616d" x="0" y="67" width="264" height="15" blankWhenNull="true" style="InvoiceAddressTo">
+				<expression><![CDATA[$F{street}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="3049dec9-0468-47ae-a674-441ce0546bc1" x="0" y="97" width="264" height="15" blankWhenNull="true" style="InvoiceAddressTo">
+				<expression><![CDATA[$F{zip}+" "+$F{city}]]></expression>
+			</element>
+			<element kind="textField" uuid="d4bb0a96-f48a-4f71-a9f3-9744f21aa2c1" x="0" y="37" width="264" height="15" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceAddressTo">
+				<expression><![CDATA[T($F{fullname}).isEmpty()?((T($F{receiverFirstname}).isEmpty()?"":($F{receiverFirstname}+" "))+(T($F{receiverLastname}).isEmpty()?"":$F{receiverLastname})):$F{fullname}]]></expression>
+			</element>
+			<element kind="textField" uuid="2eb1e1d9-a87b-4c04-b901-c93c6bff57fa" x="0" y="52" width="264" height="15" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceAddressTo">
+				<expression><![CDATA[$F{nameSecondLine}]]></expression>
+			</element>
+			<element kind="textField" uuid="cca49d5f-0bb3-4e7c-bd48-8b6d6cc815d8" x="0" y="112" width="264" height="15" blankWhenNull="true" style="InvoiceAddressTo">
+				<expression><![CDATA[$F{country}]]></expression>
+			</element>
+			<element kind="textField" uuid="d67bef58-5e4f-4367-bc37-112e2cd4aab2" x="0" y="0" width="264" height="14" style="InvoiceAddressFrom">
+				<expression><![CDATA[$F{invoicingFullname} +" | "+$F{invoicingStreet} +" | "+$F{invoicingZIP}+" "+$F{invoicingCity}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="mm"/>
+				<property name="com.jaspersoft.studio.unit.y" value="mm"/>
+			</element>
+			<element kind="textField" uuid="87ece6a9-2e42-4373-b71e-a69f6434743b" x="0" y="82" width="264" height="15" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceAddressTo">
+				<expression><![CDATA[$F{additionalAddressLine}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+		</element>
+		<element kind="frame" uuid="b195b4f5-456f-4147-8fa5-c88f062def4e" x="300" y="128" width="219" height="118">
+			<element kind="textField" uuid="90d8db4b-fb1c-48e1-a4b7-fb91276bed33" mode="Transparent" x="0" y="45" width="218" height="15" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" hTextAlign="Right" style="InvoiceText">
+				<expression><![CDATA[$F{invoicingAdditionalAddressLine}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="00918d7b-39d1-41d5-a422-41fdd1e8202a" mode="Transparent" x="0" y="60" width="218" height="15" backcolor="#F56C69" blankWhenNull="true" hTextAlign="Right" style="InvoiceText">
+				<expression><![CDATA[$F{invoicingZIP}+" "+$F{invoicingCity}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="a1b3037d-dfb1-48ae-b294-d9e0e9b71ddc" mode="Transparent" x="0" y="30" width="218" height="15" backcolor="#F56C69" blankWhenNull="true" hTextAlign="Right" style="InvoiceText">
+				<expression><![CDATA[$F{invoicingStreet}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="fa7a71f0-c705-4985-9ed5-ca646111ae22" mode="Transparent" x="0" y="0" width="218" height="15" backcolor="#F56C69" blankWhenNull="true" hTextAlign="Right" style="InvoiceText">
+				<expression><![CDATA[$F{invoicingFullname}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="5b3fcfe6-255a-41b0-bff5-324abf4f045b" x="0" y="15" width="218" height="15" blankWhenNull="true" removeLineWhenBlank="true" hTextAlign="Right" style="InvoiceText">
+				<expression><![CDATA[$F{invoicingSecondNameLine}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</title>
+	<pageHeader height="98" splitType="Stretch">
+		<element kind="textField" uuid="5b0620e8-ceff-4839-8822-91e62e3617b5" x="422" y="2" width="98" height="15" hTextAlign="Right" style="InvoiceText">
+			<expression><![CDATA[$F{invoiceNumber}]]></expression>
+		</element>
+		<element kind="textField" uuid="19db7203-00e9-4851-8ddb-1a898f7798fa" x="422" y="17" width="98" height="15" pattern="dd.MM.yyyy" hTextAlign="Right" style="InvoiceText">
+			<expression><![CDATA[java.util.Date.from( java.time.Instant.parse( $F{billIssueDate}))]]></expression>
+		</element>
+		<element kind="textField" uuid="4545690e-14ca-4221-94c0-99006c409ad4" x="125" y="33" width="100" height="15" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceText">
+			<expression><![CDATA[$F{vatId}]]></expression>
+		</element>
+		<element kind="textField" uuid="704f638a-f9a5-4bb8-839d-d0dbcc0e7f01" x="322" y="2" width="100" height="15" style="InvoiceText">
+			<expression><![CDATA[$R{header.invoicenumber}]]></expression>
+		</element>
+		<element kind="textField" uuid="17ad29ea-7989-4637-b063-39d2035a481e" x="322" y="17" width="100" height="15" style="InvoiceText">
+			<expression><![CDATA[$R{header.invoicedate}]]></expression>
+		</element>
+		<element kind="textField" uuid="b5d392a7-63d5-4430-b693-bdebd625993c" x="44" y="33" width="80" height="15" removeLineWhenBlank="true" style="InvoiceText">
+			<printWhenExpression><![CDATA[!$F{vatId}.isEmpty()]]></printWhenExpression>
+			<expression><![CDATA[$R{header.vatnumber}]]></expression>
+		</element>
+		<element kind="textField" uuid="d5c321f7-2992-46d2-b7b6-ed276da1419a" x="44" y="48" width="80" height="15" removeLineWhenBlank="true" style="InvoiceText">
+			<printWhenExpression><![CDATA[!$F{customerId}.isEmpty()]]></printWhenExpression>
+			<expression><![CDATA[$R{header.customerId}]]></expression>
+		</element>
+		<element kind="textField" uuid="b631e56b-7145-4240-ab52-9470e323e328" x="125" y="48" width="100" height="15" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceText">
+			<expression><![CDATA[$F{customerId}]]></expression>
+		</element>
+		<element kind="textField" uuid="80f8f7f1-b120-4872-b323-7771ec01421e" x="44" y="63" width="80" height="15" forecolor="#FFFFFF" removeLineWhenBlank="true" style="InvoiceText">
+			<printWhenExpression><![CDATA[!$F{orderId}.isEmpty()]]></printWhenExpression>
+			<expression><![CDATA[$R{header.orderId}]]></expression>
+		</element>
+		<element kind="textField" uuid="a7129d7c-47ea-4311-8736-6153eba769a3" x="125" y="63" width="100" height="15" forecolor="#FFFFFF" blankWhenNull="true" removeLineWhenBlank="true" style="InvoiceText">
+			<expression><![CDATA[$F{orderId}]]></expression>
+		</element>
+		<element kind="textField" uuid="dd972be9-5f2f-43a9-ae4f-afb4594e9776" x="44" y="2" width="181" height="15" style="InvoiceText">
+			<expression><![CDATA[$R{header.invoiceType.invoice}]]></expression>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</pageHeader>
+	<columnHeader splitType="Stretch">
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</columnHeader>
+	<detail>
+		<band height="42" splitType="Stretch">
+			<element kind="component" uuid="9a63a1f5-8c48-491d-8cd6-65dbd67c426c" x="44" y="0" width="476" height="40">
+				<component kind="table">
+					<datasetRun uuid="ce461cfd-45be-4630-963c-b1e032c6170c" subDataset="InvoicePositionsDataset">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.json.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("positions")]]></dataSourceExpression>
+					</datasetRun>
+					<column kind="single" uuid="2e28be3a-58e5-436c-a91e-0829fcee14db" width="79">
+						<columnHeader height="25" rowSpan="1">
+							<element kind="textField" uuid="ce6a1a30-7a4f-4d32-86a5-f85f8a350e4a" x="0" y="0" width="79" height="25" hTextAlign="Center" vTextAlign="Middle" style="Table_TH">
+								<expression><![CDATA[$R{maintable.column.header.date}]]></expression>
+								<box topPadding="2" style="Table_TH"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+						</columnHeader>
+						<detailCell height="15" style="Table_TD">
+							<element kind="textField" uuid="4c0eb875-07b0-406c-9572-73b6eadc62b7" stretchType="ContainerHeight" x="0" y="0" width="79" height="15" textAdjust="StretchHeight" pattern="dd.MM.yyyy HH:mm " blankWhenNull="true" vTextAlign="Middle" style="Table_TD">
+								<paragraph leftIndent="2"/>
+								<expression><![CDATA[java.util.Date.from( java.time.ZonedDateTime.ofInstant(java.time.Instant.parse($F{deliveryTimestamp}), java.time.ZoneId.of("Europe/Berlin")).toInstant())]]></expression>
+								<property name="com.jaspersoft.studio.unit.height" value="mm"/>
+								<box padding="2" style="Table_TD"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+						</detailCell>
+						<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+					</column>
+					<column kind="single" uuid="1269dde4-93ee-4955-974f-2278b7d9224f" width="40">
+						<columnHeader height="25" rowSpan="1">
+							<element kind="textField" uuid="0568f5ad-46c7-42a1-8366-3351ad042378" x="0" y="0" width="40" height="25" hTextAlign="Center" vTextAlign="Middle" style="Table_TH">
+								<expression><![CDATA[$R{maintable.column.header.amount}]]></expression>
+								<box topPadding="2" style="Table_TH"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+						</columnHeader>
+						<detailCell height="15" style="Table_TD">
+							<element kind="textField" uuid="5d2e0e43-3b44-43e2-a5b3-fdea951f2f46" stretchType="ContainerHeight" x="0" y="0" width="40" height="15" textAdjust="StretchHeight" hTextAlign="Right" vTextAlign="Middle" style="Table_TD">
+								<expression><![CDATA[$F{units}]]></expression>
+								<box padding="2" style="Table_TD"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</column>
+					<column kind="single" uuid="a3e7fff2-e268-4636-bc57-43a94a7e19f8" width="65">
+						<columnHeader height="25" rowSpan="1">
+							<element kind="textField" uuid="e1075185-88b2-4d5d-885b-0045bfe0417d" x="0" y="0" width="65" height="25" hTextAlign="Center" vTextAlign="Middle" style="Table_TH">
+								<expression><![CDATA[$R{maintable.column.header.medNumber}]]></expression>
+								<box topPadding="2" style="Table_TH"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+						</columnHeader>
+						<detailCell height="15" style="Table_TD">
+							<element kind="textField" uuid="ffaf1552-b3e6-46ee-8d64-c70afd9b73a0" stretchType="ContainerHeight" x="0" y="0" width="65" height="15" textAdjust="StretchHeight" vTextAlign="Middle" style="Table_TD">
+								<expression><![CDATA[$F{gotNumber}]]></expression>
+								<box padding="2" style="Table_TD"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					</column>
+					<column kind="single" uuid="dd507a78-0791-4dc7-9983-4bdc06bf63d0" width="252">
+						<columnHeader height="25" rowSpan="1">
+							<element kind="textField" uuid="45932433-8fe9-4d5f-bcfb-44cfedeb814f" x="0" y="0" width="252" height="25" hTextAlign="Center" vTextAlign="Middle" style="Table_TH">
+								<expression><![CDATA[$R{maintable.column.header.details}]]></expression>
+								<box topPadding="2" style="Table_TH"/>
+							</element>
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</columnHeader>
+						<detailCell height="15" style="Table_TD">
+							<element kind="textField" uuid="a91e3bf5-26df-437f-b409-3c034796ccaf" stretchType="ContainerHeight" x="0" y="0" width="252" height="15" textAdjust="StretchHeight" blankWhenNull="true" vTextAlign="Middle" style="Table_TD">
+								<paragraph leftIndent="2"/>
+								<expression><![CDATA[$F{gotDescription}]]></expression>
+								<box padding="2" style="Table_TD"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					</column>
+					<column kind="single" uuid="ee66cbce-b846-431d-978f-3e13be9fd7ad" width="40">
+						<columnHeader height="25" rowSpan="1">
+							<element kind="textField" uuid="f8f88ebd-83b2-4b65-8511-18b25e5b23fb" x="0" y="0" width="40" height="25" hTextAlign="Center" vTextAlign="Middle" style="Table_TH">
+								<expression><![CDATA[$R{maintable.column.header.sum}]]></expression>
+								<box topPadding="2" style="Table_TH"/>
+							</element>
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.HorizontalRowLayout"/>
+						</columnHeader>
+						<detailCell height="15" style="Table_TD">
+							<element kind="textField" uuid="8ffe68a4-a4a6-460b-ad6c-6a4cf7732127" stretchType="ContainerHeight" x="0" y="0" width="40" height="15" textAdjust="StretchHeight" pattern="#,##0.00;-#,##0.00" hTextAlign="Right" vTextAlign="Middle" style="Table_TD">
+								<expression><![CDATA[$F{grossAmount}]]></expression>
+								<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+								<box padding="2" style="Table_TD"/>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+				<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+			</element>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+		<band height="40" splitType="Prevent">
+			<printWhenExpression><![CDATA[!($F{additionalInvoiceNote}.equals( "PRIVATE" )||
+	$F{additionalInvoiceNote}.equals( "NON_EU" )||
+	$F{additionalInvoiceNote}.equals( "SMALLBUSINESSRULE" )||$F{additionalInvoiceNote}.equals( "REVERSE_CHARGE" )
+)]]></printWhenExpression>
+			<element kind="frame" uuid="a67c39e8-6096-44cd-b21b-18de3dcee602" mode="Transparent" x="331" y="0" width="189" height="40" backcolor="#FFFFFF">
+				<printWhenExpression><![CDATA[!($F{additionalInvoiceNote}.equals( "PRIVATE" )||
+	$F{additionalInvoiceNote}.equals( "NON_EU" )||
+	$F{additionalInvoiceNote}.equals( "SMALLBUSINESSRULE" )||$F{additionalInvoiceNote}.equals( "REVERSE_CHARGE" )
+)]]></printWhenExpression>
+				<property name="ShowOutOfBoundContent" value="false"/>
+				<element kind="component" uuid="285ea8f5-dfc7-4bf5-b8f6-6aba1e2085ce" x="90" y="25" width="99" height="15" printRepeatedValues="false" removeLineWhenBlank="true" style="InvoiceData">
+					<component kind="table">
+						<datasetRun uuid="8164dd5f-5a0a-464c-a63c-1f0d54404807" subDataset="TaxDetailsDataset">
+							<dataSourceExpression><![CDATA[((net.sf.jasperreports.json.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("taxPositions")]]></dataSourceExpression>
+						</datasetRun>
+						<column kind="single" uuid="d7bd50dd-e009-4cad-aba1-912c3441b88f" width="50">
+							<detailCell height="15">
+								<element kind="textField" uuid="e76dbc8d-2ad1-4d7d-848a-0ac9c92041b5" stretchType="ContainerHeight" x="0" y="0" width="50" height="15" pattern="#,##0.##%" blankWhenNull="true" removeLineWhenBlank="true" hTextAlign="Right" style="InvoiceData">
+									<expression><![CDATA[$F{vatRate}/100]]></expression>
+									<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+									<box rightPadding="2" style="InvoiceData"/>
+								</element>
+								<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+								<property name="com.jaspersoft.studio.unit.height" value="px"/>
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<box>
+									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+							</detailCell>
+							<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+						</column>
+						<column kind="single" uuid="764e5201-794c-44f1-8caf-eb3c3c693933" width="49">
+							<detailCell height="15">
+								<element kind="textField" uuid="16849cf4-d3d4-4eeb-93e9-dcdb5079d6fa" stretchType="ContainerHeight" x="0" y="0" width="49" height="15" pattern="#,##0.00" blankWhenNull="true" hTextAlign="Right" style="InvoiceData">
+									<expression><![CDATA[$F{vatAmount}]]></expression>
+									<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+									<property name="com.jaspersoft.studio.unit.width" value="px"/>
+									<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="2" style="InvoiceData"/>
+								</element>
+								<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+								<property name="com.jaspersoft.studio.unit.width" value="px"/>
+								<box>
+									<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+									<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+							</detailCell>
+							<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+							<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+						</column>
+					</component>
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 1_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 1_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 1_TD"/>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</element>
+				<element kind="textField" uuid="7bf1db0e-8a8d-427a-8b46-80d506baff39" x="90" y="10" width="99" height="15" pattern="#,##0.00" blankWhenNull="true" hTextAlign="Right" style="InvoiceData">
+					<expression><![CDATA[$F{totalNetAmount}]]></expression>
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<box rightPadding="2" style="InvoiceData"/>
+				</element>
+				<element kind="textField" uuid="7a417b56-5d0d-41be-87a6-27995ae1ee7c" x="40" y="10" width="50" height="15" style="InvoiceData">
+					<printWhenExpression><![CDATA[$F{totalNetAmount} != null]]></printWhenExpression>
+					<expression><![CDATA[$R{summarytable.row.net}]]></expression>
+				</element>
+				<element kind="textField" uuid="9cc080ce-5b31-4bfb-9ed7-a73b3e0ea952" x="40" y="25" width="50" height="15" style="InvoiceData">
+					<expression><![CDATA[$R{summarytable.row.vat}]]></expression>
+				</element>
+			</element>
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</band>
+	</detail>
+	<columnFooter height="178" splitType="Immediate">
+		<element kind="textField" uuid="f5727868-3768-4cfd-bad1-62a271a65fae" x="421" y="0" width="99" height="15" pattern="#,##0.00" hTextAlign="Right" style="InvoiceData">
+			<expression><![CDATA[$F{totalGrossAmount}]]></expression>
+			<box rightPadding="2" style="InvoiceData"/>
+		</element>
+		<element kind="textField" uuid="0162bb75-f21f-4ca7-bbb8-15f8661f5dc5" x="44" y="70" width="475" height="36" blankWhenNull="true" style="InvoiceText">
+			<paragraph lineSpacing="Single"/>
+			<expression><![CDATA[($F{additionalInvoiceNote}.equals( "SMALLBUSINESSRULE" )) ?$R{invoicenote.smallbusiness}: ( ($F{additionalInvoiceNote}.equals( "REVERSE_CHARGE" )) ?$R{invoicenote.reversecharge}: ( ($F{additionalInvoiceNote}.equals( "PRIVATE" )) ?$R{invoicenote.private}: ($F{additionalInvoiceNote}.equals( "NON_EU" )) ?$R{invoicenote.non_eu}: ""))]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</element>
+		<element kind="textField" uuid="9dd0d91e-368b-43a8-be54-34dc0ca4fed4" x="371" y="0" width="50" height="15" style="InvoiceData">
+			<expression><![CDATA[$R{summarytable.row.sum}]]></expression>
+		</element>
+		<element kind="textField" uuid="e13c2e84-0777-48e6-950e-d526e3ff976d" x="44" y="50" width="474" height="15" blankWhenNull="true" style="InvoiceText">
+			<expression><![CDATA[($F{paymentType}.equals("NA")&&$F{creditcardType}.equals("NA"))?"":
+($F{paymentType}.equals("Withheld")?$R{tablefooter.paymenttype.withheld}:
+(($F{totalGrossAmount}>=0)?($R{tablefooter.paymenttype.infotext}):($R{tablefooter.paymenttype.refund}))+" "+
+($F{paymentType}.equals("Card")?($F{creditcardType}.equals("CB_VISA_MASTERCARD")?$R{tablefooter.cardtype.creditcard}:$F{creditcardType}):
+($F{paymentType}.equals("DirectDebit")?($F{directDebitType}.equals("SOFORT")?$R{tablefooter.directDebitType.sofort}:($F{directDebitType}.equals("GIROPAY")?$R{tablefooter.directDebitType.giropay}:$F{directDebitType})):
+$F{paymentType})))]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</element>
+		<element kind="textField" uuid="372441b3-db15-4e5e-b58c-bc9f3a20202c" x="44" y="16" width="326" height="15" style="InvoiceText">
+			<expression><![CDATA[$R{header.currencyInfoText}+" "+$F{currency} +
+($F{additionalInvoiceNote}.equals( "NONE" )  ?" "+$R{header.currencyInfoText2}:"")]]></expression>
+		</element>
+		<element kind="textField" uuid="9daea2ab-ce0f-4923-926a-de1e06949eb0" x="44" y="106" width="474" height="41" style="InvoiceText">
+			<expression><![CDATA[$R{tablefooter.text1}]]></expression>
+		</element>
+		<element kind="textField" uuid="942e20ff-b130-46f5-a1b8-97d1a7c9014f" x="44" y="161" width="474" height="14" style="InvoiceText">
+			<expression><![CDATA[$R{tablefooter.text2}]]></expression>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</columnFooter>
+	<pageFooter height="89" splitType="Stretch">
+		<element kind="textField" uuid="64ee5738-62dd-46a6-b736-ce0a88e8cd23" x="44" y="6" width="479" height="20" blankWhenNull="true" style="footer_text">
+			<expression><![CDATA[$F{invoicingFooterline}]]></expression>
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+		</element>
+		<element kind="frame" uuid="5d90230e-541f-4cba-92aa-d963ab88cd29" x="382" y="29" width="141" height="58">
+			<element kind="textField" uuid="e6419557-df27-4bbf-b20f-d52c409bd40a" mode="Transparent" x="3" y="14" width="134" height="9" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingIBAN}.isEmpty()?"":$R{footer.iban}+": "+$F{invoicingIBAN}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="0e8ae8a6-3cd2-4374-8d3c-5b8a7219e37c" mode="Transparent" x="3" y="5" width="134" height="9" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingBankName}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="4e55ae50-2c1d-4540-8eaa-4419ad4fa714" mode="Transparent" x="3" y="23" width="134" height="9" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingHomepage}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<box>
+				<topPen lineWidth="0.5"/>
+			</box>
+		</element>
+		<element kind="frame" uuid="b9c37d2e-60f3-4d4f-9b57-37ecf93cc2f0" x="182" y="29" width="200" height="58">
+			<element kind="textField" uuid="dc7f4673-7f63-4d4c-af4a-5e70fc69d6ff" mode="Transparent" x="0" y="5" width="200" height="9" backcolor="#F56C69" blankWhenNull="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingTypeOfLegalRepresentatives}.equals("NONE")?"":((
+$F{invoicingTypeOfLegalRepresentatives}.equals("PARTNER")?$R{footer.typeOfLegalRepresentatives.partner}+": ": $F{invoicingTypeOfLegalRepresentatives}.equals("MANAGING_DIRECTOR")?$R{footer.typeOfLegalRepresentatives.managingdirector}+": ":$R{footer.typeOfLegalRepresentatives.boardmembers}+": ")+$F{invoicingCompanyLegalRepresentatives})]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="21d22dc8-528a-49a9-b940-3910512e5040" mode="Transparent" x="0" y="23" width="200" height="9" backcolor="#F56C69" blankWhenNull="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingCompanyRegistrationData}.isEmpty()?"":($R{footer.registercourt}+": "+$F{invoicingCompanyRegistrationData})]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="3d638414-5abb-424d-93cc-b10b69d9e31a" mode="Transparent" x="0" y="14" width="200" height="9" backcolor="#F56C69" blankWhenNull="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingCompanyHeadOffice}.isEmpty()?"":($R{footer.registeredcity}+": "+$F{invoicingCompanyHeadOffice})]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="5c96d161-8fdd-49ca-97e6-aa8245087cea" mode="Transparent" x="0" y="32" width="200" height="9" backcolor="#F56C69" blankWhenNull="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingCompanyChairman}.isEmpty()?"":($R{footer.chairman}+": "+$F{invoicingCompanyChairman})]]></expression>
+			</element>
+			<box>
+				<topPen lineWidth="0.5"/>
+			</box>
+		</element>
+		<element kind="frame" uuid="024c7132-8a39-43de-b96a-3981e7f60ba4" x="44" y="29" width="138" height="58">
+			<element kind="textField" uuid="cca49382-ee6e-4456-bbfd-e8ef57320b3e" mode="Transparent" x="0" y="14" width="130" height="9" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingVatId}.isEmpty()?"":($R{footer.vatId}+" "+$F{invoicingVatId})]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="5fbbe9b3-063c-49d0-aea4-23533dc039d7" x="0" y="5" width="130" height="9" blankWhenNull="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingFullname}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+			</element>
+			<element kind="textField" uuid="2b379eed-3bbf-4b18-abaf-5cba1a50172b" mode="Transparent" x="0" y="23" width="130" height="9" backcolor="#F56C69" blankWhenNull="true" removeLineWhenBlank="true" style="footer_text">
+				<expression><![CDATA[$F{invoicingTaxId}.isEmpty()?"":($R{footer.taxId}+" "+$F{invoicingTaxId})]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			</element>
+			<box>
+				<topPen lineWidth="0.5"/>
+			</box>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</pageFooter>
+	<summary splitType="Stretch">
+		<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+	</summary>
+</jasperReport>
