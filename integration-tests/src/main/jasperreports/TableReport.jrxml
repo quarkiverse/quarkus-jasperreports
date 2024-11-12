@@ -1,0 +1,91 @@
+<!-- Created with Jaspersoft Studio version 7.0.1.final using JasperReports Library version 7.0.0  -->
+<jasperReport name="TableDatasetReport" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" resourceBundle="data/simple" uuid="9f285852-1dcd-4d7d-8f49-e5e47f1b0142">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SimpleJsonDataAdapter.jrdax"/>
+	<dataset name="InvoicePositionsDataset" uuid="435d5d29-31d6-44d3-83bb-06b2603ecba1">
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="SimpleJsonDataAdapter.jrdax"/>
+		<query language="json"><![CDATA[positions]]></query>
+		<field name="deliveryTimestamp" class="java.lang.String">
+			<description><![CDATA[deliveryTimestamp]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="deliveryTimestamp"/>
+		</field>
+		<field name="product" class="java.lang.String">
+			<description><![CDATA[product]]></description>
+			<property name="net.sf.jasperreports.json.field.expression" value="product"/>
+		</field>
+	</dataset>
+	<parameter name="jsonString" class="java.lang.String"/>
+	<parameter name="JSON_INPUT_STREAM" class="java.io.InputStream">
+		<defaultValueExpression><![CDATA[new java.io.ByteArrayInputStream($P{jsonString}.getBytes("UTF-8"))]]></defaultValueExpression>
+	</parameter>
+	<query language="json"><![CDATA[]]></query>
+	<field name="name" class="java.lang.String">
+		<description><![CDATA[name]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="name"/>
+	</field>
+	<field name="positions" class="java.lang.String">
+		<description><![CDATA[positions]]></description>
+		<property name="net.sf.jasperreports.json.field.expression" value="positions"/>
+	</field>
+	<background splitType="Stretch"/>
+	<title height="132" splitType="Stretch">
+		<element kind="staticText" uuid="5b6b4aee-eddb-496c-b44f-252e874f04de" x="20" y="14" width="100" height="30">
+			<text><![CDATA[Dataset test report]]></text>
+		</element>
+		<element kind="staticText" uuid="c442ec8d-a1b7-453b-8f13-f96d05d9ebfb" x="20" y="50" width="280" height="30">
+			<text><![CDATA[Report is filled via JSON Datasource]]></text>
+		</element>
+		<element kind="staticText" uuid="ebe85d50-a350-42f0-aba5-09e4657516be" x="20" y="90" width="280" height="30">
+			<text><![CDATA[Product table is filled via Dataset]]></text>
+		</element>
+	</title>
+	<pageHeader height="35" splitType="Stretch">
+		<element kind="textField" uuid="77f2c496-4366-4f1a-b2c4-ed32e17a6735" x="10" y="2" width="110" height="30">
+			<expression><![CDATA[$R{header.customername}]]></expression>
+		</element>
+		<element kind="textField" uuid="71f90b00-0588-470b-9587-42d1bf27ed23" x="120" y="2" width="100" height="30">
+			<expression><![CDATA[$F{name}]]></expression>
+			<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="6306912b-ae5e-4963-a473-c3b063408b06"/>
+		</element>
+	</pageHeader>
+	<detail>
+		<band height="239" splitType="Stretch">
+			<element kind="component" uuid="c0f12572-7e9d-4d76-ad8a-8aa2c3bc0b5c" x="70" y="10" width="200" height="60">
+				<component kind="table">
+					<datasetRun uuid="ce461cfd-45be-4630-963c-b1e032c6170c" subDataset="InvoicePositionsDataset">
+						<dataSourceExpression><![CDATA[((net.sf.jasperreports.json.data.JsonDataSource)$P{REPORT_DATA_SOURCE}).subDataSource("positions")]]></dataSourceExpression>
+					</datasetRun>
+					<column kind="single" uuid="8fe962c1-5474-4a1a-a3d4-413e04e2232c" width="130">
+						<columnHeader height="30" rowSpan="1">
+							<element kind="textField" uuid="e4224d7b-12ae-4735-87cf-a7b179a3da85" x="0" y="0" width="130" height="30">
+								<expression><![CDATA[$R{header.date}]]></expression>
+							</element>
+						</columnHeader>
+						<detailCell height="30">
+							<element kind="textField" uuid="887cca1b-e127-4cff-9b2d-9af51503f1ae" x="0" y="0" width="130" height="30" textAdjust="StretchHeight" pattern="dd.MM.yyyy HH:mm " blankWhenNull="true">
+								<expression><![CDATA[String.format("%1$te. %1$tB %1$tY", java.util.Date.from( java.time.Instant.parse( $F{deliveryTimestamp})))]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+					</column>
+					<column kind="single" uuid="ba47cd24-137c-420a-bb78-5e9b28b7ca63" width="150">
+						<columnHeader height="30" rowSpan="1">
+							<element kind="textField" uuid="68832f56-ab89-4d44-9c21-7b90c4ef40cb" x="0" y="0" width="150" height="30">
+								<expression><![CDATA[$R{header.product}]]></expression>
+							</element>
+						</columnHeader>
+						<detailCell height="30">
+							<element kind="textField" uuid="57059718-24c8-4908-8c6b-6d1697b81ac1" x="0" y="0" width="150" height="30">
+								<expression><![CDATA[$F{product}]]></expression>
+							</element>
+						</detailCell>
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+					</column>
+				</component>
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+				<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+				<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+				<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+			</element>
+		</band>
+	</detail>
+</jasperReport>
