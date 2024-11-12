@@ -250,6 +250,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
 
+        // Darwin AWT MacOS
+        classNames.add(java.awt.desktop.QuitStrategy.class.getName());
+
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
         Log.debugf("Jasper Reflection: %s", uniqueClasses);
@@ -276,7 +279,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "javax.swing.text.rtf",
                 "sun.datatransfer",
                 "sun.swing",
-                "sun.lwawt.LWWindowPeer",
+                "sun.lwawt.LWWindowPeer", // Darwin AWT MacOs
                 net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement.class.getPackageName(),
                 net.sf.jasperreports.components.iconlabel.IconLabelElement.class.getPackageName(),
                 net.sf.jasperreports.components.list.UnusedSpaceImageRenderer.class.getName(),
