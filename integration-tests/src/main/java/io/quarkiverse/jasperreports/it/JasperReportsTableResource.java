@@ -53,8 +53,110 @@ import net.sf.jasperreports.json.query.JsonQueryExecuterFactory;
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 public class JasperReportsTableResource extends AbstractJasperResource {
 
-    private static final String REPORT_NAME = "TableReport.jasper";
+    private static final String JSON_REPORT_NAME = "TableReport.jasper";
     private static final String JSON_STRING = "{'name':'Hugo Meier','positions': [{'deliveryTimestamp' : '2024-10-24T16:40:56Z','product':'product1'},{'deliveryTimestamp' : '2024-10-24T16:40:56Z','product':'product2'}]}";
+
+    private static final String INVOICE_REPORT_NAME = "FixedPriceGoAEInvoice.jasper";
+    private static final String INVOICE_JSON = """
+            {
+              "templateId" : "FixedPriceGoAEInvoice",
+              "locale" : "de_DE",
+              "timezone" : null,
+              "gender" : null,
+              "academicTitle" : null,
+              "receiverFullname" : null,
+              "receiverNameSecondLine" : null,
+              "receiverFirstname" : "Lisandro",
+              "receiverLastname" : "W.",
+              "tenantID" : "dev",
+              "transactionId" : "15187",
+              "invoicingFullname" : "Dr Meier",
+              "invoicingSecondNameLine" : null,
+              "invoicingStreet" : "RingstraÃŸe 2323",
+              "invoicingHousenumber" : null,
+              "invoicingAdditionalAddressLine" : null,
+              "invoicingZIP" : "80342",
+              "invoicingCity" : "Minga",
+              "invoicingCountry" : "Germany",
+              "invoicingVatId" : null,
+              "invoicingTaxId" : "117/266/03333336",
+              "invoicingCompanyLegalForm" : null,
+              "invoicingCompanyHeadOffice" : null,
+              "invoicingCompanyChairman" : null,
+              "invoicingCompanyRegistrationData" : null,
+              "invoicingCompanyLegalRepresentatives" : null,
+              "invoicingTypeOfLegalRepresentatives" : null,
+              "invoicingIBAN" : null,
+              "invoicingBankName" : null,
+              "invoicingFooterline" : null,
+              "invoicingReferenceNumber" : null,
+              "invoicingEMail" : null,
+              "invoicingPhone" : null,
+              "invoicingFax" : null,
+              "invoicingHomepage" : null,
+              "salutation" : null,
+              "companyName" : "",
+              "fullname" : "Heidi W.",
+              "nameSecondLine" : null,
+              "street" : "Muellerstr. 24",
+              "additionalAddressLine" : null,
+              "zip" : "80538",
+              "housenumber" : null,
+              "city" : "Minga",
+              "country" : "Germany",
+              "vatId" : null,
+              "billIssueDate" : "2024-10-24T16:40:56Z",
+              "invoiceNumber" : "ex17-01233",
+              "servicePeriodFrom" : null,
+              "servicePeriodTo" : null,
+              "currency" : "EUR",
+              "invoiceType" : "Invoice",
+              "invoiceSpecificData" : {
+                "petName" : null,
+                "petType" : null
+              },
+              "additionalInvoiceNote" : "NONE",
+              "customerId" : null,
+              "customerExternalId" : null,
+              "orderId" : "1389ab31-0648-4cb4-a95d-8907ff492ffb",
+              "contractId" : null,
+              "positions" : [ {
+                "product" : "PersonalCalendarAppointment",
+                "description" : "VTest",
+                "additionalInfo" : null,
+                "units" : 1.0,
+                "pricePerUnit" : 39.81,
+                "netAmount" : 39.81,
+                "vatRate" : null,
+                "vatAmount" : 7.56,
+                "grossAmount" : 47.37,
+                "deliveryTimestamp" : "2024-10-24T16:40:56Z",
+                "unit" : "NUMBER",
+                "invoiceReferenceNumber" : null,
+                "medFactor" : null,
+                "medNumber" : null,
+                "invoicePositionSpecificData" : {
+                  "description" : "Beratung ",
+                  "details" : "1",
+                  "hostName" : "Dr Meier"
+                },
+                "discounts" : [ ]
+              } ],
+              "taxPositions" : [ {
+                "vatRate" : 19.0,
+                "vatAmount" : 7.56
+              } ],
+              "totalNetAmount" : 39.81,
+              "totalGrossAmount" : 47.37,
+              "paymentType" : "Card",
+              "creditcardType" : "CB_VISA_MASTERCARD",
+              "directDebitType" : null,
+              "additionalInvoiceText" : null,
+              "invoiceTextData" : null,
+              "customerSpecificText1" : null,
+              "customerSpecificText2" : null
+            }
+            """;
 
     @Inject
     ReadOnlyStreamingService repo;
@@ -68,12 +170,24 @@ public class JasperReportsTableResource extends AbstractJasperResource {
         params.put(JsonQueryExecuterFactory.JSON_NUMBER_PATTERN, "#,##0.##");
         params.put(JsonQueryExecuterFactory.JSON_LOCALE, Locale.ENGLISH);
         params.put(JRParameter.REPORT_LOCALE, Locale.US);
-        return fillToCsv(REPORT_NAME, params);
+        return fillToCsv(JSON_REPORT_NAME, JSON_STRING, params);
     }
 
-    protected Response fillToCsv(String reportFile, Map<String, Object> params) {
+    @GET
+    @Path("invoice")
+    @APIResponse(responseCode = "200", description = "Document downloaded", content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM, schema = @Schema(type = SchemaType.STRING, format = "binary")))
+    public Response invoice() {
+        Map<String, Object> params = new HashMap<>();
+        params.put(JsonQueryExecuterFactory.JSON_DATE_PATTERN, "yyyy-MM-dd");
+        params.put(JsonQueryExecuterFactory.JSON_NUMBER_PATTERN, "#,##0.##");
+        params.put(JsonQueryExecuterFactory.JSON_LOCALE, Locale.ENGLISH);
+        params.put(JRParameter.REPORT_LOCALE, Locale.US);
+        return fillToCsv(INVOICE_REPORT_NAME, INVOICE_JSON, params);
+    }
+
+    protected Response fillToCsv(String reportFile, String jsonString, Map<String, Object> params) {
         try {
-            InputStream fillParameterStream = IOUtils.toInputStream(JSON_STRING, StandardCharsets.UTF_8); // convert the json string to input stream
+            InputStream fillParameterStream = IOUtils.toInputStream(jsonString, StandardCharsets.UTF_8); // convert the json string to input stream
             long start = System.currentTimeMillis();
             JasperPrint jasperPrint = JasperFillManager.getInstance(repo.getContext()).fillFromRepo(reportFile,
                     params, new JsonDataSource(fillParameterStream));
