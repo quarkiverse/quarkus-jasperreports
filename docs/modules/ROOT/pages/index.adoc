@@ -41,13 +41,13 @@ Caused by: java.sql.SQLException: Enlisted connection used without active transa
 ----
 
 
-IMPORTANT: In your service you must use `@Transactional(Transactional.TxType.NEVER)` above the method that is filling your report.
+IMPORTANT: In your service you must use `@Transactional(Transactional.TxType.NOT_SUPPORTED)` above the method that is filling your report.
 [source,java]
 ----
 @Inject
 DataSource datasource;
 
-@Transactional(Transactional.TxType.NEVER)
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
 public byte[] text() throws JRException, SQLException {
     JasperPrint jasperPrint = null;
      try (final Connection connection = datasource.getConnection()) {

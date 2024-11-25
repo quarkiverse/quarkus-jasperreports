@@ -27,7 +27,7 @@ import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.pdf.JRPdfExporter;
 
 @ApplicationScoped
-@Transactional(Transactional.TxType.NEVER)
+@Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DatabaseReportService extends AbstractJasperResource {
 
     @Inject
