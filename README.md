@@ -101,6 +101,7 @@ Thanks go to these wonderful people ([emoji key](https://allcontributors.org/doc
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/joggl71xpt"><img src="https://avatars.githubusercontent.com/u/115216319?v=4?s=100" width="100px;" alt="joggl71xpt"/><br /><sub><b>joggl71xpt</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-jasperreports/issues?q=author%3Ajoggl71xpt" title="Bug reports">🐛</a> <a href="https://github.com/quarkiverse/quarkus-jasperreports/commits?author=joggl71xpt" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/SATISHEEEK"><img src="https://avatars.githubusercontent.com/u/35563759?v=4?s=100" width="100px;" alt="Honza "SATISH" Brtek"/><br /><sub><b>Honza "SATISH" Brtek</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-jasperreports/commits?author=SATISHEEEK" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
