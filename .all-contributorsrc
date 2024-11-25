@@ -84,6 +84,15 @@
         "bug",
         "test"
       ]
+    },
+    {
+      "login": "SATISHEEEK",
+      "name": "Honza \"SATISH\" Brtek",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35563759?v=4",
+      "profile": "https://github.com/SATISHEEEK",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
