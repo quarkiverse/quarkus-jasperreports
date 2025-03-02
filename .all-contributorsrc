@@ -93,6 +93,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "BourassIS",
+      "name": "Issam BOURASS",
+      "avatar_url": "https://avatars.githubusercontent.com/u/126097953?v=4",
+      "profile": "https://github.com/BourassIS",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
