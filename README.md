@@ -46,9 +46,9 @@ simply add these lines to your `DockerFile.native` file:
 ```shell
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
 
-######################### Set up environment for POI #############################
+######################### Set up environment for POI ##################################
 RUN microdnf update -y && microdnf install -y freetype fontconfig && microdnf clean all
-######################### Set up environment for POI #############################
+######################### Set up environment for POI ##################################
 
 WORKDIR /work/
 RUN chown 1001 /work \

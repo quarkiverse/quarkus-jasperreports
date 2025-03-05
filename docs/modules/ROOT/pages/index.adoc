@@ -88,9 +88,9 @@ When building native images in Docker using the standard Quarkus Docker configur
 ----
 FROM registry.access.redhat.com/ubi9/ubi-minimal:9.5
 
-######################### Set up environment for POI ##########################
+######################### Set up environment for POI ##################################
 RUN microdnf update -y && microdnf install -y freetype fontconfig && microdnf clean all
-######################### Set up environment for POI ##########################
+######################### Set up environment for POI ##################################
 
 WORKDIR /work/
 RUN chown 1001 /work \
