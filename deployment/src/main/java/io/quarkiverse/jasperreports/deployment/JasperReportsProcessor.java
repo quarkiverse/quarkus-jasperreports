@@ -607,7 +607,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                         if (shouldUpdateFile(item.getPath(), outputFilePath)) {
                             Log.infof("Compiling %s into %s", item.getPath().toString(), outputFile);
 
-                            try (InputStream inputStream = JRLoader.getLocationInputStream(item.getPath().toString());
+                            try (InputStream inputStream = JRLoader
+                                    .getLocationInputStream(item.getPath().toAbsolutePath().toString());
                                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
                                 // Compile the report
