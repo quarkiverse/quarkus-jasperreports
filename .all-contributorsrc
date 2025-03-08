@@ -111,6 +111,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "teodord",
+      "name": "Teodor Danciu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2511035?v=4",
+      "profile": "https://github.com/teodord",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
