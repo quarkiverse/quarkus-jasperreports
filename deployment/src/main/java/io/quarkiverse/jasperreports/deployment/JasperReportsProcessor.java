@@ -331,6 +331,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/pptx/**");
         builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/xlsx/**");
         builder.includeGlob("net/sf/jasperreports/fonts/icons/**");
+        builder.includeGlob("net/sf/jasperreportsengine/images/**");
         nativeImageResourcePatterns.produce(builder.build());
     }
 
