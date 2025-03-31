@@ -10,7 +10,7 @@
     <name>Quarkus JasperReports - Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
     <dependencies>
         <dependency>
