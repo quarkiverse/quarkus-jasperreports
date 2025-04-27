@@ -6,7 +6,7 @@
 <br>
 
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.jasperreports/quarkus-jasperreports?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.jasperreports/quarkus-jasperreports)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
 [![Build](https://github.com/quarkiverse/quarkus-jasperreports/actions/workflows/build.yml/badge.svg)](https://github.com/quarkiverse/quarkus-jasperreports/actions/workflows/build.yml)
 
 A Quarkus extension that lets you utilize [JasperReports](https://github.com/TIBCOSoftware/jasperreports). JasperReports is an open source Java reporting tool that can write to a variety of targets, such as: screen, a printer, into PDF, HTML, Microsoft Office (XSLX, PPTX, DOCX), RTF, ODT, CSV, or XML files.
