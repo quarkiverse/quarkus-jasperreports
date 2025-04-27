@@ -73,6 +73,7 @@ import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 import io.quarkus.jackson.deployment.IgnoreJsonDeserializeClassBuildItem;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.compilers.ReportExpressionEvaluationData;
+import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperReport;
@@ -373,19 +374,41 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             try {
                 String jasperFilePath = reportFile.getPath().toFile().getAbsolutePath();
                 JasperReport report = (JasperReport) JRLoader.loadObject(JRLoader.getLocationInputStream(jasperFilePath));
-                JRReportCompileData reportData = (JRReportCompileData) report.getCompileData();
-                ReportExpressionEvaluationData mainData = (ReportExpressionEvaluationData) reportData
-                        .getMainDatasetCompileData();
-                String reportDataClass = mainData.getCompileName();
-                if (StringUtils.isNotBlank(reportDataClass)) {
-                    byte[] bytes = (byte[]) mainData.getCompileData();
-                    Log.debugf("JasperReport Data Class: %s Size: %d", reportDataClass, bytes.length);
+                JRReportCompileData compileData = (JRReportCompileData) report.getCompileData();
 
-                    reflectiveClassProducer
-                            .produce(ReflectiveClassBuildItem.builder(reportDataClass).constructors().methods()
-                                    .serialization()
-                                    .build());
-                    additionalClasses.produce(new GeneratedClassBuildItem(true, reportDataClass, bytes));
+                // collect all compiled datasets in this report
+                List<ReportExpressionEvaluationData> datasetClasses = new ArrayList<>();
+
+                // add the main data set (should always found)
+                ReportExpressionEvaluationData mainData = (ReportExpressionEvaluationData) compileData
+                        .getMainDatasetCompileData();
+                if (mainData != null) {
+                    datasetClasses.add((ReportExpressionEvaluationData) compileData.getMainDatasetCompileData());
+                }
+
+                // add any sub datasets if found
+                final JRDataset[] datasets = report.getDatasets();
+                if (datasets != null) {
+                    for (JRDataset dataset : datasets) {
+                        ReportExpressionEvaluationData reportData = (ReportExpressionEvaluationData) compileData
+                                .getDatasetCompileData(dataset);
+                        datasetClasses.add(reportData);
+                    }
+                }
+
+                // produce all dataset classes so they are found in native mode
+                for (ReportExpressionEvaluationData reportData : datasetClasses) {
+                    final String reportDataClass = reportData.getCompileName();
+                    if (StringUtils.isNotBlank(reportDataClass)) {
+                        final byte[] bytes = (byte[]) reportData.getCompileData();
+                        Log.debugf("JasperReport Data Class: %s Size: %d", reportDataClass, bytes.length);
+
+                        reflectiveClassProducer
+                                .produce(ReflectiveClassBuildItem.builder(reportDataClass).constructors().methods()
+                                        .serialization()
+                                        .build());
+                        additionalClasses.produce(new GeneratedClassBuildItem(true, reportDataClass, bytes));
+                    }
                 }
             } catch (JRException e) {
                 Log.error("Error loading JasperReport file class.", e);
@@ -463,7 +486,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      *
      * @param config The ReportConfig containing build configuration settings.
      * @return A ReportRootBuildItem representing the default report root directory.
-     *         If build is enabled and a source is specified in the config, it returns that source.
+     *         If a build is enabled and a source is specified in the config, it returns that source.
      *         Otherwise, it returns the default source path defined in ReportConfig.
      */
     @BuildStep
@@ -737,7 +760,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             FileTime inputFileLastModifiedTime = Files.getLastModifiedTime(inputFilePath);
             FileTime outputFileLastModifiedTime = Files.getLastModifiedTime(outputFilePath);
 
-            // Return false if output file is newer or the same as the input file
+            // Return false if the output file is newer or the same as the input file
             if (outputFileLastModifiedTime.compareTo(inputFileLastModifiedTime) >= 0) {
                 Log.debugf("Skipping update, output file %s is up to date.", outputFilePath.toString());
                 return false;
@@ -748,7 +771,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     }
 
     /**
-     * Finds the project root directory. It starts with build target and searches for a directory under that and if that is not
+     * Finds the project root directory. It starts with a build target and searches for a directory under that, and if that is
+     * not
      * found it uses the start directory.
      *
      * @param outputDirectory The output directory path.

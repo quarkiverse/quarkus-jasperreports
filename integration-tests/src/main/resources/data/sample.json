@@ -1,0 +1,22 @@
+{
+  "tableDataset": [
+    {
+      "item": "Item 001",
+      "description": "Description of item 001",
+      "quantity": 2,
+      "price": 50.0
+    },
+    {
+      "item": "Item 002",
+      "description": "Description of item 002",
+      "quantity": 1,
+      "price": 75.5
+    },
+    {
+      "item": "Item 003",
+      "description": "Description of item 003",
+      "quantity": 4,
+      "price": 20.25
+    }
+  ]
+}
