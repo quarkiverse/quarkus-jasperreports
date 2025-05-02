@@ -31,8 +31,6 @@ class SaxonProcessor extends AbstractJandexProcessor {
                         net.sf.saxon.functions.StringJoin.class)
                 .build());
         reflectiveClasses.produce(ReflectiveClassBuildItem.builder(org.xmlresolver.loaders.XmlLoader.class).build());
-
-        runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem("org.apache.hc.client5.http.impl.auth.NTLMEngineImpl"));
         //@formatter:on
     }
 }
