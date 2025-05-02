@@ -26,7 +26,7 @@
     <properties>
         <!-- Dependency Versions -->
         <version.quarkus>3.15.4</version.quarkus>
-        <version.jasperreports>7.0.2</version.jasperreports>
+        <version.jasperreports>7.0.3</version.jasperreports>
         <version.quarkus-barcode>1.0.0</version.quarkus-barcode>
         <version.quarkus-openpdf>3.1.2</version.quarkus-openpdf>
         <version.quarkus-poi>2.1.2</version.quarkus-poi>
