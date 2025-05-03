@@ -46,6 +46,7 @@ public class BatikProcessor extends AbstractJandexProcessor {
                 "sun.swing",
                 org.apache.batik.anim.values.AnimatableTransformListValue.class.getPackageName(),
                 org.apache.batik.bridge.CSSUtilities.class.getPackageName(),
+                org.apache.batik.bridge.RhinoInterpreter.class.getName(),
                 org.apache.batik.css.engine.SystemColorSupport.class.getPackageName(),
                 org.apache.batik.dom.svg.AbstractSVGTransform.class.getPackageName(),
                 org.apache.batik.ext.awt.MultipleGradientPaint.class.getPackageName(),

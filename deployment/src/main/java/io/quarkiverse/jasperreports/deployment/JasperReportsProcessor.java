@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -393,6 +394,15 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                         ReportExpressionEvaluationData reportData = (ReportExpressionEvaluationData) compileData
                                 .getDatasetCompileData(dataset);
                         datasetClasses.add(reportData);
+                    }
+                }
+
+                Map<Integer, Serializable> crossTabs = compileData.getCrosstabsCompileData();
+                if (crossTabs != null) {
+                    for (Serializable value : crossTabs.values()) {
+                        if (value instanceof ReportExpressionEvaluationData reportData) {
+                            datasetClasses.add(reportData);
+                        }
                     }
                 }
 
