@@ -3,7 +3,6 @@ package io.quarkiverse.jasperreports.deployment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 
 /**
  * A build step class responsible for registering classes related to the Saxon library
@@ -18,11 +17,9 @@ class SaxonProcessor extends AbstractJandexProcessor {
      * Registers the required Saxon and XML resolver classes for reflection and runtime initialization.
      *
      * @param reflectiveClasses the build producer for registering classes for reflection
-     * @param runtimeInitializedClasses the build producer for marking classes as needing runtime initialization
      */
     @BuildStep
-    void registerSaxon(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses,
-            BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitializedClasses) {
+    void registerSaxon(BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
         //@formatter:off
         reflectiveClasses.produce(ReflectiveClassBuildItem.builder(
                         net.sf.saxon.Configuration.class,

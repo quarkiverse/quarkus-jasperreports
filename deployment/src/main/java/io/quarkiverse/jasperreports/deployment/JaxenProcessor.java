@@ -14,7 +14,8 @@ import io.quarkus.logging.Log;
  * A build step class responsible for registering classes related to the Jaxen library
  * for reflection and runtime initialization during the Quarkus build process.
  * <p>
- * Jaxen supports 4 XML libs DOM, DOM4J, JDOM, XOM but we want to use native DOM so we exclude all the other 3rd party libs from
+ * Jaxen supports 4 XML libs DOM, DOM4J, JDOM, XOM, but we want to use native DOM, so we exclude all the other 3rd party libs
+ * from
  * classloading.
  * </p>
  */

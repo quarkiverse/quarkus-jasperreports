@@ -8,7 +8,6 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
@@ -74,8 +73,7 @@ class JFreeChartProcessor extends AbstractJandexProcessor {
     }
 
     @BuildStep
-    void registerChartResources(BuildProducer<NativeImageResourceBuildItem> nativeImageResourceProducer,
-            BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
+    void registerChartResources(BuildProducer<NativeImageResourceBundleBuildItem> resourceBundleBuildItem) {
         //@formatter:off
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("org.jfree.chart.LocalizationBundle"));
         resourceBundleBuildItem.produce(new NativeImageResourceBundleBuildItem("org.jfree.chart.LocalizationBundle_ca"));
