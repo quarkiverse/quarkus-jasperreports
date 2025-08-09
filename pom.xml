@@ -25,11 +25,12 @@
     </scm>
     <properties>
         <!-- Dependency Versions -->
-        <version.quarkus>3.15.4</version.quarkus>
+        <version.quarkus>3.20.2</version.quarkus>
         <version.jasperreports>7.0.3</version.jasperreports>
         <version.quarkus-barcode>1.0.1</version.quarkus-barcode>
         <version.quarkus-openpdf>3.3.0</version.quarkus-openpdf>
         <version.quarkus-poi>2.1.2</version.quarkus-poi>
+        <version.quarkus-batik>0.0.1</version.quarkus-batik>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -64,6 +65,16 @@
                 <groupId>io.quarkiverse.openpdf</groupId>
                 <artifactId>quarkus-openpdf-deployment</artifactId>
                 <version>${version.quarkus-openpdf}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkiverse.batik</groupId>
+                <artifactId>quarkus-batik</artifactId>
+                <version>${version.quarkus-batik}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkiverse.batik</groupId>
+                <artifactId>quarkus-batik-deployment</artifactId>
+                <version>${version.quarkus-batik}</version>
             </dependency>
             <dependency>
                 <groupId>io.quarkiverse.barcode</groupId>

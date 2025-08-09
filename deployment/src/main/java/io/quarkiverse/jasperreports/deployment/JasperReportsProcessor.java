@@ -465,7 +465,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
     /**
      * A build step that processes the `@JsonDeserialize` annotations in the application,
-     * specifically targeting classes within the `net.sf.jasperreports` package.
+     * specifically focusing on classes within the `net.sf.jasperreports` package.
      * Any class annotated with `@JsonDeserialize` that belongs to this package will be ignored
      * for JSON deserialization purposes by producing an {@link IgnoreJsonDeserializeClassBuildItem}.
      *
@@ -741,7 +741,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             for (URL resource : resources) {
                 Log.debugf("Appending JSON: %s", resource);
                 try (InputStream is = resource.openStream(); JsonReader reader = Json.createReader(is)) {
-                    // Parse JSON object from the resource and add it to the array
+                    // Parse a JSON object from the resource and add it to the array
                     JsonObject json = reader.readObject();
                     arrayBuilder.add(json);
                 }
@@ -783,7 +783,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     /**
      * Finds the project root directory. It starts with a build target and searches for a directory under that, and if that is
      * not
-     * found it uses the start directory.
+     * found, it uses the start directory.
      *
      * @param outputDirectory The output directory path.
      * @return The path to the project root directory.

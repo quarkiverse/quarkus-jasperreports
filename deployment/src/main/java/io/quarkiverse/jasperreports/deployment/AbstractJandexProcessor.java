@@ -38,7 +38,7 @@ abstract class AbstractJandexProcessor {
             final List<String> packageClasses = combinedIndex.getIndex()
                     .getClassesInPackage(aPackage)
                     .stream()
-                    .filter(ClassInfo::isInterface) // Filter only interfaces
+                    .filter(ClassInfo::isInterface) // Filter-only interfaces
                     .map(ClassInfo::toString)
                     .toList();
             classes.addAll(packageClasses);
@@ -60,7 +60,7 @@ abstract class AbstractJandexProcessor {
 
     protected List<String> collectImplementors(CombinedIndexBuildItem combinedIndex, String className) {
         Set<String> classes = combinedIndex.getIndex()
-                .getAllKnownImplementors(DotName.createSimple(className))
+                .getKnownDirectImplementations(DotName.createSimple(className))
                 .stream()
                 .map(ClassInfo::toString)
                 .collect(Collectors.toCollection(HashSet::new));
