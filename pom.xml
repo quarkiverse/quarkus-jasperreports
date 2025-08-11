@@ -30,7 +30,7 @@
         <version.quarkus-barcode>1.0.1</version.quarkus-barcode>
         <version.quarkus-openpdf>3.3.0</version.quarkus-openpdf>
         <version.quarkus-poi>2.1.2</version.quarkus-poi>
-        <version.quarkus-batik>0.0.1</version.quarkus-batik>
+        <version.quarkus-batik>0.0.2</version.quarkus-batik>
     </properties>
     <dependencyManagement>
         <dependencies>
