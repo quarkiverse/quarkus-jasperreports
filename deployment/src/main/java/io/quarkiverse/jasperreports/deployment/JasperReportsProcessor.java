@@ -271,6 +271,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         List<String> classes = collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName());
+        classes.addAll(collectImplementors(combinedIndex,  net.sf.jasperreports.functions.FunctionSupport.class.getName()));
         classes.addAll(Stream.of(
                 "javax.swing",
                 "javax.swing.plaf.metal",
@@ -292,7 +293,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 net.sf.jasperreports.engine.fonts.AwtFontManager.class.getPackageName(),
                 net.sf.jasperreports.engine.type.ColorEnum.class.getPackageName(),
                 net.sf.jasperreports.engine.util.JRQueryExecuterUtils.class.getPackageName(),
-                net.sf.jasperreports.functions.standard.ReportFunctions.class.getPackageName(),
                 net.sf.jasperreports.poi.query.PoiQueryExecuterFactoryBundle.class.getName()).toList());
         //@formatter:on
         Log.debugf("Jasper Runtime: %s", classes);
