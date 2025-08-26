@@ -70,7 +70,7 @@ abstract class AbstractJandexProcessor {
             subclasses.addAll(collectSubclasses(combinedIndex, implementationClass));
         }
         classes.addAll(subclasses);
-        Log.debugf("Implementors: %s", classes);
+        Log.debugf("%S: Implementors: %s", className, classes);
         return new ArrayList<>(classes);
     }
 }

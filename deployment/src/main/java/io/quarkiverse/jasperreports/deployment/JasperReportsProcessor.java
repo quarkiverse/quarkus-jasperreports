@@ -151,6 +151,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         //@formatter:off
         final List<String> classNames = new ArrayList<>();
         // By Implementors: jasper interfaces/abstract classes that are created with Class.forName
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.functions.FunctionSupport.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRDataSource.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRDataSourceProvider.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.JRTemplate.class.getName()));
@@ -162,8 +163,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.xml.ReportLoader.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistry.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName()));
-        classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.engine.JRAbstractExporter.class.getName()));
         classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.dataadapters.AbstractDataAdapter.class.getName()));
+        classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.engine.JRAbstractExporter.class.getName()));
 
         // By Package (utilities etc)
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.compilers.ReportExpressionEvaluationData.class.getPackageName()));
@@ -183,6 +184,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.engine.xml.ReportLoader.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.export.CsvExporterConfiguration.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.extensions.DefaultExtensionsRegistryFactory.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.functions.standard.MathFunctions.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.governors.GovernorExtensionsRegistryFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.jackson.util.JacksonUtil.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.parts.PartComponentsExtensionsRegistryFactory.class.getPackageName()));
@@ -271,7 +273,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<RuntimeInitializedPackageBuildItem> runtimeInitializedPackages) {
         //@formatter:off
         List<String> classes = collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName());
-        classes.addAll(collectImplementors(combinedIndex,  net.sf.jasperreports.functions.FunctionSupport.class.getName()));
         classes.addAll(Stream.of(
                 "javax.swing",
                 "javax.swing.plaf.metal",
