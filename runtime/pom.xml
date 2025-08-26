@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.quarkiverse.jasperreports</groupId>
         <artifactId>quarkus-jasperreports-parent</artifactId>
-        <version>999-SNAPSHOT</version>
+        <version>1.0.10</version>
     </parent>
     <artifactId>quarkus-jasperreports</artifactId>
     <name>Quarkus JasperReports - Runtime</name>
