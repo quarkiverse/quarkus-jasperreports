@@ -26,7 +26,7 @@ abstract class AbstractJandexProcessor {
                     .toList();
             classes.addAll(packageClasses);
         }
-        Log.debugf("Package Classes: %s", classes);
+        Log.debugf("Package '%s' Classes: %s", packageName, classes);
         return classes;
     }
 
