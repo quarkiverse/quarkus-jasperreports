@@ -8,7 +8,7 @@
     </parent>
     <groupId>io.quarkiverse.jasperreports</groupId>
     <artifactId>quarkus-jasperreports-parent</artifactId>
-    <version>1.0.11</version>
+    <version>999-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Quarkus JasperReports - Parent</name>
     <description>JasperReports is an open source reporting library that can be embedded into any Java application.
@@ -21,7 +21,7 @@
         <connection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</connection>
         <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-jasperreports.git</developerConnection>
         <url>https://github.com/quarkiverse/quarkus-jasperreports</url>
-        <tag>1.0.11</tag>
+        <tag>HEAD</tag>
     </scm>
     <properties>
         <!-- Dependency Versions -->
