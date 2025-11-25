@@ -407,7 +407,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 }
 
                 // produce all dataset classes so they are found in native mode
-                final Set<String> uniqueReportClassNames = new LinkedHashSet<>(datasetClasses.size());
                 for (ReportExpressionEvaluationData reportData : datasetClasses) {
                     final String reportDataClass = reportData.getCompileName();
                     if (StringUtils.isNotBlank(reportDataClass)) {
