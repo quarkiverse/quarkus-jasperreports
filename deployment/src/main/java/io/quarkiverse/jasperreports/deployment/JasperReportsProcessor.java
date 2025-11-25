@@ -371,6 +371,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
             List<CompiledReportFileBuildItem> compiledReports) {
 
+        final Set<String> uniqueReportClassNames = new LinkedHashSet<>();
+
         // only care about compiled - .jasper files
         for (CompiledReportFileBuildItem reportFile : compiledReports) {
             Log.debugf("Jasper compiled report: %s", reportFile.getPath());
