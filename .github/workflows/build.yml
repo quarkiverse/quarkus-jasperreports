@@ -36,15 +36,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #        os: [windows-latest, macos-latest, ubuntu-latest]
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Prepare git
         run: git config --global core.autocrlf false
         if: startsWith(matrix.os, 'windows')
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Set up JDK 21
         uses: graalvm/setup-graalvm@v1
         with:

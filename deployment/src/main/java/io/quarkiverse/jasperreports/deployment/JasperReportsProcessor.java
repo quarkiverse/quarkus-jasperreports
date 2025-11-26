@@ -16,11 +16,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -49,7 +45,7 @@ import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.BeanContainerBuildItem;
 import io.quarkus.deployment.IsDevelopment;
-import io.quarkus.deployment.IsNormal;
+import io.quarkus.deployment.IsProduction;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -105,7 +101,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
      * @param generatedResourcesProducer the producer to add generated resources
      * @param packageConfig the package configuration to check for UBER_JAR type
      */
-    @BuildStep(onlyIf = IsNormal.class)
+    @BuildStep(onlyIf = IsProduction.class)
     void uberJarFiles(BuildProducer<GeneratedResourceBuildItem> generatedResourcesProducer,
             BuildProducer<UberJarMergedResourceBuildItem> uberJarMergedProducer,
             PackageConfig packageConfig) {
@@ -371,6 +367,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
             BuildProducer<ReflectiveClassBuildItem> reflectiveClassProducer,
             List<CompiledReportFileBuildItem> compiledReports) {
 
+        final Set<String> uniqueReportClassNames = new LinkedHashSet<>();
+
         // only care about compiled - .jasper files
         for (CompiledReportFileBuildItem reportFile : compiledReports) {
             Log.debugf("Jasper compiled report: %s", reportFile.getPath());
@@ -412,6 +410,11 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 for (ReportExpressionEvaluationData reportData : datasetClasses) {
                     final String reportDataClass = reportData.getCompileName();
                     if (StringUtils.isNotBlank(reportDataClass)) {
+                        if (uniqueReportClassNames.contains(reportDataClass)) {
+                            throw new IllegalStateException("Duplicate report class found: " + reportDataClass
+                                    + " Please review all reports for duplicate names.");
+                        }
+                        uniqueReportClassNames.add(reportDataClass);
                         final byte[] bytes = (byte[]) reportData.getCompileData();
                         Log.debugf("JasperReport Data Class: %s Size: %d", reportDataClass, bytes.length);
 

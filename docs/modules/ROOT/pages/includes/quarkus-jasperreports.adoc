@@ -26,7 +26,7 @@ Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_ENABLE+++`
 endif::add-copy-button-to-env-var[]
 --
 |boolean
-|`true`
+|`+++true+++`
 
 a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperreports-build-source]] [.property-path]##link:#quarkus-jasperreports_quarkus-jasperreports-build-source[`quarkus.jasperreports.build.source`]##
 ifdef::add-copy-button-to-config-props[]
@@ -47,7 +47,7 @@ Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_SOURCE+++`
 endif::add-copy-button-to-env-var[]
 --
 |path
-|`src/main/jasperreports`
+|`+++src/main/jasperreports+++`
 
 a|icon:lock[title=Fixed at build time] [[quarkus-jasperreports_quarkus-jasperreports-build-destination]] [.property-path]##link:#quarkus-jasperreports_quarkus-jasperreports-build-destination[`quarkus.jasperreports.build.destination`]##
 ifdef::add-copy-button-to-config-props[]
@@ -68,7 +68,7 @@ Environment variable: `+++QUARKUS_JASPERREPORTS_BUILD_DESTINATION+++`
 endif::add-copy-button-to-env-var[]
 --
 |path
-|`jasperreports`
+|`+++jasperreports+++`
 
 |===
 

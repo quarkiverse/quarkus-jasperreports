@@ -25,12 +25,12 @@
     </scm>
     <properties>
         <!-- Dependency Versions -->
-        <version.quarkus>3.20.2</version.quarkus>
+        <version.quarkus>3.27.1</version.quarkus>
         <version.jasperreports>7.0.3</version.jasperreports>
-        <version.quarkus-barcode>1.0.2</version.quarkus-barcode>
+        <version.quarkus-barcode>1.1.0</version.quarkus-barcode>
         <version.quarkus-openpdf>3.3.0</version.quarkus-openpdf>
-        <version.quarkus-poi>2.1.2</version.quarkus-poi>
-        <version.quarkus-batik>0.0.2</version.quarkus-batik>
+        <version.quarkus-poi>2.1.4</version.quarkus-poi>
+        <version.quarkus-batik>1.0.0</version.quarkus-batik>
     </properties>
     <dependencyManagement>
         <dependencies>

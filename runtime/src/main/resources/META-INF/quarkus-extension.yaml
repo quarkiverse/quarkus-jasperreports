@@ -13,6 +13,7 @@ metadata:
     - "miscellaneous"
   config:
     - "quarkus.jasperreports."
-  status: "preview"
+  status: "stable"
   guide: "https://docs.quarkiverse.io/quarkus-jasperreports/dev/index.html"
   icon-url: "https://raw.githubusercontent.com/quarkiverse/quarkus-jasperreports/main/docs/modules/ROOT/assets/images/jasperreports.svg"
+  lib-ga: net.sf.jasperreports:jasperreports[https://docs.quarkiverse.io/quarkus-jasperreports/dev/index.html]
