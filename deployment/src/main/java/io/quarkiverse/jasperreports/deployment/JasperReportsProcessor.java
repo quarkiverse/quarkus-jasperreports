@@ -160,6 +160,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.engine.xml.ReportLoader.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistry.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.extensions.ExtensionsRegistryFactory.class.getName()));
+        classNames.addAll(collectImplementors(combinedIndex, net.sf.jasperreports.renderers.Renderable.class.getName()));
         classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.dataadapters.AbstractDataAdapter.class.getName()));
         classNames.addAll(collectSubclasses(combinedIndex, net.sf.jasperreports.engine.JRAbstractExporter.class.getName()));
 
