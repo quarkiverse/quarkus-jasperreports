@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.quarkiverse</groupId>
         <artifactId>quarkiverse-parent</artifactId>
-        <version>20</version>
+        <version>21</version>
     </parent>
     <groupId>io.quarkiverse.jasperreports</groupId>
     <artifactId>quarkus-jasperreports-parent</artifactId>
@@ -25,12 +25,12 @@
     </scm>
     <properties>
         <!-- Dependency Versions -->
-        <version.quarkus>3.30.1</version.quarkus>
-        <version.jasperreports>7.0.3</version.jasperreports>
+        <version.quarkus>3.32.2</version.quarkus>
+        <version.jasperreports>7.0.4</version.jasperreports>
         <version.quarkus-barcode>1.1.0</version.quarkus-barcode>
-        <version.quarkus-openpdf>3.3.1</version.quarkus-openpdf>
-        <version.quarkus-poi>2.1.4</version.quarkus-poi>
-        <version.quarkus-batik>1.0.0</version.quarkus-batik>
+        <version.quarkus-openpdf>3.3.2</version.quarkus-openpdf>
+        <version.quarkus-poi>2.2.1</version.quarkus-poi>
+        <version.quarkus-batik>1.1.0</version.quarkus-batik>
     </properties>
     <dependencyManagement>
         <dependencies>
