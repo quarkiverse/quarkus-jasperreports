@@ -279,6 +279,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "sun.datatransfer",
                 "sun.swing",
                 "sun.lwawt.LWWindowPeer",
+                "org.apache.commons.javaflow.core.PlatformContinuationExecutor",
                 net.sf.jasperreports.components.headertoolbar.HeaderToolbarElement.class.getPackageName(),
                 net.sf.jasperreports.components.iconlabel.IconLabelElement.class.getPackageName(),
                 net.sf.jasperreports.components.list.UnusedSpaceImageRenderer.class.getName(),
