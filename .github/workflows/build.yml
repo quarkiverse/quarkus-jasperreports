@@ -57,5 +57,5 @@ jobs:
         run: mvn -B -U clean install -Dno-format
 
       - name: Build with Maven (Native)
-        run: mvn -B verify -Dnative -Dnative.surefire.skip -Dquarkus.native.native-image-xmx=13g
+        run: mvn -B verify -Dnative -Dnative.surefire.skip -Dquarkus.native.native-image-xmx=13g -Dquarkus.native.additional-build-args=-Dsun.font.layoutengine=icu
         if: ${{ startsWith(matrix.os, 'windows') == false}}
