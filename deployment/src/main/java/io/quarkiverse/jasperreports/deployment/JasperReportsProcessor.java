@@ -269,9 +269,11 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "java.awt.image.BufferedImage",
                 "java.awt.image.DataBufferInt",
                 "java.awt.image.DirectColorModel",
+                "java.awt.color.Color",
                 "java.awt.color.ColorSpace",
                 "sun.font.SunLayoutEngine",
                 "sun.font.GlyphLayout")
+                .constructors()
                 .methods()
                 .fields()
                 .build();
