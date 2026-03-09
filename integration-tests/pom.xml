@@ -136,7 +136,6 @@
             <properties>
                 <skipITs>false</skipITs>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
-                <quarkus.native.additional-build-args>--enable-preview</quarkus.native.additional-build-args>
             </properties>
         </profile>
         <profile>
