@@ -208,8 +208,6 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.add("java.util.Collections$SynchronizedSortedMap");
         classNames.add(byte.class.getName());
         classNames.add(byte[].class.getName());
-        classNames.add(java.awt.Color.class.getName());
-        classNames.add(java.awt.color.ColorSpace.class.getName());
         classNames.add(java.io.Serializable.class.getName());
         classNames.add(java.lang.Boolean.class.getName());
         classNames.add(java.lang.Byte.class.getName());
@@ -260,6 +258,25 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                         .serialization().build());
     }
 
+    @BuildStep
+    ReflectiveClassBuildItem registerAwtReflection() {
+        return ReflectiveClassBuildItem.builder(
+                "java.awt.Font",
+                "java.awt.font.TextLayout",
+                "java.awt.font.FontRenderContext",
+                "java.awt.geom.AffineTransform",
+                "java.awt.geom.Rectangle2D",
+                "java.awt.image.BufferedImage",
+                "java.awt.image.DataBufferInt",
+                "java.awt.image.DirectColorModel",
+                "java.awt.color.ColorSpace",
+                "sun.font.SunLayoutEngine",
+                "sun.font.GlyphLayout")
+                .methods()
+                .fields()
+                .build();
+    }
+
     /**
      * Registers classes and packages that need to be initialized at runtime.
      *
@@ -275,6 +292,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "javax.swing.plaf.metal",
                 "javax.swing.text.html",
                 "javax.swing.text.rtf",
+                "sun.font.HBShaper",
+                "sun.awt.FontConfiguration",
+                "sun.font.TrueTypeFont",
+                "sun.font.CompositeFont",
                 "sun.datatransfer",
                 "sun.swing",
                 "sun.lwawt.LWWindowPeer",
