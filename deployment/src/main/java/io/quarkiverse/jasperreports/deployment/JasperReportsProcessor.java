@@ -208,6 +208,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.add("java.util.Collections$SynchronizedSortedMap");
         classNames.add(byte.class.getName());
         classNames.add(byte[].class.getName());
+        classNames.add(java.awt.Color.class.getName());
+        classNames.add(java.awt.color.ColorSpace.class.getName());
         classNames.add(java.io.Serializable.class.getName());
         classNames.add(java.lang.Boolean.class.getName());
         classNames.add(java.lang.Byte.class.getName());
@@ -269,13 +271,12 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "java.awt.image.BufferedImage",
                 "java.awt.image.DataBufferInt",
                 "java.awt.image.DirectColorModel",
-                "java.awt.color.Color",
-                "java.awt.color.ColorSpace",
                 "sun.font.SunLayoutEngine",
                 "sun.font.GlyphLayout")
                 .constructors()
                 .methods()
                 .fields()
+                .serialization()
                 .build();
     }
 
