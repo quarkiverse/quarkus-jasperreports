@@ -61,6 +61,9 @@
                             <version>${version.quarkus}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>--enable-preview</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
