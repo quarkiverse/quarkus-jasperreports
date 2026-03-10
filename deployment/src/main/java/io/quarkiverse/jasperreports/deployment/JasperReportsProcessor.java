@@ -260,6 +260,26 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                         .serialization().build());
     }
 
+    @BuildStep
+    ReflectiveClassBuildItem registerAwtReflection() {
+        return ReflectiveClassBuildItem.builder(
+                "java.awt.Font",
+                "java.awt.font.TextLayout",
+                "java.awt.font.FontRenderContext",
+                "java.awt.geom.AffineTransform",
+                "java.awt.geom.Rectangle2D",
+                "java.awt.image.BufferedImage",
+                "java.awt.image.DataBufferInt",
+                "java.awt.image.DirectColorModel",
+                "sun.font.SunLayoutEngine",
+                "sun.font.GlyphLayout")
+                .constructors()
+                .methods()
+                .fields()
+                .serialization()
+                .build();
+    }
+
     /**
      * Registers classes and packages that need to be initialized at runtime.
      *
@@ -275,6 +295,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
                 "javax.swing.plaf.metal",
                 "javax.swing.text.html",
                 "javax.swing.text.rtf",
+                "sun.font.HBShaper",
+                "sun.awt.FontConfiguration",
+                "sun.font.TrueTypeFont",
+                "sun.font.CompositeFont",
                 "sun.datatransfer",
                 "sun.swing",
                 "sun.lwawt.LWWindowPeer",
@@ -721,6 +745,16 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         if (nativeConfig.enabled()) {
             // see https://github.com/quarkiverse/quarkus-jasperreports/issues/156
             return new SystemPropertyBuildItem("java.awt.headless", "true");
+        }
+        return null;
+    }
+
+    @BuildStep
+    SystemPropertyBuildItem sysPropFontNative(NativeConfig nativeConfig) {
+        if (nativeConfig.enabled()) {
+            // sun.font.HBShaper utilizes the FFM API for native interactions, which may not be fully supported or
+            // compatible with certain GraalVM configurations, leading to errors in native images.
+            return new SystemPropertyBuildItem("sun.font.layout.ffm", "false");
         }
         return null;
     }
