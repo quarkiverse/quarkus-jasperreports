@@ -28,7 +28,7 @@
         <version.quarkus>3.32.2</version.quarkus>
         <version.jasperreports>7.0.4</version.jasperreports>
         <version.quarkus-barcode>1.1.0</version.quarkus-barcode>
-        <version.quarkus-openpdf>3.3.2</version.quarkus-openpdf>
+        <version.quarkus-openpdf>3.3.3</version.quarkus-openpdf>
         <version.quarkus-poi>2.2.1</version.quarkus-poi>
         <version.quarkus-batik>1.1.0</version.quarkus-batik>
         <maven.compiler.release>21</maven.compiler.release>
