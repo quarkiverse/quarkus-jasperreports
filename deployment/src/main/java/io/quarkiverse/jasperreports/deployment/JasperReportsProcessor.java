@@ -752,8 +752,9 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep
     SystemPropertyBuildItem sysPropFontNative(NativeConfig nativeConfig) {
         if (nativeConfig.enabled()) {
-            // This happens when GraalVM Native Image tries to execute the Foreign Function & Memory API call used by HarfBuzz inside the JDK font engine.
-            return new SystemPropertyBuildItem("sun.font.layoutengine", "icu");
+            // sun.font.HBShaper utilizes the FFM API for native interactions, which may not be fully supported or
+            // compatible with certain GraalVM configurations, leading to errors in native images.
+            return new SystemPropertyBuildItem("sun.font.layout.ffm", "false");
         }
         return null;
     }
