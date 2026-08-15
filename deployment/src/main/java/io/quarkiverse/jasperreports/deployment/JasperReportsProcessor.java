@@ -191,6 +191,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.util.JsonLoader.class.getPackageName()));
 
         // PDF
+        classNames.add(net.sf.jasperreports.pdf.common.SilentPdfTaggerFactory.class.getName());
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
 
@@ -250,6 +251,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, java.time.temporal.TemporalAccessor.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
+
+        classNames.remove("net.sf.jasperreports.pdf.classic.ClassicPdfStructureTreeRoot");
 
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
