@@ -251,6 +251,8 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
 
+        classNames.remove("net.sf.jasperreports.pdf.classic.ClassicPdfStructureTreeRoot");
+
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
         Log.debugf("Jasper Reflection: %s", uniqueClasses);
