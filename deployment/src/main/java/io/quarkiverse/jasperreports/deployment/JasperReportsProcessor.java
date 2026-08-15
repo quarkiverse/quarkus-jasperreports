@@ -191,6 +191,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.util.JsonLoader.class.getPackageName()));
 
         // PDF
+        classNames.add(net.sf.jasperreports.pdf.common.SilentPdfTaggerFactory.class.getName());
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
 
