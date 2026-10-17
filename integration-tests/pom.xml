@@ -55,9 +55,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
-            <version>3.0.8</version>
+            <groupId>io.quarkiverse.pdfbox</groupId>
+            <artifactId>quarkus-pdfbox</artifactId>
+            <version>${version.quarkus-pdfbox}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
