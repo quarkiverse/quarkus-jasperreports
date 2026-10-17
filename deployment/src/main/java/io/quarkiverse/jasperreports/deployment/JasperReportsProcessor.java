@@ -360,6 +360,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         builder.includeGlob("net/sf/jasperreports/engine/export/ooxml/xlsx/**");
         builder.includeGlob("net/sf/jasperreports/fonts/icons/**");
         builder.includeGlob("net/sf/jasperreports/engine/images/**");
+        // JDK HTML parser DTD and default stylesheet used by HtmlEditorKitMarkupProcessor (markup="html")
+        builder.includeGlob("javax/swing/text/html/parser/*.bdtd");
+        builder.includeGlob("javax/swing/text/html/parser/*.bin");
+        builder.includeGlob("javax/swing/text/html/*.css");
         nativeImageResourcePatterns.produce(builder.build());
     }
 
