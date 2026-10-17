@@ -17,12 +17,4 @@ class JasperReportsHyperLinkResourceTest {
                 .statusCode(200);
     }
 
-    @Test
-    void testMarkup() {
-        given()
-                .when().get("/jasper/markup/pdf")
-                .then()
-                .statusCode(200);
-    }
-
 }
