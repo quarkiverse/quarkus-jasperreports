@@ -132,6 +132,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-json"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf-core"));
     }
 
     /**
