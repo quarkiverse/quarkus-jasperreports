@@ -63,6 +63,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuil
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.pkg.NativeConfig;
 import io.quarkus.deployment.pkg.PackageConfig;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
@@ -484,6 +485,19 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         for (String proxyClassName : classes) {
             proxyDefinitions.produce(new NativeImageProxyDefinitionBuildItem(proxyClassName));
         }
+    }
+
+    /**
+     * Registers JasperReports service providers for native image compilation.
+     * <p>
+     * JRPdfExporter discovers its PdfProducerFactory implementation via ServiceLoader.
+     *
+     * @param serviceProviders The producer for ServiceProviderBuildItem
+     */
+    @BuildStep
+    void registerJasperReportsServiceProviders(BuildProducer<ServiceProviderBuildItem> serviceProviders) {
+        serviceProviders.produce(ServiceProviderBuildItem
+                .allProvidersFromClassPath(net.sf.jasperreports.pdf.common.PdfProducerFactory.class.getName()));
     }
 
     /**
