@@ -63,6 +63,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBundleBuil
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourcePatternsBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.pkg.NativeConfig;
 import io.quarkus.deployment.pkg.PackageConfig;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
@@ -132,6 +133,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-jdt"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-json"));
         index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf"));
+        index.produce(new IndexDependencyBuildItem("net.sf.jasperreports", "jasperreports-pdf-core"));
     }
 
     /**
@@ -192,9 +194,10 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
         // PDF
         classNames.add(net.sf.jasperreports.pdf.common.SilentPdfTaggerFactory.class.getName());
-        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.ClassicPdfProducerFactory.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.PdfXmpCreator.class.getPackageName()));
+        classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.classic.producer.StandardPdfProducerFactory.class.getPackageName()));
         classNames.addAll(collectClassesInPackage(combinedIndex, net.sf.jasperreports.pdf.type.PdfVersionEnum.class.getPackageName()));
-        classNames.remove(net.sf.jasperreports.pdf.classic.ClassicPdfStructureTreeRoot.class.getName());
+        classNames.remove(net.sf.jasperreports.pdf.classic.producer.StandardPdfStructureTreeRoot.class.getName());
 
         // basic Java classes found in reports for serialization
         classNames.add("java.util.Collections$CheckedCollection");
@@ -253,7 +256,7 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         classNames.addAll(collectImplementors(combinedIndex, java.util.Collection.class.getName()));
         classNames.addAll(collectImplementors(combinedIndex, java.util.Map.Entry.class.getName()));
 
-        classNames.remove("net.sf.jasperreports.pdf.classic.ClassicPdfStructureTreeRoot");
+        classNames.remove("net.sf.jasperreports.pdf.classic.producer.StandardPdfStructureTreeRoot");
 
         //@formatter:on
         final TreeSet<String> uniqueClasses = new TreeSet<>(classNames);
@@ -482,6 +485,19 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
         for (String proxyClassName : classes) {
             proxyDefinitions.produce(new NativeImageProxyDefinitionBuildItem(proxyClassName));
         }
+    }
+
+    /**
+     * Registers JasperReports service providers for native image compilation.
+     * <p>
+     * JRPdfExporter discovers its PdfProducerFactory implementation via ServiceLoader.
+     *
+     * @param serviceProviders The producer for ServiceProviderBuildItem
+     */
+    @BuildStep
+    void registerJasperReportsServiceProviders(BuildProducer<ServiceProviderBuildItem> serviceProviders) {
+        serviceProviders.produce(ServiceProviderBuildItem
+                .allProvidersFromClassPath(net.sf.jasperreports.pdf.common.PdfProducerFactory.class.getName()));
     }
 
     /**
