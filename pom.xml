@@ -29,9 +29,11 @@
         <version.jasperreports>7.1.1</version.jasperreports>
         <version.quarkus-barcode>4.0.0</version.quarkus-barcode>
         <version.quarkus-openpdf>3.3.3</version.quarkus-openpdf>
-        <version.quarkus-poi>3.0.0.Beta1</version.quarkus-poi>
+        <version.quarkus-poi>4.0.0</version.quarkus-poi>
         <version.quarkus-pdfbox>4.0.0</version.quarkus-pdfbox>
         <version.quarkus-batik>4.0.0</version.quarkus-batik>
+        <!-- JasperReports 7.1.1 is built against POI 5.x; quarkus-poi 4.0.0 brings POI 6 -->
+        <version.poi>5.5.1</version.poi>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -56,6 +58,26 @@
                 <groupId>io.quarkiverse.poi</groupId>
                 <artifactId>quarkus-poi-deployment</artifactId>
                 <version>${version.quarkus-poi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${version.poi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${version.poi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml-full</artifactId>
+                <version>${version.poi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-scratchpad</artifactId>
+                <version>${version.poi}</version>
             </dependency>
             <dependency>
                 <groupId>io.quarkiverse.openpdf</groupId>
