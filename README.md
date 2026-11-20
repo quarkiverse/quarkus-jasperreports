@@ -26,7 +26,7 @@ Read the full [JasperReports documentation](https://docs.quarkiverse.io/quarkus-
 
 Create a new JasperReports project (with a base jasperreports starter code):
 
-- With [code.quarkus.io](https://code.quarkus.io/?a=jasperreports-bowl&j=17&e=io.quarkiverse.jasperreports%3Aquarkus-jasperreports)
+- With [code.quarkus.io](https://code.quarkus.io/?a=jasperreports-bowl&j=21&e=io.quarkiverse.jasperreports%3Aquarkus-jasperreports)
 - With the [Quarkus CLI](https://quarkus.io/guides/cli-tooling):
 
 ```bash
@@ -41,6 +41,15 @@ Or add to your pom.xml directly:
     <version>{project-version}</version>
 </dependency>
 ```
+
+## Compatibility
+
+| JasperReports extension version | Quarkus version |
+| ------------------------------- | --------------- |
+| 1.4.x                           | 3.33.4+         |
+| 2.x                             | 4.0.0+          |
+
+2.x targets Quarkus 4 and requires JDK 21. If you are still on Quarkus 3, stay on 1.4.x, which is maintained from the `1.x` branch.
 
 ## Docker
 
