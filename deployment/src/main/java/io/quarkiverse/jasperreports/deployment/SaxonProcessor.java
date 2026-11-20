@@ -3,6 +3,7 @@ package io.quarkiverse.jasperreports.deployment;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 
 /**
  * A build step class responsible for registering classes related to the Saxon library
@@ -29,5 +30,16 @@ class SaxonProcessor extends AbstractJandexProcessor {
                 .build());
         reflectiveClasses.produce(ReflectiveClassBuildItem.builder(org.xmlresolver.loaders.XmlLoader.class).build());
         //@formatter:on
+    }
+
+    /**
+     * xmlresolver's {@code SaxProducer} references the optional Jing {@code ValidationDriver$SaxProducer}
+     * class, which is not on the classpath, so it cannot be initialized at image build time.
+     *
+     * @return the runtime initialized class build item
+     */
+    @BuildStep
+    RuntimeInitializedClassBuildItem runtimeInitXmlResolverSaxProducer() {
+        return new RuntimeInitializedClassBuildItem("org.xmlresolver.utils.SaxProducer");
     }
 }

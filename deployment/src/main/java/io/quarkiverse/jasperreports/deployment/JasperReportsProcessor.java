@@ -1,7 +1,6 @@
 package io.quarkiverse.jasperreports.deployment;
 
 import static io.quarkus.deployment.pkg.PackageConfig.JarConfig.JarType.UBER_JAR;
-import static org.jboss.jandex.AnnotationTarget.Kind.CLASS;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
@@ -30,10 +29,9 @@ import jakarta.json.JsonWriterFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
+import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.quarkiverse.jasperreports.JasperReportsBeanProducer;
 import io.quarkiverse.jasperreports.JasperReportsRecorder;
@@ -68,7 +66,6 @@ import io.quarkus.deployment.pkg.NativeConfig;
 import io.quarkus.deployment.pkg.PackageConfig;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
-import io.quarkus.jackson.deployment.IgnoreJsonDeserializeClassBuildItem;
 import io.quarkus.logging.Log;
 import net.sf.jasperreports.compilers.ReportExpressionEvaluationData;
 import net.sf.jasperreports.engine.JRDataset;
@@ -88,7 +85,21 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
 
     private static final String FEATURE = "jasperreports";
     private static final String EXTENSIONS_FILE = "jasperreports_extension.properties";
-    private static final DotName JSON_DESERIALIZE = DotName.createSimple(JsonDeserialize.class.getName());
+
+    /**
+     * Jackson 2 databind annotations used by JasperReports. Quarkus 4's quarkus-jackson only processes the
+     * Jackson 3 ({@code tools.jackson}) equivalents, so the classes these reference must be registered here.
+     */
+    private static final List<DotName> JACKSON2_ANNOTATIONS = List.of(
+            DotName.createSimple("com.fasterxml.jackson.databind.annotation.JsonDeserialize"),
+            DotName.createSimple("com.fasterxml.jackson.databind.annotation.JsonSerialize"),
+            DotName.createSimple("com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver"),
+            DotName.createSimple("com.fasterxml.jackson.databind.annotation.JsonTypeResolver"),
+            DotName.createSimple("com.fasterxml.jackson.databind.annotation.JsonNaming"));
+
+    /** Annotation members that hold a class Jackson 2 instantiates or introspects reflectively. */
+    private static final Set<String> JACKSON2_CLASS_MEMBERS = Set.of("value", "using", "contentUsing", "keyUsing",
+            "builder", "as", "contentAs", "keyAs", "converter", "contentConverter");
 
     @BuildStep
     FeatureBuildItem feature() {
@@ -511,37 +522,60 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     @BuildStep
     void registerFonts(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
         final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("**/fonts/dejavu/**");
+        builder.includeGlob("net/sf/jasperreports/fonts/dejavu/**");
         builder.includeGlob("fonts/**");
         nativeImageResourcePatterns.produce(builder.build());
     }
 
     /**
-     * A build step that processes the `@JsonDeserialize` annotations in the application,
-     * specifically focusing on classes within the `net.sf.jasperreports` package.
-     * Any class annotated with `@JsonDeserialize` that belongs to this package will be ignored
-     * for JSON deserialization purposes by producing an {@link IgnoreJsonDeserializeClassBuildItem}.
+     * Registers the serializers, deserializers and other helper classes referenced by JasperReports'
+     * Jackson 2 annotations (e.g. {@code @JsonDeserialize(using = NamedEnumConstantContextualDeserializer.class)})
+     * for reflection.
+     * <p>
+     * JasperReports uses Jackson 2 ({@code com.fasterxml.jackson}). In Quarkus 3, quarkus-jackson registered these
+     * classes; in Quarkus 4 it only processes Jackson 3 ({@code tools.jackson}) annotations, so without this step
+     * Jackson 2 cannot instantiate them in native mode ("has no default (no arg) constructor").
      *
      * @param combinedIndex The build item that contains the index of all annotations and classes in the application.
-     * @param ignoredJsonDeserializationClasses The build producer used to generate {@link IgnoreJsonDeserializeClassBuildItem}
-     *        instances for classes that should be ignored for deserialization.
+     * @param reflectiveClasses The producer for reflective classes
      */
     @BuildStep
-    void ignoreJacksonDeserialize(CombinedIndexBuildItem combinedIndex,
-            BuildProducer<IgnoreJsonDeserializeClassBuildItem> ignoredJsonDeserializationClasses) {
+    void registerJackson2AnnotatedClasses(CombinedIndexBuildItem combinedIndex,
+            BuildProducer<ReflectiveClassBuildItem> reflectiveClasses) {
         IndexView index = combinedIndex.getIndex();
-
-        // handle the various @JsonDeserialize cases
-        for (AnnotationInstance deserializeInstance : index.getAnnotations(JSON_DESERIALIZE)) {
-            AnnotationTarget annotationTarget = deserializeInstance.target();
-            if (CLASS.equals(annotationTarget.kind())) {
-                DotName dotName = annotationTarget.asClass().name();
-                if (dotName.packagePrefix().startsWith("net.sf.jasperreports")) {
-                    Log.debugf("Ignore @JsonDeserialize: %s", dotName);
-                    ignoredJsonDeserializationClasses.produce(new IgnoreJsonDeserializeClassBuildItem(dotName));
+        Set<String> classNames = new TreeSet<>();
+        for (DotName annotation : JACKSON2_ANNOTATIONS) {
+            for (AnnotationInstance instance : index.getAnnotations(annotation)) {
+                DotName declaringClass = declaringClass(instance.target());
+                if (declaringClass == null || !declaringClass.toString().startsWith("net.sf.jasperreports")) {
+                    continue;
+                }
+                for (AnnotationValue value : instance.values()) {
+                    if (value.kind() == AnnotationValue.Kind.CLASS && JACKSON2_CLASS_MEMBERS.contains(value.name())) {
+                        String className = value.asClass().name().toString();
+                        // skip Jackson's "no class" placeholders such as JsonDeserializer.None and Void
+                        if (!className.endsWith("$None") && !className.equals(Void.class.getName())) {
+                            classNames.add(className);
+                        }
+                    }
                 }
             }
         }
+        Log.debugf("Jackson 2 classes registered for reflection: %s", classNames);
+        if (!classNames.isEmpty()) {
+            reflectiveClasses.produce(ReflectiveClassBuildItem.builder(classNames.toArray(String[]::new))
+                    .constructors().methods().fields().build());
+        }
+    }
+
+    private static DotName declaringClass(AnnotationTarget target) {
+        return switch (target.kind()) {
+            case CLASS -> target.asClass().name();
+            case METHOD -> target.asMethod().declaringClass().name();
+            case FIELD -> target.asField().declaringClass().name();
+            case METHOD_PARAMETER -> target.asMethodParameter().method().declaringClass().name();
+            default -> null;
+        };
     }
 
     /**
