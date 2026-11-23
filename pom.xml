@@ -28,7 +28,7 @@
         <version.quarkus>4.0.0</version.quarkus>
         <version.jasperreports>7.1.1</version.jasperreports>
         <version.quarkus-barcode>4.0.0</version.quarkus-barcode>
-        <version.quarkus-openpdf>3.3.3</version.quarkus-openpdf>
+        <version.quarkus-openpdf>4.0.0</version.quarkus-openpdf>
         <version.quarkus-poi>4.0.0</version.quarkus-poi>
         <version.quarkus-pdfbox>4.0.0</version.quarkus-pdfbox>
         <version.quarkus-batik>4.0.0</version.quarkus-batik>
