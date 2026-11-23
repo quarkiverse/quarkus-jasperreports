@@ -33,7 +33,7 @@
         <version.quarkus-pdfbox>4.0.0</version.quarkus-pdfbox>
         <version.quarkus-batik>4.0.0</version.quarkus-batik>
         <!-- JasperReports 7.1.1 is built against POI 5.x; quarkus-poi 4.0.0 brings POI 6 -->
-        <version.poi>5.5.1</version.poi>
+        <version.poi>6.0.0</version.poi>
     </properties>
     <dependencyManagement>
         <dependencies>
