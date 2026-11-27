@@ -36,16 +36,19 @@ import org.jboss.jandex.IndexView;
 import io.quarkiverse.jasperreports.JasperReportsBeanProducer;
 import io.quarkiverse.jasperreports.config.Constants;
 import io.quarkiverse.jasperreports.config.ReportBuildTimeConfig;
+import io.quarkiverse.jasperreports.deployment.item.AbstractReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.CompiledReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.runtime.BeanContainer;
 import io.quarkus.core.deployment.service.ServiceRegistrar;
+import io.quarkus.deployment.ApplicationArchive;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.IsProduction;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.builditem.ApplicationArchivesBuildItem;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedClassBuildItem;
@@ -66,6 +69,7 @@ import io.quarkus.deployment.pkg.PackageConfig;
 import io.quarkus.deployment.pkg.builditem.OutputTargetBuildItem;
 import io.quarkus.deployment.pkg.builditem.UberJarMergedResourceBuildItem;
 import io.quarkus.logging.Log;
+import io.quarkus.runtime.util.ClassPathUtils;
 import net.sf.jasperreports.compilers.ReportExpressionEvaluationData;
 import net.sf.jasperreports.engine.JRDataset;
 import net.sf.jasperreports.engine.JRException;
@@ -381,22 +385,52 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     }
 
     /**
-     * Registers report files for native image compilation and processes compiled report files.
+     * Registers report files (.jrxml, .jasper, .jrtx, .jrdax) as native image resources.
+     * <p>
+     * Reports compiled by this extension are written to the configured destination folder, which is registered
+     * with a glob anchored on that folder. Any other report files shipped in application archives are registered
+     * by their exact resource path. This avoids generic {@code **}-prefixed globs, which GraalVM warns about
+     * because they force it to scan every resource on the classpath.
      *
+     * @param config The build time configuration holding the destination folder
+     * @param applicationArchives All application archives to scan for report files
      * @param nativeImageResourcePatterns Producer for native image resource patterns
+     * @param nativeImageResources Producer for individual native image resources
      */
     @BuildStep
-    void registerReports(BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns) {
-        final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
-        builder.includeGlob("**/*." + Constants.EXT_REPORT);
-        builder.includeGlob("**/*." + Constants.EXT_COMPILED);
-        builder.includeGlob("**/*." + Constants.EXT_STYLE);
-        builder.includeGlob("**/*." + Constants.EXT_DATA_ADAPTER);
-        builder.includeGlob("*." + Constants.EXT_REPORT);
-        builder.includeGlob("*." + Constants.EXT_COMPILED);
-        builder.includeGlob("*." + Constants.EXT_STYLE);
-        builder.includeGlob("*." + Constants.EXT_DATA_ADAPTER);
-        nativeImageResourcePatterns.produce(builder.build());
+    void registerReports(ReportBuildTimeConfig config,
+            ApplicationArchivesBuildItem applicationArchives,
+            BuildProducer<NativeImageResourcePatternsBuildItem> nativeImageResourcePatterns,
+            BuildProducer<NativeImageResourceBuildItem> nativeImageResources) {
+        // compiled reports and styles may be generated after the archives were scanned, so register
+        // the destination folder with a glob that starts with a literal path
+        final String destination = StringUtils.strip(ClassPathUtils.toResourceName(config.build().destination()), "/.");
+        if (StringUtils.isNotEmpty(destination)) {
+            final NativeImageResourcePatternsBuildItem.Builder builder = NativeImageResourcePatternsBuildItem.builder();
+            for (String ext : AbstractReportFileBuildItem.EXTENSIONS) {
+                builder.includeGlob(destination + "/**/*" + ext);
+            }
+            nativeImageResourcePatterns.produce(builder.build());
+        }
+
+        // register every other report file found in the application archives by its exact path
+        final Set<String> reportResources = new TreeSet<>();
+        for (ApplicationArchive archive : applicationArchives.getAllApplicationArchives()) {
+            archive.accept(tree -> tree.walk(visit -> {
+                final String resource = visit.getRelativePath();
+                final String lower = resource.toLowerCase(Locale.ROOT);
+                for (String ext : AbstractReportFileBuildItem.EXTENSIONS) {
+                    if (lower.endsWith(ext)) {
+                        reportResources.add(resource);
+                        break;
+                    }
+                }
+            }));
+        }
+        if (!reportResources.isEmpty()) {
+            Log.debugf("Registering report resources for native image: %s", reportResources);
+            nativeImageResources.produce(new NativeImageResourceBuildItem(new ArrayList<>(reportResources)));
+        }
     }
 
     /**
