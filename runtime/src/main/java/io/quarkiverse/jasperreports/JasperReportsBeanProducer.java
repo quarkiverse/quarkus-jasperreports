@@ -22,7 +22,7 @@ public class JasperReportsBeanProducer {
      *
      * @param destinationPath The path where compiled JasperReports files are located.
      */
-    void initialize(Path destinationPath) {
+    public void initialize(Path destinationPath) {
         this.destinationPath = destinationPath;
     }
 
