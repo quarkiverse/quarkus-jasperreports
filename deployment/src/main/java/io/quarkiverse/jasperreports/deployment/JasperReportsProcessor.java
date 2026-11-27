@@ -34,26 +34,25 @@ import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
 
 import io.quarkiverse.jasperreports.JasperReportsBeanProducer;
-import io.quarkiverse.jasperreports.JasperReportsRecorder;
 import io.quarkiverse.jasperreports.config.Constants;
 import io.quarkiverse.jasperreports.config.ReportBuildTimeConfig;
 import io.quarkiverse.jasperreports.deployment.item.CompiledReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportFileBuildItem;
 import io.quarkiverse.jasperreports.deployment.item.ReportRootBuildItem;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
-import io.quarkus.arc.deployment.BeanContainerBuildItem;
+import io.quarkus.arc.runtime.BeanContainer;
+import io.quarkus.core.deployment.service.ServiceRegistrar;
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.IsProduction;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.annotations.ExecutionTime;
-import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.CombinedIndexBuildItem;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
 import io.quarkus.deployment.builditem.GeneratedClassBuildItem;
 import io.quarkus.deployment.builditem.GeneratedResourceBuildItem;
 import io.quarkus.deployment.builditem.HotDeploymentWatchedFileBuildItem;
 import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
+import io.quarkus.deployment.builditem.ServiceStartBuildItem;
 import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
@@ -785,17 +784,21 @@ class JasperReportsProcessor extends AbstractJandexProcessor {
     }
 
     /**
-     * Initializes the JasperReports producer at runtime.
+     * Registers a runtime service that initializes the JasperReports producer with the configured destination path.
      *
-     * @param recorder The JasperReportsRecorder to use for initialization.
-     * @param beanContainer The BeanContainerBuildItem containing the bean container.
+     * @param reg The ServiceRegistrar used to register the runtime service.
      * @param config The ReportBuildTimeConfig to use for initialization.
+     * @return A ServiceStartBuildItem for the JasperReports feature.
      */
     @BuildStep
-    @Record(ExecutionTime.RUNTIME_INIT)
-    void initializeBeanProducer(JasperReportsRecorder recorder, BeanContainerBuildItem beanContainer,
-            ReportBuildTimeConfig config) {
-        recorder.initProducer(beanContainer.getValue(), config);
+    ServiceStartBuildItem initializeBeanProducer(ServiceRegistrar reg, ReportBuildTimeConfig config) {
+        // capture a simple value; the lambda body runs at runtime
+        final String destination = config.build().destination().toString();
+        reg.forService("io.quarkiverse.jasperreports.init-producer")
+                .require(BeanContainer.class)
+                .onStart((ctx, container) -> container.beanInstance(JasperReportsBeanProducer.class)
+                        .initialize(Path.of(destination)));
+        return new ServiceStartBuildItem(FEATURE);
     }
 
     @BuildStep
